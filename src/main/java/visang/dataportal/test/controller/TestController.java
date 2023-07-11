@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import visang.dataportal.test.dto.DataBySubsetDto;
+import visang.dataportal.test.dto.Result;
 import visang.dataportal.test.dto.Test;
 import visang.dataportal.test.dto.TestDto;
 import visang.dataportal.test.service.TestService;
@@ -15,12 +17,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/test")
 public class TestController {
 
     private final TestService testService;
 
-    @GetMapping("/getTestList")
+    @GetMapping("/test/getTestList")
     public Result getTestList() {
 
         List<TestDto> result = testService.getTestList().stream()
@@ -30,7 +31,7 @@ public class TestController {
 
     }
 
-    @GetMapping("/getTestById/{id}")
+    @GetMapping("/test/getTestById/{id}")
     public Result getTestById(@PathVariable Long id) {
 
         TestDto result = testService.getTestById(id);
@@ -38,13 +39,14 @@ public class TestController {
 
     }
 
-
-    // 데이터 테이블의 갯수에 따라 loc 생성해주는 함수 필요
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
+    @GetMapping("/chart/getAllData")
+    public Result getAllData() {
+        List<DataBySubsetDto> result = testService.getAllData();
+        return new Result(result);
     }
+
+
+
 
 
 }
