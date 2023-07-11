@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import visang.dataportal.test.dto.Test;
 import visang.dataportal.test.dto.TestDto;
-import visang.dataportal.test.response.TestResponse;
 import visang.dataportal.test.service.TestService;
 
 import java.util.List;
@@ -40,9 +39,7 @@ public class TestController {
     }
 
 
-
     // 데이터 테이블의 갯수에 따라 loc 생성해주는 함수 필요
-
     @Data
     @AllArgsConstructor
     static class Result<T> {
