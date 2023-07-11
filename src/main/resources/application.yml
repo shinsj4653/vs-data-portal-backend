@@ -1,0 +1,23 @@
+# database
+spring:
+  datasource: #???? 2?
+    url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
+#    url: jdbc:h2:file:C:\Users\user
+#    url: jdbc:h2:file:C:/visang/test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa: #???? 2?
+    hibernate: #???? 4?
+      ddl-auto: none #???? 6?
+    properties: #???? 4?
+      hibernate: #???? 6?
+        show_sql: true #???? 8?
+        format_sql: true #???? 8?
+        use_sql_comments: true
+
+mybatis:
+  mapper-locations: /mappers/**/*.xml
+  type-aliases-package: visang.dataportal.test.dto
+

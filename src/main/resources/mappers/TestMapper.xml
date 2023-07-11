@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="visang.dataportal.test.mapper.TestMapper">
+
+    <select id="getTestList" resultType="TestDto">
+        SELECT id, test_name as name FROM test;
+    </select>
+
+    <select id="getTestById" resultType="TestDto">
+        SELECT id, test_name as name FROM test WHERE id = #{id};
+    </select>
+
+
+    <insert id="createTest" useGeneratedKeys="true" keyProperty="id">
+        INSERT test (test_num, test_name) VALUES (#{testNum}, #{testName})
+    </insert>
+
+<!--    데이터 포털 loc 추출용 SQL-->
+<!--    select c.company_name, c.company_color, s.service_name, s.service_color, c1.data_category_name, c1.data_category_color, c2.data_subcategory_name, c2.data_subcategory_color, count(d.datasetlist_id) as loc--><!--    from tb_company c, tb_service s, tb_data_category c1, tb_data_subcategory c2, tb_datasetlist d-->
+<!--    where c.company_id = s.service_id and s.service_id = c1.service_id and s.service_id = c2.service_id and s.service_id = d.service_id and c2.data_category_id = c1.data_category_id and d.data_subcategory_id = c2.data_subcategory_id-->
+<!--    group by c2.data_subcategory_id-->
+
+<!--    테이블 데이터셋리스트 추가문-->
+<!--    INSERT INTO TB_DATASETLIST(table_id, table_name, service_id, data_category_id, data_subcategory_id)-->
+<!--    values('tb_ex_11', '테이블11', 1, 1, 2);-->
+
+</mapper>
