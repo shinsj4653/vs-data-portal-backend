@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class DataBySubsetResult {
+public class DataBySubjectResult {
     private String name;
     private String color;
     private int id;

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataBySubsetDto {
+public class DataBySubjectDto {
 
     private String company_name;
     private String company_color;

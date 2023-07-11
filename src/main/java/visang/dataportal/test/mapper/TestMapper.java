@@ -1,7 +1,7 @@
 package visang.dataportal.test.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import visang.dataportal.test.dto.DataBySubsetDto;
+import visang.dataportal.test.dto.DataBySubjectDto;
 import visang.dataportal.test.dto.Test;
 import visang.dataportal.test.dto.TestDto;
 
@@ -14,7 +14,7 @@ public interface TestMapper {
     TestDto getTestById(Long id);
     void createTest(Test test);
 
-    List<DataBySubsetDto> getAllData();
+    List<DataBySubjectDto> getAllData();
 
 
 }

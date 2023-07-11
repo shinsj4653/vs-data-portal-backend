@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import visang.dataportal.test.dto.DataBySubsetDto;
+import visang.dataportal.test.dto.DataBySubjectDto;
 import visang.dataportal.test.dto.Test;
 import visang.dataportal.test.dto.TestDto;
 import visang.dataportal.test.mapper.TestMapper;
@@ -43,7 +43,7 @@ public class TestService {
         return testRepository.findAll();
     }
 
-    public List<DataBySubsetDto> getAllData() {
+    public List<DataBySubjectDto> getAllData() {
         return testMapper.getAllData();
     }
 

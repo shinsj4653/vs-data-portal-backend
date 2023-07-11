@@ -1,13 +1,10 @@
 package visang.dataportal.test.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataportal.test.dto.DataBySubsetDto;
+import visang.dataportal.test.dto.DataBySubjectDto;
 import visang.dataportal.test.dto.Result;
-import visang.dataportal.test.dto.Test;
 import visang.dataportal.test.dto.TestDto;
 import visang.dataportal.test.service.TestService;
 
@@ -41,7 +38,7 @@ public class TestController {
 
     @GetMapping("/chart/getAllData")
     public Result getAllData() {
-        List<DataBySubsetDto> result = testService.getAllData();
+        List<DataBySubjectDto> result = testService.getAllData();
         return new Result(result);
     }
 
