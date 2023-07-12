@@ -1,33 +1,27 @@
-package visang.dataportal.test.controller;
-
-import aj.org.objectweb.asm.TypeReference;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+package visang.dataplatform.dataportal.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import visang.dataportal.test.dto.*;
-import visang.dataportal.test.service.TestService;
-
-import java.util.ArrayList;
+import visang.dataplatform.dataportal.dto.*;
+import visang.dataplatform.dataportal.service.DataService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class TestController {
+public class DataController {
 
-    private final TestService testService;
+    private final DataService dataService;
 
     @GetMapping("/test/getTestList")
     public Result getTestList() {
 
-        List<TestDto> result = testService.getTestList().stream()
+        List<TestDto> result = dataService.getTestList().stream()
                 .collect(toList());
 
         return new Result(result);
@@ -37,14 +31,14 @@ public class TestController {
     @GetMapping("/test/getTestById/{id}")
     public Result getTestById(@PathVariable Long id) {
 
-        TestDto result = testService.getTestById(id);
+        TestDto result = dataService.getTestById(id);
         return new Result(result);
 
     }
 
     @GetMapping("/chart/getAllData")
     public Result getAllData() {
-        List<DataBySubjectDto> list = testService.getAllData();
+        List<DataBySubjectDto> list = dataService.getAllData();
         Map<String, Node> companyMap = new HashMap<>();
         Node rootNode = new Node("비상교육", "#00b2e2", "node-parent");
 
