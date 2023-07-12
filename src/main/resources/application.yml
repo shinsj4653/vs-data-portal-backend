@@ -19,5 +19,5 @@ spring:
 
 mybatis:
   mapper-locations: /mappers/**/*.xml
-  type-aliases-package: visang.dataportal.test.dto
+  type-aliases-package: visang.dataplatform.dataportal.dto
 

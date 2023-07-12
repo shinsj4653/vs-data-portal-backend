@@ -1,4 +1,4 @@
-package visang.dataportal.test.exception;
+package visang.dataplatform.dataportal.exception;
 
 public class BizException extends RuntimeException {
     private int status;

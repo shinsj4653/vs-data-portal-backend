@@ -3,13 +3,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="visang.dataportal.test.mapper.TestMapper">
+<mapper namespace="visang.dataplatform.dataportal.mapper.DataMapper">
 
-    <select id="getTestList" resultType="TestDto">
+    <select id="getTestList" resultType="visang.dataplatform.dataportal.dto.TestDto">
         SELECT id, test_name as name FROM test;
     </select>
 
-    <select id="getTestById" resultType="TestDto">
+    <select id="getTestById" resultType="visang.dataplatform.dataportal.dto.TestDto">
         SELECT id, test_name as name FROM test WHERE id = #{id};
     </select>
 
@@ -22,7 +22,7 @@
 <!--    select c.company_name, c.company_color, s.service_name, s.service_color, c1.data_category_name, c1.data_category_color, c2.data_subcategory_name, c2.data_subcategory_color, count(d.datasetlist_id) as loc--><!--    from tb_company c, tb_service s, tb_data_category c1, tb_data_subcategory c2, tb_datasetlist d-->
 <!--    where c.company_id = s.service_id and s.service_id = c1.service_id and s.service_id = c2.service_id and s.service_id = d.service_id and c2.data_category_id = c1.data_category_id and d.data_subcategory_id = c2.data_subcategory_id-->
 <!--    group by c2.data_subcategory_id-->
-    <select id="getAllData" resultType="DataBySubjectDto">
+    <select id="getAllData" resultType="visang.dataplatform.dataportal.dto.DataBySubjectDto">
         select c.company_name, c.company_id, c.company_color, s.service_name, s.service_id, s.service_color, c1.main_subject_name, c1.main_subject_id, c1.main_subject_color, c2.sub_subject_name, c2.sub_subject_id, c2.sub_subject_color, count(t.tablelist_id) as loc
         from tb_company_info c, tb_service_info s, tb_main_subject c1, tb_sub_subject c2, tb_tablelist t
         where c.company_id = s.service_id and s.service_id = t.service_id and t.main_subject_id = c1.main_subject_id and t.sub_subject_id = c2.sub_subject_id

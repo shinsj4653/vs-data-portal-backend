@@ -1,4 +1,4 @@
-package visang.dataportal.test.dto;
+package visang.dataplatform.dataportal.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

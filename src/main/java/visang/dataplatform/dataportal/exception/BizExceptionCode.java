@@ -1,4 +1,4 @@
-package visang.dataportal.test.exception;
+package visang.dataplatform.dataportal.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
