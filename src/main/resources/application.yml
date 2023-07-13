@@ -1,12 +1,22 @@
 # database
 spring:
-  datasource: #???? 2?
-    url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
-#    url: jdbc:h2:file:C:\Users\user
-#    url: jdbc:h2:file:C:/visang/test
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  # --- rds postgresql db --- #
+
+  datasource:
+    url: jdbc:postgresql://database-pionada-ai-poc-13.cuerrc1vwpjd.ap-northeast-2.rds.amazonaws.com:5023/vs_dp_data_service
+    username: pionada_ai_poc
+    password: pocAiPionada1#
+    hikari:
+      maximum-pool-size: 4
+
+  # --- local H2 db --- #
+
+  #    url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
+##    url: jdbc:h2:file:C:\Users\user
+##    url: jdbc:h2:file:C:/visang/test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
 
   jpa: #???? 2?
     hibernate: #???? 4?
