@@ -6,7 +6,7 @@
 <mapper namespace="visang.dataplatform.dataportal.mapper.DataMapper">
 
     <select id="getTestList" resultType="TestDto">
-        SELECT id, test_name as name FROM test;
+        SELECT id, name as name FROM test;
     </select>
 
     <select id="getTestById" resultType="TestDto">

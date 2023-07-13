@@ -18,6 +18,7 @@ spring:
 #    password:
 #    driver-class-name: org.h2.Driver
 
+
   jpa: #???? 2?
     hibernate: #???? 4?
       ddl-auto: none #???? 6?
@@ -26,8 +27,10 @@ spring:
         show_sql: true #???? 8?
         format_sql: true #???? 8?
         use_sql_comments: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
-mybatis:
+mybatis: # type을 쉽게 쓰기 위해서 dto 패키지를 type-aliaes에 설정
   mapper-locations: /mappers/**/*.xml
   type-aliases-package: visang.dataplatform.dataportal.dto
-
