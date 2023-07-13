@@ -43,8 +43,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload to AWS S3
-        run: |
-          aws deploy push 
+        run: aws deploy push 
             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }}
             --ignore-hidden-files
             --s3-location s3://${{ env.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
@@ -52,8 +51,7 @@ jobs:
 
       # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
       - name: Deploy to AWS EC2 from S3
-        run: |
-          aws deploy create-deployment 
+        run: aws deploy create-deployment 
             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} 
             --deployment-config-name CodeDeployDefault.AllAtOnce 
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} 
