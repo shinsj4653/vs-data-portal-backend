@@ -21,11 +21,7 @@ public class DataController {
     @GetMapping("/test/getTestList")
     public Result getTestList() {
 
-        List<TestDto> result = dataService.getTestList().stream()
-                .collect(toList());
-
-        return new Result(result);
-
+        return new Result("Hello World");
     }
 
     @GetMapping("/test/getTestById/{id}")
