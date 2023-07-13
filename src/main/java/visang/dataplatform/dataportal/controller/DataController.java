@@ -1,4 +1,10 @@
 package visang.dataplatform.dataportal.controller;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,10 +20,18 @@ import static java.util.stream.Collectors.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "chart datas", description = "차트 데이터 API")
 public class DataController {
 
     private final DataService dataService;
 
+    @Operation(summary = "get tests", description = "test 테이블에서 데이터 가져오기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = TestDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
     @GetMapping("/test/getTestList")
     public Result getTestList() {
 
