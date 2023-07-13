@@ -8,8 +8,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: vs-dp-github-action-s3-bucket
-  CODE_DEPLOY_APPLICATION_NAME: vs-dp-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: vs-dp-codedeploy-deployment-group
+  CODE_DEPLOY_APPLICATION_NAME: vs-dp-codedeploy-backend
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: vs-dp-codedeploy-backend-deployment-group
 
 permissions:
   contents: read
