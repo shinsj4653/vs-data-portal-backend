@@ -21,6 +21,10 @@ repositories {
 	maven { url 'https://repo.spring.io/snapshot' }
 	mavenCentral()
 }
+//plain jar 파일이 만들어지지 않도록 추가
+jar {
+	enabled = false
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
