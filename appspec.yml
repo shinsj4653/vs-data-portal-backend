@@ -11,10 +11,10 @@ permissions: # EC2 인스턴스에 프로젝트를 저장하기 위한 권한 �
     mode: 755
 hooks:
   AfterInstall:
-    - location: scripts/stop.sh
+    - location: stop.sh
       timeout: 60
       runas: root
   ApplicationStart:
-    - location: scripts/start.sh
+    - location: start.sh
       timeout: 60
       runas: root
