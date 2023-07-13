@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "chart datas", description = "차트 데이터 API")
+@Tag(name = "Chart Data API", description = "차트 데이터 API")
 public class DataController {
 
     private final DataService dataService;
@@ -35,7 +35,7 @@ public class DataController {
     @GetMapping("/test/getTestList")
     public Result getTestList() {
 
-        return new Result("Hello World");
+        return new Result("Hello World!!");
     }
 
     @GetMapping("/test/getTestById/{id}")
