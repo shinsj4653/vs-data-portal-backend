@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class DataBySubjectDto {
+public class DataByCategoryDto {
 
     private String company_name;
     private String company_color;
@@ -20,13 +20,13 @@ public class DataBySubjectDto {
     private String service_color;
     private int service_id;
 
-    private String main_subject_name;
-    private String main_subject_color;
-    private int main_subject_id;
+    private String main_category_name;
+    private String main_category_color;
+    private int main_category_id;
 
-    private String sub_subject_name;
-    private String sub_subject_color;
-    private int sub_subject_id;
+    private String sub_category_name;
+    private String sub_category_color;
+    private int sub_category_id;
 
     private int loc;
 
