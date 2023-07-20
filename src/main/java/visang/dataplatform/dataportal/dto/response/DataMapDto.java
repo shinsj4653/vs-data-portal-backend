@@ -1,10 +1,8 @@
-package visang.dataplatform.dataportal.dto;
+package visang.dataplatform.dataportal.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;

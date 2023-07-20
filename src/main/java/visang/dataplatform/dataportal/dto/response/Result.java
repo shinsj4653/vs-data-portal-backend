@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.dto;
+package visang.dataplatform.dataportal.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
