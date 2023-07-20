@@ -1,10 +1,10 @@
 package visang.dataplatform.dataportal.controller;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -17,35 +17,36 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "ChartData API", description = "차트데이터 API")
+@RequestMapping("CirclePack")
+@Api(tags = { "DataMap API" }, description = "비상교육 데이터 맵 API")
 public class DataController {
 
     private final DataService dataService;
 
-    @Operation(summary = "GET test", description = "GET 요청 테스트")
+    @Operation(description = "GET 요청 테스트")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @GetMapping("/test")
+    @GetMapping("test")
     public Result getTest() {
         return new Result("Hello World!!");
     }
 
-    @Operation(summary = "GET getChartData", description = "데이터 포털 원형차트에 필요한 데이터 가져오기")
+    @Operation(description = "데이터 맵에 필요한 정보 가져오기")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataByCategoryDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @GetMapping("/chart/getChartData")
-    public Result getChartData() {
+    @GetMapping("getCirclePackData")
+    public DataMapDto getChartData() {
         List<DataByCategoryDto> list = dataService.getChartData();
-        Map<String, Node> companyMap = new HashMap<>();
-        Node rootNode = new Node("비상교육", "#00b2e2", "node-parent");
+        Map<String, DataMapDto> companyMap = new HashMap<>();
+        DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-parent");
 
         for (DataByCategoryDto data : list) {
             String companyName = data.getCompany_name();
@@ -65,15 +66,15 @@ public class DataController {
             String subSubjectId = String.valueOf(data.getSub_category_id());
             int loc = data.getLoc();
 
-            Node companyNode = companyMap.computeIfAbsent(companyName, name -> new Node(companyName, companyColor, companyId));
-            Node serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
-            Node mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
-            Node subSubjectNode = mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
+            DataMapDto companyNode = companyMap.computeIfAbsent(companyName, name -> new DataMapDto(companyName, companyColor, companyId));
+            DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+            DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
+            DataMapDto subSubjectNode = mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
 
             rootNode.addChild(companyNode);
 
         }
 
-        return new Result(rootNode);
+        return rootNode;
     }
 }
