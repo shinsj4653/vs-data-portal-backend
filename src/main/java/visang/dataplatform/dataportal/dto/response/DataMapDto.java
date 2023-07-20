@@ -9,16 +9,16 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@Schema(description = "데이터 맵 응답DTO")
+@Schema(description = "데이터 맵 응답 DTO")
 public class DataMapDto {
 
     @Schema(description = "이름")
     private String name;
 
-    @Schema(description = "원 색상")
+    @Schema(description = "색상")
     private String color;
 
-    @Schema(description = "원 id값")
+    @Schema(description = "id값")
     private String id;
 
     @Schema(description = "자식 정보")
