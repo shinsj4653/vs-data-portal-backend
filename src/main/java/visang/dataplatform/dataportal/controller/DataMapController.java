@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import visang.dataplatform.dataportal.dto.response.DataByCategoryDto;
 import visang.dataplatform.dataportal.dto.response.DataMapDto;
-import visang.dataplatform.dataportal.dto.response.Result;
-import visang.dataplatform.dataportal.service.DataService;
+import visang.dataplatform.dataportal.service.DataMapService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,34 +18,39 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("CirclePack")
-@Api(tags = { "DataMap API" }, description = "비상교육 데이터 맵 API")
-public class DataController {
+@RequestMapping("apis/map")
+@Api(tags = { "DataMap API" }, description = "데이터 맵 API")
+public class DataMapController {
 
-    private final DataService dataService;
+    private final DataMapService dataMapService;
 
-    @Operation(description = "GET 요청 테스트")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @GetMapping("test")
-    public Result getTest() {
-        return new Result("Hello World!!");
-    }
-
-    @Operation(description = "데이터 맵에 필요한 정보 가져오기")
+    @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @GetMapping("getCirclePackData")
-    public DataMapDto getChartData() {
-        List<DataByCategoryDto> list = dataService.getChartData();
+    @GetMapping("main")
+    public DataMapDto getMapMainData() {
+        List<DataByCategoryDto> list = dataMapService.getMapMainData();
+        return makeMapData(list, true);
+    }
+
+    @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("sub")
+    public DataMapDto getMapSubData() {
+        List<DataByCategoryDto> list = dataMapService.getMapSubData();
+        return makeMapData(list, false);
+    }
+
+    private static DataMapDto makeMapData(List<DataByCategoryDto> list, Boolean isMain) {
         Map<String, DataMapDto> companyMap = new HashMap<>();
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-parent");
 
@@ -70,8 +74,13 @@ public class DataController {
 
             DataMapDto companyNode = companyMap.computeIfAbsent(companyName, name -> new DataMapDto(companyName, companyColor, companyId));
             DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
-            DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
-            DataMapDto subSubjectNode = mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
+
+            if (isMain){
+                DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, loc);
+            } else {
+                DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
+                DataMapDto subSubjectNode = mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
+            }
 
             rootNode.addChild(companyNode);
 

@@ -6,7 +6,7 @@ import visang.dataplatform.dataportal.dto.response.DataByCategoryDto;
 import java.util.List;
 
 @Mapper
-public interface DataMapper {
-    List<DataByCategoryDto> getChartData();
-
+public interface DataMapMapper {
+    List<DataByCategoryDto> getMapMainData();
+    List<DataByCategoryDto> getMapSubData();
 }
