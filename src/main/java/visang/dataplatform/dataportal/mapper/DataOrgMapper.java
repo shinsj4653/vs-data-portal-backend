@@ -1,7 +1,7 @@
 package visang.dataplatform.dataportal.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import visang.dataplatform.dataportal.dto.response.DataOrgSystemInfoDto;
+import visang.dataplatform.dataportal.dto.response.dataorg.DataOrgSystemInfoDto;
 
 import java.util.List;
 
