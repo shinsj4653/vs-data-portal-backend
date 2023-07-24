@@ -21,5 +21,8 @@ public class DataMapService {
     public List<DataByCategoryDto> getMapSubData() {
         return dataMapMapper.getMapSubData();
     }
+    public List<String> getPrimaryDataset() {
+        return dataMapMapper.getPrimaryDataset();
+    }
 
 }

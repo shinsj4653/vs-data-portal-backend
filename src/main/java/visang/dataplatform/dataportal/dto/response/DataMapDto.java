@@ -46,7 +46,7 @@ public class DataMapDto {
 
     public DataMapDto findOrCreateChild(String name, String color, String id) {
         return children.stream()
-                .filter(child -> child.getName().equals(name) && child.getId().equals(id))
+                .filter(child -> child.getName().equals(name))
                 .findFirst()
                 .orElseGet(() -> {
                     DataMapDto child = new DataMapDto(name, color, id);
@@ -57,7 +57,7 @@ public class DataMapDto {
 
     public DataMapDto findOrCreateChild(String name, String color, String id, Integer loc) {
         return children.stream()
-                .filter(child -> child.getName().equals(name) && child.getId().equals(id) && child.getLoc().equals(loc))
+                .filter(child -> child.getName().equals(name))
                 .findFirst()
                 .orElseGet(() -> {
                     DataMapDto child = new DataMapDto(name, color, id, loc);
