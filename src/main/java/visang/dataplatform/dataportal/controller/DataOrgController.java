@@ -16,7 +16,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("dataorg")
 @Api(tags = { "DataOrganization API" }, description = "데이터 기반 조직도 API")
 public class DataOrgController {

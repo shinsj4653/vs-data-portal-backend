@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("datamap")
 @Api(tags = { "DataMap API" }, description = "데이터 맵 API")
 public class DataMapController {
