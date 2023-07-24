@@ -1,15 +1,14 @@
 package visang.dataplatform.dataportal.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@Schema(description = "데이터 맵 응답 DTO")
+@Schema(description = "데이터 맵 부모 DTO")
 public class DataMapDto {
 
     @Schema(description = "이름")
@@ -21,22 +20,23 @@ public class DataMapDto {
     @Schema(description = "id값")
     private String id;
 
+    private Integer loc;
+
     @Schema(description = "자식 정보")
     private List<DataMapDto> children;
-
-    @Schema(description = "메타 테이블 갯수")
-    private int loc;
 
     public DataMapDto(String name, String color, String id) {
         this.name = name;
         this.color = color;
         this.id = id;
+        this.loc = null;
         this.children = new ArrayList<>();
-        this.loc = -1;
     }
 
-    public DataMapDto(String name, String color, String id, int loc) {
-        this(name, color, id);
+    public DataMapDto(String name, String color, String id, Integer loc) {
+        this.name = name;
+        this.color = color;
+        this.id = id;
         this.loc = loc;
     }
 
@@ -46,7 +46,7 @@ public class DataMapDto {
 
     public DataMapDto findOrCreateChild(String name, String color, String id) {
         return children.stream()
-                .filter(child -> child.name.equals(name) && child.id.equals(id))
+                .filter(child -> child.getName().equals(name) && child.getId().equals(id))
                 .findFirst()
                 .orElseGet(() -> {
                     DataMapDto child = new DataMapDto(name, color, id);
@@ -55,9 +55,9 @@ public class DataMapDto {
                 });
     }
 
-    public DataMapDto findOrCreateChild(String name, String color, String id, int loc) {
+    public DataMapDto findOrCreateChild(String name, String color, String id, Integer loc) {
         return children.stream()
-                .filter(child -> child.name.equals(name) && child.id.equals(id) && child.loc == loc)
+                .filter(child -> child.getName().equals(name) && child.getId().equals(id) && child.getLoc().equals(loc))
                 .findFirst()
                 .orElseGet(() -> {
                     DataMapDto child = new DataMapDto(name, color, id, loc);
@@ -65,4 +65,6 @@ public class DataMapDto {
                     return child;
                 });
     }
+
+
 }

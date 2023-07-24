@@ -17,9 +17,12 @@ spring:
 #    username: sa
 #    password:
 #    driver-class-name: org.h2.Driver
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+    converters:
+      preferred-json-mapper: gson
 
 mybatis: # type을 쉽게 쓰기 위해서 dto 패키지를 type-aliaes에 설정
   mapper-locations: /mappers/**/*.xml
