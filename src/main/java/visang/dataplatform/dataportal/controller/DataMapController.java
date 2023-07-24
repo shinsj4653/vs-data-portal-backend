@@ -54,30 +54,43 @@ public class DataMapController {
         return makeMapData(list, false);
     }
 
+    @Operation(description = "데이터 맵 - 주요 데이터 셋 이름 보여주기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("dataset")
+    public List<String> getMapSelectedData() {
+        return dataMapService.getPrimaryDataset();
+    }
+
     private static JsonObject makeMapData(List<DataByCategoryDto> list, Boolean isMain) {
-        Map<String, DataMapDto> companyMap = new HashMap<>();
-        DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-parent");
+        int id = 0;
+
+        DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
+
 
         for (DataByCategoryDto data : list) {
             String companyName = data.getCompany_name();
             String companyColor = data.getCompany_color();
-            String companyId = String.valueOf(data.getCompany_id());
+            String companyId = "node-" + (id++);
 
             String serviceName = data.getService_name();
             String serviceColor = data.getService_color();
-            String serviceId = String.valueOf(data.getService_id());
+            String serviceId = "node-" + (id++);
 
             String mainSubjectName = data.getMain_category_name();
             String mainSubjectColor = data.getMain_category_color();
-            String mainSubjectId = String.valueOf(data.getMain_category_id());
+            String mainSubjectId = "node-" + (id++);
 
             String subSubjectName = data.getSub_category_name();
             String subSubjectColor = data.getSub_category_color();
-            String subSubjectId = String.valueOf(data.getSub_category_id());
+            String subSubjectId = "node-" + (id++);
             int loc = data.getLoc();
 
-            DataMapDto companyNode = companyMap.computeIfAbsent(companyName, name -> new DataMapDto(companyName, companyColor, companyId));
-            DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+            DataMapDto serviceNode = rootNode.findOrCreateChild(serviceName, serviceColor, serviceId);
 
             if (isMain){
                 serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, loc);
@@ -85,8 +98,6 @@ public class DataMapController {
                 DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
                 mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
             }
-
-            rootNode.addChild(companyNode);
 
         }
 
