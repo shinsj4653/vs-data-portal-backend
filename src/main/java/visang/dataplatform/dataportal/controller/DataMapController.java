@@ -1,27 +1,19 @@
 package visang.dataplatform.dataportal.controller;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.DataByCategoryDto;
-import visang.dataplatform.dataportal.dto.response.DataMapDto;
+import visang.dataplatform.dataportal.dto.response.datamap.DataByCategoryDto;
+import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
+import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
+import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataMapService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,22 +29,26 @@ public class DataMapController {
 
     @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
     @GetMapping("category/main")
-    public String getMapMainData() throws JsonProcessingException {
+    public ResponseDto getMapMainData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapMainData();
-        return makeMapData(list, true);
+        String result = makeMapData(list, true);
+        return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
     @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
     @GetMapping("category/sub")
-    public String getMapSubData() throws JsonProcessingException {
+    public ResponseDto getMapSubData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapSubData();
-        return makeMapData(list, false);
+        String result = makeMapData(list, false);
+        return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
     @Operation(description = "데이터 맵 - 주요 데이터 셋 이름 보여주기")
     @GetMapping("dataset")
-    public List<String> getMapSelectedData() {
-        return dataMapService.getPrimaryDataset();
+    public ResponseDto getMapSelectedData() {
+        List<String> result = dataMapService.getPrimaryDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
+
     }
 
     private static String makeMapData(List<DataByCategoryDto> list, Boolean isMain) throws JsonProcessingException {

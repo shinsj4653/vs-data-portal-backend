@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.dto.response;
+package visang.dataplatform.dataportal.dto.response.datamap;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
