@@ -7,22 +7,22 @@
 
     <!-- 데이터 맵 : 대분류 단위까지 -->
     <select id="getMapMainData" resultType="DataByCategoryDto">
-        select distinct ci.company_name, ci.company_id, ci.company_color, si.service_name, si.service_id, si.service_color, mc.main_category_name, mc.main_category_id,
-               mc.main_category_color, count(tmi.table_meta_info_id) as loc
+        select distinct ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name,
+                        mc.main_category_color, count(tmi.table_meta_info_id) as loc
         from tb_company_info ci, tb_service_info si, tb_main_category mc, tb_table_meta_info tmi
         where ci.company_id = si.service_id and tmi.service_id = si.service_id and mc.main_category_id = tmi.main_category_id
-        group by mc.main_category_id, ci.company_name, ci.company_id, ci.company_color, si.service_name, si.service_id, si.service_color, mc.main_category_name, mc.main_category_id, mc.main_category_color
-        order by mc.main_category_id;
+        group by ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name, mc.main_category_color
+        order by mc.main_category_name;
     </select>
 
     <!-- 데이터 맵 : 중분류 단위까지 -->
     <select id="getMapSubData" resultType="DataByCategoryDto">
-        select distinct ci.company_name, ci.company_id, ci.company_color, si.service_name, si.service_id, si.service_color, mc.main_category_name, mc.main_category_id,
-               mc.main_category_color, sc.sub_category_name, sc.sub_category_id, sc.sub_category_color, count(tmi.table_meta_info_id) as loc
+        select distinct ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name,
+                        mc.main_category_color, sc.sub_category_name, sc.sub_category_color, count(tmi.table_meta_info_id) as loc
         from tb_company_info ci, tb_service_info si, tb_main_category mc, tb_sub_category sc, tb_table_meta_info tmi
-        where ci.company_id = si.company_id and tmi.service_id = si.service_id and mc.main_category_id = tmi.main_category_id and sc.sub_category_id = tmi.sub_category_id
-        group by mc.main_category_id, ci.company_name, ci.company_id, ci.company_color, si.service_name, si.service_id, si.service_color, mc.main_category_name, mc.main_category_id, mc.main_category_color, sc.sub_category_name, sc.sub_category_id, sc.sub_category_color
-        order by mc.main_category_id, sc.sub_category_id;
+        where ci.company_id = si.service_id and tmi.service_id = si.service_id and mc.main_category_id = tmi.main_category_id and sc.sub_category_id = tmi.sub_category_id
+        group by ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name, mc.main_category_color, sc.sub_category_name, sc.sub_category_color
+        order by mc.main_category_name, sc.sub_category_name;
     </select>
 
     <!-- 데이터 맵 : 선택된 대분류만 보여주기 -->
