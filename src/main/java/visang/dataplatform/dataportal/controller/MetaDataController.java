@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("apis/meta")
+@RequestMapping("metadata")
 @Api(tags = { "MetaDataInfo API" }, description = "메타데이터 정보 API")
 public class MetaDataController {
 }
