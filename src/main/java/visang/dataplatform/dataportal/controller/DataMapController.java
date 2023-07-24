@@ -36,12 +36,6 @@ public class DataMapController {
     private final DataMapService dataMapService;
 
     @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
     @GetMapping("category/main")
     public String getMapMainData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapMainData();
@@ -49,12 +43,6 @@ public class DataMapController {
     }
 
     @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
     @GetMapping("category/sub")
     public String getMapSubData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapSubData();
@@ -62,12 +50,6 @@ public class DataMapController {
     }
 
     @Operation(description = "데이터 맵 - 주요 데이터 셋 이름 보여주기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
     @GetMapping("dataset")
     public List<String> getMapSelectedData() {
         return dataMapService.getPrimaryDataset();
