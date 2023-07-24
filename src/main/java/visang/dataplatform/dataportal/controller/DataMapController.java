@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("datamap")
 @Api(tags = { "DataMap API" }, description = "데이터 맵 API")
 public class DataMapController {
@@ -40,7 +41,7 @@ public class DataMapController {
         return makeMapData(list, true);
     }
 
-    @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
+    @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
