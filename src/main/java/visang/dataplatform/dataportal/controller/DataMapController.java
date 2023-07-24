@@ -1,9 +1,14 @@
 package visang.dataplatform.dataportal.controller;
-import com.google.gson.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import visang.dataplatform.dataportal.dto.response.DataByCategoryDto;
 import visang.dataplatform.dataportal.dto.response.DataMapDto;
 import visang.dataplatform.dataportal.service.DataMapService;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,26 +37,26 @@ public class DataMapController {
 
     @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("category/main")
-    public JsonObject getMapMainData() {
+    public String getMapMainData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapMainData();
         return makeMapData(list, true);
     }
 
     @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DataMapDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("category/sub")
-    public JsonObject getMapSubData() {
+    public String getMapSubData() throws JsonProcessingException {
         List<DataByCategoryDto> list = dataMapService.getMapSubData();
         return makeMapData(list, false);
     }
@@ -66,11 +73,10 @@ public class DataMapController {
         return dataMapService.getPrimaryDataset();
     }
 
-    private static JsonObject makeMapData(List<DataByCategoryDto> list, Boolean isMain) {
+    private static String makeMapData(List<DataByCategoryDto> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
-
 
         for (DataByCategoryDto data : list) {
             String companyName = data.getCompany_name();
@@ -90,7 +96,8 @@ public class DataMapController {
             String subSubjectId = "node-" + (id++);
             int loc = data.getLoc();
 
-            DataMapDto serviceNode = rootNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+            DataMapDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
+            DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
 
             if (isMain){
                 serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, loc);
@@ -103,25 +110,19 @@ public class DataMapController {
 
         return convertMapToJson(rootNode);
     }
-
-    private static JsonObject convertMapToJson(DataMapDto rootNode) {
+    private static String convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
         // Map 형태 데이터를 String으로 변환
-        Gson gsonBuilder = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-        String updatedJsonData = gsonBuilder.toJson(rootNode);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(rootNode);
 
         // "loc": null와 "children" : null 인 부분을 String 상에서 제거
-        String locRemoved = updatedJsonData.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
+        String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
         String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*null(,)?", "");
 
         // String을 JsonObject로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
         String cleanedJsonString = removeTrailingCommas(childrenRemoved);
+        return cleanedJsonString;
 
-        // JsonParser를 가지고 JsonObject 형태로 String을 변환해줌
-        JsonParser parser = new JsonParser();
-        JsonElement jsonElement = parser.parse(cleanedJsonString);
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-        return jsonObject;
     }
 
     private static String removeTrailingCommas(String jsonString) {
@@ -129,6 +130,5 @@ public class DataMapController {
         Matcher matcher = pattern.matcher(jsonString);
         return matcher.replaceAll("");
     }
-
 
 }

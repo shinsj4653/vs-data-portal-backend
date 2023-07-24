@@ -37,7 +37,8 @@ dependencies {
 	// Swagger 3.0.0
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-	implementation 'com.google.code.gson:gson:2.9.0'
+
+	implementation "org.springframework.boot:spring-boot-starter-json"
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'

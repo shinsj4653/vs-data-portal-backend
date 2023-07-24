@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Data
-@Schema(description = "데이터 맵 부모 DTO")
+@Schema(description = "데이터 맵 트리 노드 DTO")
 public class DataMapDto {
 
     @Schema(description = "이름")
@@ -17,9 +17,10 @@ public class DataMapDto {
     @Schema(description = "색상")
     private String color;
 
-    @Schema(description = "id값")
+    @Schema(description = "id 값")
     private String id;
 
+    @Schema(description = "loc 값")
     private Integer loc;
 
     @Schema(description = "자식 정보")
