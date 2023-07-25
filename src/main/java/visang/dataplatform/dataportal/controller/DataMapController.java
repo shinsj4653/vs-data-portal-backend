@@ -71,16 +71,15 @@ public class DataMapController {
             String subSubjectName = data.getSub_category_name();
             String subSubjectColor = data.getSub_category_color();
             String subSubjectId = "node-" + (id++);
-            int loc = data.getLoc();
 
             DataMapDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
             DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
 
             if (isMain){
-                serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, loc);
+                serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
             } else {
                 DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
-                mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, loc);
+                mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, 1);
             }
 
         }

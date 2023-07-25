@@ -7,19 +7,18 @@
 
     <!-- 데이터 맵 : 대분류 단위까지 -->
     <select id="getMapMainData" resultType="DataByCategoryDto">
-        select tci.company_name ,
-        	   tci.company_color ,
-        	   si.service_name ,
-        	   si.service_color ,
-        	   tmc.main_category_name ,
-        	   tmc.main_category_color ,
-        	   1 as loc
+        select tci.company_name,
+               tci.company_color,
+               tsi.service_name,
+               tsi.service_color,
+               tmc.main_category_name,
+               tmc.main_category_color
         from tb_company_info tci
-        join tb_service_info si  on si.company_id = tci.company_id
-        left join tb_table_meta_info ttmi on ttmi.service_id = si.service_id
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
         left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
-        group by tci.company_name , tci.company_color , si.service_name , si.service_color , tmc.main_category_name , tmc.main_category_color
-        order by 1,2
+        group by tci.company_name, tci.company_color, tsi.service_name, tsi.service_color, tmc.main_category_name, tmc.main_category_color
+        order by 1,3;
     </select>
 
     <!-- 데이터 맵 : 중분류 단위까지 -->
