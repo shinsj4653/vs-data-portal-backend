@@ -23,14 +23,21 @@
 
     <!-- 데이터 맵 : 중분류 단위까지 -->
     <select id="getMapSubData" resultType="DataByCategoryDto">
-        select distinct ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name,
-        mc.main_category_color, sc.sub_category_name, sc.sub_category_color, count(tmi.table_meta_info_id) as loc
-        from tb_company_info ci, tb_service_info si, tb_main_category mc, tb_sub_category sc, tb_table_meta_info tmi
-        where ci.company_id = si.service_id and tmi.service_id = si.service_id and mc.main_category_id =
-        tmi.main_category_id and sc.sub_category_id = tmi.sub_category_id
-        group by ci.company_name, ci.company_color, si.service_name, si.service_color, mc.main_category_name,
-        mc.main_category_color, sc.sub_category_name, sc.sub_category_color
-        order by mc.main_category_name, sc.sub_category_name;
+        select tci.company_name,
+               tci.company_color,
+               tsi.service_name,
+               tsi.service_color,
+               tmc.main_category_name,
+               tmc.main_category_color,
+               tsc.sub_category_name,
+               tsc.sub_category_color
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
+        group by tci.company_name, tci.company_color, tsi.service_name, tsi.service_color, tmc.main_category_name, tmc.main_category_color, tsc.sub_category_name, tsc.sub_category_color
+        order by 1,3;
     </select>
 
     <!-- 데이터 맵 : 선택된 대분류만 보여주기 -->
