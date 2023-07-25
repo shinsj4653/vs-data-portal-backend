@@ -9,10 +9,10 @@
         select distinct tsc.sub_category_name
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
-        inner join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
-        inner join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
-        inner join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
-        and tsi.service_name = #{serviceName} and tmc.main_category_name = #{mainCategoryName};
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
+        where tsi.service_name = #{serviceName} and tmc.main_category_name = #{mainCategoryName};
     </select>
 
 </mapper>
