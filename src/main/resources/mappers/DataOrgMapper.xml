@@ -10,7 +10,7 @@
         select distinct si.service_name, ssi.service_web_url, ssi.service_os, ssi.service_was, ssi.service_db
         from tb_company_info ci, tb_service_info si, tb_service_system_info ssi
         where ci.company_id = si.company_id and si.service_id = ssi.service_id
-          and si.service_name = #{name};
+        and si.service_name = #{name};
     </select>
 
 </mapper>
