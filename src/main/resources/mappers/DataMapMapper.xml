@@ -37,16 +37,18 @@
         left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
         left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
         group by tci.company_name, tci.company_color, tsi.service_name, tsi.service_color, tmc.main_category_name, tmc.main_category_color, tsc.sub_category_name, tsc.sub_category_color
-        order by 1,3;
+        order by 1,3,5;
     </select>
 
     <!-- 데이터 맵 : 선택된 대분류만 보여주기 -->
     <select id="getPrimaryDataset" resultType="String">
-        select distinct mc.main_category_name
-        from tb_company_info ci, tb_service_info si, tb_main_category mc, tb_sub_category sc, tb_table_meta_info tmi
-        where ci.company_id = si.company_id and tmi.service_id = si.service_id and mc.main_category_id =
-        tmi.main_category_id
-        order by mc.main_category_name;
+        select distinct tmc.main_category_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        where tmc.main_category_name is not null
+        order by 1;
     </select>
 
 
