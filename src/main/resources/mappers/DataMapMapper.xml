@@ -6,7 +6,7 @@
 <mapper namespace="visang.dataplatform.dataportal.mapper.DataMapMapper">
 
     <!-- 데이터 맵 : 대분류 단위까지 -->
-    <select id="getMapMainData" resultType="DataByCategoryDto">
+    <select id="getMapMainData" resultType="QueryResponseDataMap">
         select tci.company_name,
                tci.company_color,
                tsi.service_name,
@@ -22,7 +22,7 @@
     </select>
 
     <!-- 데이터 맵 : 중분류 단위까지 -->
-    <select id="getMapSubData" resultType="DataByCategoryDto">
+    <select id="getMapSubData" resultType="QueryResponseDataMap">
         select tci.company_name,
                tci.company_color,
                tsi.service_name,

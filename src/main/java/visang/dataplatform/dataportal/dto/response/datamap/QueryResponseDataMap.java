@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DataByCategoryDto {
+public class QueryResponseDataMap {
 
     private String company_name;
     private String company_color;

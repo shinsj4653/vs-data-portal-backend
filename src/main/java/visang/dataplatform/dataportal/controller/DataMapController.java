@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.datamap.DataByCategoryDto;
+import visang.dataplatform.dataportal.dto.response.datamap.QueryResponseDataMap;
 import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
 import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
 import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
@@ -29,7 +29,7 @@ public class DataMapController {
     @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
     @GetMapping("category/main")
     public ResponseDto getMapMainData() throws JsonProcessingException {
-        List<DataByCategoryDto> list = dataMapService.getMapMainData();
+        List<QueryResponseDataMap> list = dataMapService.getMapMainData();
         String result = makeMapData(list, true);
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
@@ -37,7 +37,7 @@ public class DataMapController {
     @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
     @GetMapping("category/sub")
     public ResponseDto getMapSubData() throws JsonProcessingException {
-        List<DataByCategoryDto> list = dataMapService.getMapSubData();
+        List<QueryResponseDataMap> list = dataMapService.getMapSubData();
         String result = makeMapData(list, false);
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
@@ -50,12 +50,12 @@ public class DataMapController {
 
     }
 
-    private static String makeMapData(List<DataByCategoryDto> list, Boolean isMain) throws JsonProcessingException {
+    private static String makeMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
 
-        for (DataByCategoryDto data : list) {
+        for (QueryResponseDataMap data : list) {
             String companyName = data.getCompany_name();
             String companyColor = data.getCompany_color();
             String companyId = "node-" + (id++);
