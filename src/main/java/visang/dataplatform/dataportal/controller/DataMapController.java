@@ -28,7 +28,7 @@ public class DataMapController {
 
     @Operation(description = "데이터 맵 - 대분류 단위까지의 데이터 보여주기")
     @GetMapping("category/main")
-    public ResponseDto getMapMainData() throws JsonProcessingException {
+    public ResponseDto<String> getMapMainData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapMainData();
         String result = makeMapData(list, true);
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
@@ -36,7 +36,7 @@ public class DataMapController {
 
     @Operation(description = "데이터 맵 - 중분류 단위까지의 데이터 보여주기")
     @GetMapping("category/sub")
-    public ResponseDto getMapSubData() throws JsonProcessingException {
+    public ResponseDto<String> getMapSubData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapSubData();
         String result = makeMapData(list, false);
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
@@ -44,7 +44,7 @@ public class DataMapController {
 
     @Operation(description = "데이터 맵 - 주요 데이터 셋 이름 보여주기")
     @GetMapping("dataset")
-    public ResponseDto getMapSelectedData() {
+    public ResponseDto<List<String>> getMapSelectedData() {
         List<String> result = dataMapService.getPrimaryDataset();
         return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
 

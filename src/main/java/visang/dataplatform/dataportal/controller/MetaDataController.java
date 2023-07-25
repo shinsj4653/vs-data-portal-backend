@@ -30,7 +30,7 @@ public class MetaDataController {
 
     @Operation(description = "메타 데이터 정보 - 대분류 클릭 시, 중분류에 해당하는 정보 보여주기")
     @PostMapping("category/main")
-    public ResponseDto getMetaDataWithMainCategory(@RequestBody MetaDataRequest metaDataMain) {
+    public ResponseDto<Map<String, List<SubCategoryDto>>> getMetaDataWithMainCategory(@RequestBody MetaDataRequest metaDataMain) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithMainCategory(metaDataMain.getService_name(), metaDataMain.getMain_category_name());
 
         if(result.size() == 0){
@@ -43,7 +43,7 @@ public class MetaDataController {
 
     @Operation(description = "메타 데이터 정보 - 중분류 클릭 시, 중분류에 해당하는 모든 메타 테이블 데이터 정보 보여주기")
     @PostMapping("category/sub")
-    public ResponseDto getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
+    public ResponseDto<Map<String, List<TableMetaInfoDto>>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
 
         if(result.size() == 0){

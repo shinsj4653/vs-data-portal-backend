@@ -23,7 +23,7 @@ public class DataOrgController {
     private final DataOrgService dataOrgService;
     @Operation(description = "데이터 조직도 - 원하는 서비스의 시스템 정보 보여주기")
     @GetMapping("service/systeminfo")
-    public ResponseDto getSystemInfo(@RequestParam String name) {
+    public ResponseDto<List<DataOrgSystemInfoDto>> getSystemInfo(@RequestParam String name) {
         List<DataOrgSystemInfoDto> result = dataOrgService.getSystemInfo(name);
         if (result.size() == 0){
             return ResponseUtil.FAILURE("비상교육 내에 존재하는 서비스 명을 입력해주세요", null);
