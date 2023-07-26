@@ -15,6 +15,7 @@ spring:
 #    username: sa
 #    password:
 #    driver-class-name: org.h2.Driver
+  # Hibernate Logging Configuration
 
   mvc:
     pathmatch:
@@ -23,6 +24,8 @@ spring:
 mybatis: # type을 쉽게 쓰기 위해서 dto 패키지를 type-aliaes에 설정
   mapper-locations: /mappers/**/*.xml
   type-aliases-package: visang.dataplatform.dataportal.dto
+  config-location: classpath:mybatis/mybatis-config.xml
+
 springfox:
   documentation:
     swagger-ui:

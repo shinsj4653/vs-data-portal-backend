@@ -18,7 +18,7 @@
         order by 3;
     </select>
 
-    <select id="getMetaDataWithSubCategory" resultType="QueryResponseMeta">
+    <select id="getMetaDataWithSubCategory" resultType="QueryResponseMeta" fetchSize="1000">
         select distinct tsc.sub_category_name,
                         ttmi.table_meta_info_id,
                         ttmi.table_id,

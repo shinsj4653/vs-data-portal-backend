@@ -13,13 +13,10 @@ import visang.dataplatform.dataportal.dto.response.metadata.SubCategoryDto;
 import visang.dataplatform.dataportal.dto.response.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("metadata")

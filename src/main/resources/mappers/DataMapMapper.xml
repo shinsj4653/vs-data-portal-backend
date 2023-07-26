@@ -6,7 +6,7 @@
 <mapper namespace="visang.dataplatform.dataportal.mapper.DataMapMapper">
 
     <!-- 데이터 맵 : 대분류 단위까지 -->
-    <select id="getMapMainData" resultType="QueryResponseDataMap">
+    <select id="getMapMainData" resultType="QueryResponseDataMap" fetchSize="1000">
         select tci.company_name,
                tci.company_color,
                tsi.service_name,
@@ -22,7 +22,7 @@
     </select>
 
     <!-- 데이터 맵 : 중분류 단위까지 -->
-    <select id="getMapSubData" resultType="QueryResponseDataMap">
+    <select id="getMapSubData" resultType="QueryResponseDataMap" fetchSize="1000">
         select tci.company_name,
                tci.company_color,
                tsi.service_name,
@@ -50,6 +50,5 @@
         where tmc.main_category_name is not null
         order by 1;
     </select>
-
 
 </mapper>
