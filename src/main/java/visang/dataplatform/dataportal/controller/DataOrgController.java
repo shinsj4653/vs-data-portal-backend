@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class DataOrgController {
 
     private final DataOrgService dataOrgService;
-    @Operation(description = "데이터 조직도 - 원하는 서비스의 시스템 정보 보여주기")
+    @Operation(summary = "데이터 조직도 시스템 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도 화면 상에서, 원하는 서비스 클릭 시 해당 서비스의 시스템 정보를 보여주는 API")
     @GetMapping("service/systeminfo")
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
         List<QueryResponseDataOrg> queryResponse = dataOrgService.getSystemInfo(name);

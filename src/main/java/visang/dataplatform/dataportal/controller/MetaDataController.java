@@ -28,7 +28,7 @@ public class MetaDataController {
 
     private final MetaDataService metaDataService;
 
-    @Operation(description = "메타 데이터 정보 - 대분류 클릭 시, 중분류에 해당하는 정보 보여주기")
+    @Operation(summary = "대분류 기준 테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 대분류 정보를 클릭하거나 메타 데이터 정보 메뉴에서 서비스 내에 있는 대분류 정보를 클릭 시, 그 서비스 내의 대분류 영역안에 속하는 중분류 카테고리 정보들을 반환해주는 API")
     @PostMapping("category/main")
     public ResponseDto<Map<String, List<SubCategoryDto>>> getMetaDataWithMainCategory(@RequestBody MetaDataRequest metaDataMain) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithMainCategory(metaDataMain.getService_name(), metaDataMain.getMain_category_name());
@@ -41,7 +41,7 @@ public class MetaDataController {
         }
     }
 
-    @Operation(description = "메타 데이터 정보 - 중분류 클릭 시, 중분류에 해당하는 모든 메타 테이블 데이터 정보 보여주기")
+    @Operation(summary = "중분류 기준 테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 중분류 정보를 클릭하거나 메타 데이터 메뉴에서 각 대분류 내의 중분류 정보를 클릭하면, 해당 중분류 영역안에 속하는 테이블 메타 데이터 정보들을 모두 가져오는 API")
     @PostMapping("category/sub")
     public ResponseDto<Map<String, List<TableMetaInfoDto>>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
