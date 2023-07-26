@@ -4,8 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "데이터 조직도 - 서비스 시스템 정보 DTO")
-public class DataOrgSystemInfoDto {
+public class QueryResponseDataOrg {
     @Schema(description = "컴퍼니 명")
     private String company_name;
     @Schema(description = "서비스 명")
@@ -18,4 +17,10 @@ public class DataOrgSystemInfoDto {
     private String service_was;
     @Schema(description = "서비스 DB 정보")
     private String service_db;
+    @Schema(description = "서비스 담당자 역할")
+    private String service_mngr_tkcg;
+    @Schema(description = "서비스 담당자 부서")
+    private String service_mngr_dept;
+    @Schema(description = "서비스 담당자 이름")
+    private String service_mngr_name;
 }
