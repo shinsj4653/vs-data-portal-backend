@@ -14,9 +14,10 @@ import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataMapService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("datamap")
@@ -27,17 +28,17 @@ public class DataMapController {
 
     @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “대분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/main")
-    public ResponseDto<String> getMapMainData() throws JsonProcessingException {
+    public ResponseDto<Map<String, String>> getMapMainData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapMainData();
-        String result = makeMapData(list, true);
+        Map<String, String> result = makeMapData(list, true);
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
     @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “중분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/sub")
-    public ResponseDto<String> getMapSubData() throws JsonProcessingException {
+    public ResponseDto<Map<String, String>> getMapSubData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapSubData();
-        String result = makeMapData(list, false);
+        Map<String, String> result = makeMapData(list, false);
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
@@ -46,10 +47,9 @@ public class DataMapController {
     public ResponseDto<List<String>> getMapSelectedData() {
         List<String> result = dataMapService.getPrimaryDataset();
         return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
-
     }
 
-    private static String makeMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
+    private static Map<String, String> makeMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
@@ -85,7 +85,7 @@ public class DataMapController {
 
         return convertMapToJson(rootNode);
     }
-    private static String convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
+    private static Map<String, String> convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
         // Map 형태 데이터를 String으로 변환
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(rootNode);
@@ -96,7 +96,9 @@ public class DataMapController {
 
         // String을 JsonObject로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
         String cleanedJsonString = removeTrailingCommas(childrenRemoved);
-        return cleanedJsonString;
+        Map<String, String> map = mapper.readValue(cleanedJsonString, Map.class);
+
+        return map;
 
     }
 
