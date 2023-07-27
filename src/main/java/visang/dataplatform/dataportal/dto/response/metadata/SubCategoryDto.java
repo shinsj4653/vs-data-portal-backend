@@ -3,8 +3,9 @@ package visang.dataplatform.dataportal.dto.response.metadata;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 @Schema(description = "메타데이터 - 소분류 정보 DTO")
 public class SubCategoryDto {

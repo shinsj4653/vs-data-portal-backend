@@ -34,7 +34,6 @@ public class MetaDataController {
             return ResponseUtil.FAILURE("서비스 명, 혹은 대분류 명을 다시 한 번 확인해주시길 바랍니다.", null);
         }else {
             return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스와 대분류에 해당하는 중분류 정보들을 가져오는데 성공했습니다.", makeCategoryTree(result));
-
         }
     }
 

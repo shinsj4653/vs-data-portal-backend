@@ -1,8 +1,9 @@
 package visang.dataplatform.dataportal.dto.response.metadata;
 
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class QueryResponseMeta {
     private String main_category_name;
 

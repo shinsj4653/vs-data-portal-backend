@@ -2,11 +2,12 @@ package visang.dataplatform.dataportal.dto.response.datamap;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 @Schema(description = "데이터 맵 트리 노드 DTO")
 public class DataMapDto {
 
