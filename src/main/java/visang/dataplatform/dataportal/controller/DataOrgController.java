@@ -26,16 +26,16 @@ public class DataOrgController {
 
     private final DataOrgService dataOrgService;
 
-    @Operation(summary = "데이터 조직도 시스템 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도 화면 상에서, 원하는 서비스 클릭 시 해당 서비스의 시스템 정보를 보여주는 API")
+    @Operation(summary = "데이터 조직도 전체 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도에 포함된 컴퍼니명, 서비스명을 반환해주는 API")
     @GetMapping("allorginfo")
     public ResponseDto<Map<String, List<String>>> getAllOrgInfo() {
         List<QueryResponseAllOrgData> queryResponse = dataOrgService.getAllOrgInfo();
 
-        return ResponseUtil.SUCCESS("데이터 조직도 원하는 서비스의 시스템 정보 조회에 성공하였습니다.", refactorOrgData(queryResponse));
+        return ResponseUtil.SUCCESS("데이터 조직도 전체 정보 조회에 성공하였습니다.", refactorOrgData(queryResponse));
 
     }
 
-    @Operation(summary = "데이터 조직도 시스템 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도 화면 상에서, 원하는 서비스 클릭 시 해당 서비스의 시스템 정보를 보여주는 API")
+    @Operation(summary = "데이터 조직도 서비스 시스템 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도 화면 상에서, 원하는 서비스 클릭 시 해당 서비스의 시스템 정보를 반환해주는 API")
     @GetMapping("service/systeminfo")
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
         List<QueryResponseSystemInfo> queryResponse = dataOrgService.getSystemInfo(name);
