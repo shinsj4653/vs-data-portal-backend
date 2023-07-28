@@ -72,13 +72,27 @@ public class DataMapController {
             String subSubjectId = "node-" + (id++);
 
             DataMapDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
-            DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
 
             if (isMain){
-                serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
+                if (mainSubjectName != null) {
+                    DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+                    serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
+                } else {
+                    companyNode.findOrCreateChild(serviceName, serviceColor, serviceId, 1);
+                }
             } else {
-                DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
-                mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, 1);
+                if (mainSubjectName != null) {
+                    DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+
+                    if (subSubjectName != null) {
+                        DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
+                        mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, 1);
+                    } else {
+                        serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
+                    }
+                } else{
+                    companyNode.findOrCreateChild(serviceName, serviceColor, serviceId, 1);
+                }
             }
 
         }
