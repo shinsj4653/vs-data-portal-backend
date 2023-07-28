@@ -30,7 +30,7 @@ public class DataMapController {
     @GetMapping("category/main")
     public ResponseDto<Map<String, String>> getMapMainData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapMainData();
-        Map<String, String> result = makeMapData(list, true);
+        Map<String, String> result = refactorMapData(list, true);
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
@@ -38,7 +38,7 @@ public class DataMapController {
     @GetMapping("category/sub")
     public ResponseDto<Map<String, String>> getMapSubData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapSubData();
-        Map<String, String> result = makeMapData(list, false);
+        Map<String, String> result = refactorMapData(list, false);
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
@@ -49,7 +49,7 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
     }
 
-    private static Map<String, String> makeMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
+    private static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
@@ -85,14 +85,14 @@ public class DataMapController {
 
         return convertMapToJson(rootNode);
     }
-    private static Map<String, String> convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
+    public static Map<String, String> convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
         // Map 형태 데이터를 String으로 변환
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(rootNode);
 
         // "loc": null와 "children" : null 인 부분을 String 상에서 제거
         String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
-        String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*null(,)?", "");
+        String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");
 
         // String을 JsonObject로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
         String cleanedJsonString = removeTrailingCommas(childrenRemoved);
@@ -102,7 +102,7 @@ public class DataMapController {
 
     }
 
-    private static String removeTrailingCommas(String jsonString) {
+    static String removeTrailingCommas(String jsonString) {
         Pattern pattern = Pattern.compile(",(?=\\s*\\})|,(?=\\s*\\])");
         Matcher matcher = pattern.matcher(jsonString);
         return matcher.replaceAll("");
