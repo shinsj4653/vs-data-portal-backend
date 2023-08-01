@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 public class DataMapController {
 
     private final DataMapService dataMapService;
+    static ObjectMapper mapper = new ObjectMapper();
 
     @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “대분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/main")
@@ -97,13 +98,10 @@ public class DataMapController {
 
         }
 
-        return convertMapToJson(rootNode);
+        // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
+        return convertMapToJson(mapper.writeValueAsString(rootNode));
     }
-    public static Map<String, String> convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
-        // Map 형태 데이터를 String으로 변환
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(rootNode);
-
+    static Map<String, String> convertMapToJson(String json) throws JsonProcessingException {
         // "loc": null와 "children" : null 인 부분을 String 상에서 제거
         String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
         String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");

@@ -30,7 +30,7 @@
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
         left join tb_service_system_info tssi on tsi.service_id = tssi.service_id
-        where tsi.service_name = #{name};
+        where tsi.service_name = trim(#{name});
     </select>
 
 </mapper>
