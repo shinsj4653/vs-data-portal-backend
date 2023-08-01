@@ -9,21 +9,21 @@ spring:
       maximum-pool-size: 4
 
   # --- local H2 db --- #
-  #    url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
+#      url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
 ##    url: jdbc:h2:file:C:\Users\user
-##    url: jdbc:h2:file:C:/visang/test
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
-  # Hibernate Logging Configuration
+#    #url: jdbc:h2:file:C:/visang/test
+#      username: sa
+#      password:
+#      driver-class-name: org.h2.Driver
 
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+
 mybatis: # type을 쉽게 쓰기 위해서 dto 패키지를 type-aliaes에 설정
   mapper-locations: /mappers/**/*.xml
-  type-aliases-package: visang.dataplatform.dataportal.model
+  type-aliases-package: visang.dataplatform.dataportal.model.entity
   config-location: classpath:mybatis/mybatis-config.xml
 
 springfox:
