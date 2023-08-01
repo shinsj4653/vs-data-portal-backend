@@ -1,16 +1,9 @@
 package visang.dataplatform.dataportal.controller;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static visang.dataplatform.dataportal.controller.DataMapController.refactorMapData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import visang.dataplatform.dataportal.controller.DataMapController;
-import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
 import visang.dataplatform.dataportal.service.DataMapService;
 
 @ExtendWith(MockitoExtension.class)

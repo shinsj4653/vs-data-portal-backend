@@ -35,26 +35,12 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “대분류 카테고리” 단위까지 모두 가져오는 API")
-    @GetMapping("category/main/querydata")
-    public List<QueryResponseDataMap> getMapMainDataQueryRes() throws JsonProcessingException {
-        List<QueryResponseDataMap> list = dataMapService.getMapMainData();
-        return list;
-    }
-
     @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “중분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/sub")
     public ResponseDto<Map<String, String>> getMapSubData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapSubData();
         Map<String, String> result = refactorMapData(list, false);
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
-    }
-
-    @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “중분류 카테고리” 단위까지 모두 가져오는 API")
-    @GetMapping("category/sub/querydata")
-    public List<QueryResponseDataMap> getMapSubDataQueryRes() throws JsonProcessingException {
-        List<QueryResponseDataMap> list = dataMapService.getMapSubData();
-        return list;
     }
 
     @Operation(summary = "데이터 맵 주요 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
@@ -64,7 +50,7 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
     }
 
-    public static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
+    static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
