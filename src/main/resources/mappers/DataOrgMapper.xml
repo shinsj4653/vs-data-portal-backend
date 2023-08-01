@@ -5,12 +5,32 @@
 
 <mapper namespace="visang.dataplatform.dataportal.mapper.DataOrgMapper">
 
+    <!-- 데이터 조직도 : 조직도에 속한 모든 컴퍼니, 서비스 정보 보여주기 -->
+    <select id="getAllOrgInfo" resultType="QueryResponseAllOrgData">
+        select tci.company_name,
+               tci.company_color,
+               tsi.service_name,
+               tsi.service_color
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        order by 1, 3;
+    </select>
+
     <!-- 데이터 조직도 : 원하는 서비스에 해당하는 시스템 정보 보여주기 -->
-    <select id="getSystemInfo" resultType="DataOrgSystemInfoDto">
-        select distinct si.service_name, ssi.service_web_url, ssi.service_os, ssi.service_was, ssi.service_db
-        from tb_company_info ci, tb_service_info si, tb_service_system_info ssi
-        where ci.company_id = si.company_id and si.service_id = ssi.service_id
-          and si.service_name = #{name};
+    <select id="getSystemInfo" resultType="QueryResponseSystemInfo">
+        select tci.company_name,
+               tsi.service_name,
+               tssi.service_web_url,
+               tssi.service_os,
+               tssi.service_was,
+               tssi.service_db,
+               tssi.service_mngr_tkcg,
+               tssi.service_mngr_dept,
+               tssi.service_mngr_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_service_system_info tssi on tsi.service_id = tssi.service_id
+        where tsi.service_name = #{name};
     </select>
 
 </mapper>

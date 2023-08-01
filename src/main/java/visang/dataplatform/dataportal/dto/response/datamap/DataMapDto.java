@@ -1,47 +1,39 @@
 package visang.dataplatform.dataportal.dto.response.datamap;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 @Schema(description = "데이터 맵 트리 노드 DTO")
 public class DataMapDto {
-
     @Schema(description = "이름")
-    private String name;
+    public String name;
 
     @Schema(description = "색상")
-    private String color;
+    public String color;
 
     @Schema(description = "id 값")
-    private String id;
+    public String id;
+
+    @Schema(description = "자식 정보")
+    private List<DataMapDto> children = new ArrayList<>();
 
     @Schema(description = "loc 값")
     private Integer loc;
-
-    @Schema(description = "자식 정보")
-    private List<DataMapDto> children;
 
     public DataMapDto(String name, String color, String id) {
         this.name = name;
         this.color = color;
         this.id = id;
         this.loc = null;
-        this.children = new ArrayList<>();
     }
 
     public DataMapDto(String name, String color, String id, Integer loc) {
-        this.name = name;
-        this.color = color;
-        this.id = id;
+        this(name, color, id);
         this.loc = loc;
-    }
-
-    public void addChild(DataMapDto child) {
-        children.add(child);
     }
 
     public DataMapDto findOrCreateChild(String name, String color, String id) {
