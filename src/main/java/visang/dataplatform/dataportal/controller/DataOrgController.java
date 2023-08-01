@@ -1,15 +1,17 @@
 package visang.dataplatform.dataportal.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
-import visang.dataplatform.dataportal.dto.response.dataorg.*;
+import visang.dataplatform.dataportal.response.common.ResponseDto;
+import visang.dataplatform.dataportal.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.dto.dataorg.DataOrgDto;
+import visang.dataplatform.dataportal.model.dto.dataorg.ServiceManagerDto;
+import visang.dataplatform.dataportal.model.dto.dataorg.ServiceSystemInfoDto;
+import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseAllOrgData;
+import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseSystemInfo;
 import visang.dataplatform.dataportal.service.DataOrgService;
 
 import java.util.ArrayList;

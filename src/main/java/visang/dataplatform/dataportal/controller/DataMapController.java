@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.datamap.QueryResponseDataMap;
-import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
+import visang.dataplatform.dataportal.model.dto.datamap.DataMapDto;
+import visang.dataplatform.dataportal.response.common.ResponseDto;
+import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataMapService;
 
 import java.util.List;
