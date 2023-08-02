@@ -21,4 +21,7 @@ public class TableMetaInfoDto {
 
     @Schema(description = "테이블 코멘트")
     private String table_comment;
+
+    @Schema(description = "테이블 소분류 정보")
+    private String small_clsf_name;
 }

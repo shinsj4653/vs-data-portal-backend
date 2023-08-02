@@ -69,7 +69,7 @@ public class MetaDataController {
         List<TableMetaInfoDto> list = new ArrayList<>();
 
         for (QueryResponseMeta q : result) {
-            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_name(), q.getTable_id(), q.getTable_comment());
+            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_name(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name());
             list.add(metaData);
         }
         treeData.put(result.get(0).getSub_category_name(), list);

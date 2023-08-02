@@ -23,7 +23,8 @@
                         ttmi.table_meta_info_id,
                         ttmi.table_id,
                         ttmi.table_name,
-                        ttmi.table_comment
+                        ttmi.table_comment,
+                        ttmi.small_clsf_name
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
         left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
