@@ -24,6 +24,21 @@ public class MetaDataController {
 
     private final MetaDataService metaDataService;
 
+    @Operation(summary = "서비스에 따른 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/main")
+    public ResponseDto<List<String>> getMainDataset(@RequestParam(value = "serviceName") String serviceName, @RequestParam(required = false, value = "limit") Integer limit) {
+        List<String> result = metaDataService.getMainDataset(serviceName, limit);
+        System.out.println(limit);
+        return ResponseUtil.SUCCESS("서비스에 따른 대분류 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
+    @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/sub")
+    public ResponseDto<List<String>> getSubDataset(@RequestParam(value = "serviceName") String serviceName, @RequestParam(required = false, value = "limit") Integer limit) {
+        List<String> result = metaDataService.getSubDataset(serviceName, limit);
+        return ResponseUtil.SUCCESS("서비스에 따른 중분류 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
     @Operation(summary = "대분류 기준 테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 대분류 정보를 클릭하거나 메타 데이터 정보 메뉴에서 서비스 내에 있는 대분류 정보를 클릭 시, 그 서비스 내의 대분류 영역안에 속하는 중분류 카테고리 정보들을 반환해주는 API")
     @PostMapping("category/main")
     public ResponseDto<Map<String, List<SubCategoryDto>>> getMetaDataWithMainCategory(@RequestBody MetaDataRequest metaDataMain) {

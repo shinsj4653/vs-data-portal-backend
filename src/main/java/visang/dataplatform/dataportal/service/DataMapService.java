@@ -24,11 +24,7 @@ public class DataMapService {
     public List<String> getAllDataset() {
         return dataMapMapper.getAllDataset();
     }
-    public List<String> getTopTenMainDataset() {
-        return dataMapMapper.getTopTenMainDataset();
-    }
-    public List<String> getTopTenSubDataset() {
-        return dataMapMapper.getTopTenSubDataset();
-    }
+
+
 
 }
