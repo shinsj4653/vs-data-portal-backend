@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.datamap.QueryResponseDataMap;
-import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.dto.datamap.DataMapDto;
+import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
+import visang.dataplatform.dataportal.response.common.ResponseDto;
+import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataMapService;
 
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 public class DataMapController {
 
     private final DataMapService dataMapService;
+    static ObjectMapper mapper = new ObjectMapper();
 
     @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “대분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/main")
@@ -42,14 +43,28 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 맵 주요 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
-    @GetMapping("dataset")
-    public ResponseDto<List<String>> getMapSelectedData() {
-        List<String> result = dataMapService.getPrimaryDataset();
-        return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
+    @Operation(summary = "데이터 맵 모든 주요 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/all")
+    public ResponseDto<List<String>> getAllDataset() {
+        List<String> result = dataMapService.getAllDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 모든 주요 데이터 셋 조회에 성공하였습니다.", result);
     }
 
-    private static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
+    @Operation(summary = "데이터 맵 TOP10 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/topten/main")
+    public ResponseDto<List<String>> getTopTenMainDataset() {
+        List<String> result = dataMapService.getTopTenMainDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 TOP10 대분류 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
+    @Operation(summary = "데이터 맵 TOP10 중분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/topten/sub")
+    public ResponseDto<List<String>> getTopTenSubDataset() {
+        List<String> result = dataMapService.getTopTenSubDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 TOP10 중분류 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
+    static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
         DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
@@ -97,13 +112,10 @@ public class DataMapController {
 
         }
 
-        return convertMapToJson(rootNode);
+        // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
+        return convertMapToJson(mapper.writeValueAsString(rootNode));
     }
-    public static Map<String, String> convertMapToJson(DataMapDto rootNode) throws JsonProcessingException {
-        // Map 형태 데이터를 String으로 변환
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(rootNode);
-
+    static Map<String, String> convertMapToJson(String json) throws JsonProcessingException {
         // "loc": null와 "children" : null 인 부분을 String 상에서 제거
         String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
         String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");

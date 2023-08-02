@@ -1,7 +1,7 @@
 package visang.dataplatform.dataportal.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import visang.dataplatform.dataportal.dto.response.datamap.QueryResponseDataMap;
+import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
 
 import java.util.List;
 
@@ -9,5 +9,7 @@ import java.util.List;
 public interface DataMapMapper {
     List<QueryResponseDataMap> getMapMainData();
     List<QueryResponseDataMap> getMapSubData();
-    List<String> getPrimaryDataset();
+    List<String> getAllDataset();
+    List<String> getTopTenMainDataset();
+    List<String> getTopTenSubDataset();
 }

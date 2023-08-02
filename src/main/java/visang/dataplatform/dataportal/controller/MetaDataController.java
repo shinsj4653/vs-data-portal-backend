@@ -3,14 +3,13 @@ package visang.dataplatform.dataportal.controller;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.request.metadata.MetaDataRequest;
-import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.dto.response.metadata.QueryResponseMeta;
-import visang.dataplatform.dataportal.dto.response.metadata.SubCategoryDto;
-import visang.dataplatform.dataportal.dto.response.metadata.TableMetaInfoDto;
+import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
+import visang.dataplatform.dataportal.response.common.ResponseDto;
+import visang.dataplatform.dataportal.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
+import visang.dataplatform.dataportal.model.dto.metadata.SubCategoryDto;
+import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class MetaDataController {
         List<TableMetaInfoDto> list = new ArrayList<>();
 
         for (QueryResponseMeta q : result) {
-            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_name(), q.getTable_id(), q.getTable_comment());
+            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_name(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name());
             list.add(metaData);
         }
         treeData.put(result.get(0).getSub_category_name(), list);

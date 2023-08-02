@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.dto.response.metadata;
+package visang.dataplatform.dataportal.model.dto.metadata;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -21,4 +21,7 @@ public class TableMetaInfoDto {
 
     @Schema(description = "테이블 코멘트")
     private String table_comment;
+
+    @Schema(description = "테이블 소분류 정보")
+    private String small_clsf_name;
 }

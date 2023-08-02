@@ -1,11 +1,11 @@
-package visang.dataplatform.dataportal.dto.response.datamap;
+package visang.dataplatform.dataportal.model.entity.datamap;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public class QueryResponseDataMap {
-
     private String company_name;
     private String company_color;
 

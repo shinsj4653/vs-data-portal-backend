@@ -1,23 +1,24 @@
 package visang.dataplatform.dataportal.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.dto.response.common.ResponseDto;
-import visang.dataplatform.dataportal.dto.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.dto.response.datamap.DataMapDto;
-import visang.dataplatform.dataportal.dto.response.dataorg.*;
+import visang.dataplatform.dataportal.response.common.ResponseDto;
+import visang.dataplatform.dataportal.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.dto.dataorg.DataOrgDto;
+import visang.dataplatform.dataportal.model.dto.dataorg.ServiceManagerDto;
+import visang.dataplatform.dataportal.model.dto.dataorg.ServiceSystemInfoDto;
+import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseAllOrgData;
+import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseSystemInfo;
 import visang.dataplatform.dataportal.service.DataOrgService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static visang.dataplatform.dataportal.controller.DataMapController.convertMapToJson;
-import static visang.dataplatform.dataportal.controller.DataMapController.removeTrailingCommas;
+import static visang.dataplatform.dataportal.controller.DataMapController.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class DataOrgController {
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
         List<QueryResponseSystemInfo> queryResponse = dataOrgService.getSystemInfo(name);
         if (queryResponse.size() == 0){
-            return ResponseUtil.FAILURE("비상교육 내에 존재하는 서비스 명을 입력해주세요", null);
+            return ResponseUtil.FAILURE("비상교육 내에 존재하는 서비스 명을 입력하거나, 입력 값을 다시 한 번 확인해주시길 바랍니다.", null);
         } else {
             List<ServiceManagerDto> managerList = makeManagerList(queryResponse);
             ServiceSystemInfoDto result = new ServiceSystemInfoDto(
@@ -71,27 +72,11 @@ public class DataOrgController {
             String serviceId = "node-" + (id++);
 
             DataOrgDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
-            DataOrgDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
+            companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
         }
 
-        return convertMapToJson(rootNode);
-    }
-
-    public static Map<String, String> convertMapToJson(DataOrgDto rootNode) throws JsonProcessingException {
-        // Map 형태 데이터를 String으로 변환
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(rootNode);
-
-        // "loc": null와 "children" : null 인 부분을 String 상에서 제거
-        String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
-        String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");
-
-        // String을 JsonObject로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
-        String cleanedJsonString = removeTrailingCommas(childrenRemoved);
-        Map<String, String> map = mapper.readValue(cleanedJsonString, Map.class);
-
-        return map;
-
+        // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
+        return convertMapToJson(mapper.writeValueAsString(rootNode));
     }
 
     private List<ServiceManagerDto> makeManagerList(List<QueryResponseSystemInfo> queryResponse) {

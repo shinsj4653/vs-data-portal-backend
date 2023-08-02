@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.dto.response.metadata;
+package visang.dataplatform.dataportal.model.entity.metadata;
 
 import lombok.Data;
 import lombok.Getter;
@@ -14,4 +14,6 @@ public class QueryResponseMeta {
     private String table_id;
     private String table_name;
     private String table_comment;
+    private String small_clsf_name;
+
 }

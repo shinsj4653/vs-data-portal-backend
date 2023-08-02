@@ -3,8 +3,8 @@ package visang.dataplatform.dataportal.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import visang.dataplatform.dataportal.dto.response.datamap.QueryResponseDataMap;
 import visang.dataplatform.dataportal.mapper.DataMapMapper;
+import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
 
 import java.util.List;
 
@@ -21,8 +21,14 @@ public class DataMapService {
     public List<QueryResponseDataMap> getMapSubData() {
         return dataMapMapper.getMapSubData();
     }
-    public List<String> getPrimaryDataset() {
-        return dataMapMapper.getPrimaryDataset();
+    public List<String> getAllDataset() {
+        return dataMapMapper.getAllDataset();
+    }
+    public List<String> getTopTenMainDataset() {
+        return dataMapMapper.getTopTenMainDataset();
+    }
+    public List<String> getTopTenSubDataset() {
+        return dataMapMapper.getTopTenSubDataset();
     }
 
 }

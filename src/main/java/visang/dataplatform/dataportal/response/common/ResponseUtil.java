@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.dto.response.common;
+package visang.dataplatform.dataportal.response.common;
 
 public class ResponseUtil {
 

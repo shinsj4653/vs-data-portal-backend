@@ -40,8 +40,8 @@
         order by 1,3,5;
     </select>
 
-    <!-- 데이터 맵 : 선택된 대분류만 보여주기 -->
-    <select id="getPrimaryDataset" resultType="String">
+    <!-- 데이터 맵 : 모든 데이터 셋(대분류 기준) 보여주기 -->
+    <select id="getAllDataset" resultType="String">
         select distinct tmc.main_category_name
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
@@ -49,6 +49,35 @@
         left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
         where tmc.main_category_name is not null
         order by 1;
+    </select>
+
+    <!-- 데이터 맵 : TOP10 대분류 데이터 셋 보여주기 -->
+    <select id="getTopTenMainDataset" resultType="String">
+        select tmc.main_category_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        where tmc.main_category_name is not null
+        group by tmc.main_category_name
+        order by count(*)
+        desc
+        limit 10;
+    </select>
+
+    <!-- 데이터 맵 : TOP10 중분류 데이터 셋 보여주기 -->
+    <select id="getTopTenSubDataset" resultType="String">
+        select tsc.sub_category_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
+        where tsc.sub_category_name is not null
+        group by tsc.sub_category_name
+        order by count(*)
+        desc
+        limit 10;
     </select>
 
 </mapper>
