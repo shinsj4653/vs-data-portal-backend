@@ -5,6 +5,49 @@
 
 <mapper namespace="visang.dataplatform.dataportal.mapper.MetaDataMapper">
 
+    <!-- 데이터 맵 : 서비스명에 맞는 커스텀 대분류 데이터 셋 보여주기 -->
+    <select id="getMainDataset" resultType="String">
+        select tmc.main_category_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        where tmc.main_category_name is not null and tsi.service_name = trim(#{serviceName})
+        <choose>
+            <when test="limit != null">
+                GROUP BY tmc.main_category_name
+                ORDER BY COUNT(*) DESC
+                LIMIT #{limit}
+            </when>
+            <otherwise>
+                GROUP BY tmc.main_category_name
+                ORDER BY COUNT(*) DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 데이터 맵 : 서비스명에 맞는 중분류 데이터 셋 보여주기 -->
+    <select id="getSubDataset" resultType="String">
+        select tsc.sub_category_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
+        where tsc.sub_category_name is not null and tsi.service_name = trim(#{serviceName})
+        <choose>
+            <when test="limit != null">
+                GROUP BY tsc.sub_category_name
+                ORDER BY COUNT(*) DESC
+                LIMIT #{limit}
+            </when>
+            <otherwise>
+                GROUP BY tsc.sub_category_name
+                ORDER BY COUNT(*) DESC
+            </otherwise>
+        </choose>
+    </select>
+
     <select id="getMetaDataWithMainCategory" resultType="QueryResponseMeta">
         select distinct tmc.main_category_name,
                         tsc.sub_category_id,
@@ -33,5 +76,7 @@
         where tsi.service_name = trim(#{serviceName}) and tmc.main_category_name = trim(#{mainCategoryName}) and tsc.sub_category_name = trim(#{subCategoryName})
         order by 4;
     </select>
+
+
 
 </mapper>
