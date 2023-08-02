@@ -9,5 +9,7 @@ import java.util.List;
 public interface DataMapMapper {
     List<QueryResponseDataMap> getMapMainData();
     List<QueryResponseDataMap> getMapSubData();
-    List<String> getPrimaryDataset();
+    List<String> getAllDataset();
+    List<String> getTopTenMainDataset();
+    List<String> getTopTenSubDataset();
 }

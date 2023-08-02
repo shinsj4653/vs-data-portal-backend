@@ -54,10 +54,10 @@ public class DataMapControllerTest {
     public void 데이터맵_주요_데이터셋_반환() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
 
-        mockMvc.perform(get("/datamap/dataset"))
+        mockMvc.perform(get("/datamap/dataset/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.message").value("데이터 맵 주요 데이터 셋 조회에 성공하였습니다."));
+                .andExpect(jsonPath("$.message").value("데이터 맵 모든 주요 데이터 셋 조회에 성공하였습니다."));
 
     }
 }

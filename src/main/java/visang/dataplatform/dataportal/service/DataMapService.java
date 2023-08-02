@@ -21,8 +21,14 @@ public class DataMapService {
     public List<QueryResponseDataMap> getMapSubData() {
         return dataMapMapper.getMapSubData();
     }
-    public List<String> getPrimaryDataset() {
-        return dataMapMapper.getPrimaryDataset();
+    public List<String> getAllDataset() {
+        return dataMapMapper.getAllDataset();
+    }
+    public List<String> getTopTenMainDataset() {
+        return dataMapMapper.getTopTenMainDataset();
+    }
+    public List<String> getTopTenSubDataset() {
+        return dataMapMapper.getTopTenSubDataset();
     }
 
 }

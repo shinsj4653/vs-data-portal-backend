@@ -43,11 +43,25 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 맵 주요 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
-    @GetMapping("dataset")
-    public ResponseDto<List<String>> getMapSelectedData() {
-        List<String> result = dataMapService.getPrimaryDataset();
-        return ResponseUtil.SUCCESS("데이터 맵 주요 데이터 셋 조회에 성공하였습니다.", result);
+    @Operation(summary = "데이터 맵 모든 주요 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/all")
+    public ResponseDto<List<String>> getAllDataset() {
+        List<String> result = dataMapService.getAllDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 모든 주요 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
+    @Operation(summary = "데이터 맵 TOP10 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/topten/main")
+    public ResponseDto<List<String>> getTopTenMainDataset() {
+        List<String> result = dataMapService.getTopTenMainDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 TOP10 대분류 데이터 셋 조회에 성공하였습니다.", result);
+    }
+
+    @Operation(summary = "데이터 맵 TOP10 중분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @GetMapping("dataset/topten/sub")
+    public ResponseDto<List<String>> getTopTenSubDataset() {
+        List<String> result = dataMapService.getTopTenSubDataset();
+        return ResponseUtil.SUCCESS("데이터 맵 TOP10 중분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
     static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
