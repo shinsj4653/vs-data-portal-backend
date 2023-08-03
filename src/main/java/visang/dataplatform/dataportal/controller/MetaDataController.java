@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import visang.dataplatform.dataportal.request.metadata.DatasetRequest;
 import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
 import visang.dataplatform.dataportal.response.common.ResponseDto;
 import visang.dataplatform.dataportal.response.common.ResponseUtil;
@@ -25,17 +26,17 @@ public class MetaDataController {
     private final MetaDataService metaDataService;
 
     @Operation(summary = "서비스에 따른 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
-    @GetMapping("dataset/main")
-    public ResponseDto<List<String>> getMainDataset(@RequestParam(value = "serviceName") String serviceName, @RequestParam(required = false, value = "limit") Integer limit) {
-        List<String> result = metaDataService.getMainDataset(serviceName, limit);
+    @PostMapping("dataset/main")
+    public ResponseDto<List<String>> getMainDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
+        List<String> result = metaDataService.getMainDataset(request.getService_name(), limit);
         System.out.println(limit);
         return ResponseUtil.SUCCESS("서비스에 따른 대분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
     @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
-    @GetMapping("dataset/sub")
-    public ResponseDto<List<String>> getSubDataset(@RequestParam(value = "serviceName") String serviceName, @RequestParam(required = false, value = "limit") Integer limit) {
-        List<String> result = metaDataService.getSubDataset(serviceName, limit);
+    @PostMapping("dataset/sub")
+    public ResponseDto<List<String>> getSubDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
+        List<String> result = metaDataService.getSubDataset(request.getService_name(), limit);
         return ResponseUtil.SUCCESS("서비스에 따른 중분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
