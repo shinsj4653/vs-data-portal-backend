@@ -29,7 +29,6 @@ public class MetaDataController {
     @PostMapping("dataset/main")
     public ResponseDto<List<String>> getMainDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
         List<String> result = metaDataService.getMainDataset(request.getService_name(), limit);
-        System.out.println(limit);
         return ResponseUtil.SUCCESS("서비스에 따른 대분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
@@ -44,24 +43,14 @@ public class MetaDataController {
     @PostMapping("category/main")
     public ResponseDto<List<SubCategoryDto>> getMetaDataWithMainCategory(@RequestBody MetaDataRequest metaDataMain) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithMainCategory(metaDataMain.getService_name(), metaDataMain.getMain_category_name());
-
-        if(result.size() == 0){
-            return ResponseUtil.FAILURE("서비스 명, 혹은 대분류 명을 다시 한 번 확인해주시길 바랍니다.", null);
-        }else {
-            return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스와 대분류에 해당하는 중분류 정보들을 가져오는데 성공했습니다.", makeCategoryTree(result));
-        }
+        return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스와 대분류에 해당하는 중분류 정보들을 가져오는데 성공했습니다.", makeCategoryTree(result));
     }
 
     @Operation(summary = "중분류 기준 테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 중분류 정보를 클릭하거나 메타 데이터 메뉴에서 각 대분류 내의 중분류 정보를 클릭하면, 해당 중분류 영역안에 속하는 테이블 메타 데이터 정보들을 모두 가져오는 API")
     @PostMapping("category/sub")
     public ResponseDto<List<TableMetaInfoDto>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
-
-        if(result.size() == 0){
-            return ResponseUtil.FAILURE("서비스 명, 대분류 명, 혹은 소분류 명을 다시 한 번 확인해주시길 바랍니다.", null);
-        }else {
-            return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
-        }
+        return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
     private List<SubCategoryDto> makeCategoryTree(List<QueryResponseMeta> result) {
 
