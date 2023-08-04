@@ -49,11 +49,13 @@ public class MetaDataController {
     @Operation(summary = "중분류 기준 테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 중분류 정보를 클릭하거나 메타 데이터 메뉴에서 각 대분류 내의 중분류 정보를 클릭하면, 해당 중분류 영역안에 속하는 테이블 메타 데이터 정보들을 모두 가져오는 API")
     @PostMapping("category/sub")
     public ResponseDto<List<TableMetaInfoDto>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
-        List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
-        return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
+        List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name(), metaDataSub.getAmount(), metaDataSub.getPage_no());
+        if (metaDataSub.getPage_no() <= 0) {
+            return ResponseUtil.FAILURE("페이지 번호는 1 이상이어야 합니다.", null);
+        } else
+            return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
     private List<SubCategoryDto> makeCategoryTree(List<QueryResponseMeta> result) {
-
 
         List<SubCategoryDto> list = new ArrayList<>();
 
@@ -61,7 +63,6 @@ public class MetaDataController {
             SubCategoryDto subData = new SubCategoryDto(q.getSub_category_id(), q.getSub_category_name());
             list.add(subData);
         }
-
         return list;
 
     }
