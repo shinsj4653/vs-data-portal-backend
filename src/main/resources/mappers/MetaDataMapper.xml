@@ -73,9 +73,7 @@
         left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
         left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
         left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
-        where tsi.service_name = trim(#{serviceName}) and tmc.main_category_name = trim(#{mainCategoryName}) and tsc.sub_category_name = trim(#{subCategoryName})
-        order by 4
-        limit #{amount} offset (#{pageNo} - 1) * #{amount};
+        where tsi.service_name = trim(#{serviceName}) and tmc.main_category_name = trim(#{mainCategoryName}) and tsc.sub_category_name = trim(#{subCategoryName});
     </select>
 
 
