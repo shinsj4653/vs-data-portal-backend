@@ -4,8 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.request.metadata.DatasetRequest;
+import visang.dataplatform.dataportal.request.metadata.MainDatasetRequest;
 import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
+import visang.dataplatform.dataportal.request.metadata.SubDatasetRequest;
 import visang.dataplatform.dataportal.response.common.ResponseDto;
 import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
@@ -14,9 +15,8 @@ import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("metadata")
@@ -27,15 +27,15 @@ public class MetaDataController {
 
     @Operation(summary = "서비스에 따른 대분류 데이터 셋 정보 조회 API", description = "각 서비스에 해당하는 대분류 카테고리 이름 정보를 메타 정보 테이블에 많이 존재하는 기준으로 반환해주는 API")
     @PostMapping("dataset/main")
-    public ResponseDto<List<String>> getMainDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
+    public ResponseDto<List<String>> getMainDataset(@RequestBody MainDatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
         List<String> result = metaDataService.getMainDataset(request.getService_name(), limit);
         return ResponseUtil.SUCCESS("서비스에 따른 대분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "각 서비스에 해당하는 중분류 카테고리 이름 정보를 메타 정보 테이블에 많이 존재하는 기준으로 반환해주는 API")
+    @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "각 서비스 및 대분류 카테고리에 해당하는 중분류 카테고리 이름 정보를 메타 정보 테이블에 많이 존재하는 기준으로 반환해주는 API")
     @PostMapping("dataset/sub")
-    public ResponseDto<List<String>> getSubDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
-        List<String> result = metaDataService.getSubDataset(request.getService_name(), limit);
+    public ResponseDto<List<String>> getSubDataset(@RequestBody SubDatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
+        List<String> result = metaDataService.getSubDataset(request.getService_name(), request.getMain_category_name(), limit);
         return ResponseUtil.SUCCESS("서비스에 따른 중분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
@@ -77,6 +77,5 @@ public class MetaDataController {
         }
         return list;
     }
-
 
 }

@@ -18,8 +18,8 @@ public class MetaDataService {
     public List<String> getMainDataset(String serviceName, Integer limit) {
         return metaDataMapper.getMainDataset(serviceName, limit);
     }
-    public List<String> getSubDataset(String serviceName, Integer limit) {
-        return metaDataMapper.getSubDataset(serviceName, limit);
+    public List<String> getSubDataset(String serviceName, String mainCategoryName, Integer limit) {
+        return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }
     public List<QueryResponseMeta> getMetaDataWithMainCategory(String serviceName, String mainCategoryName) {
         return metaDataMapper.getMetaDataWithMainCategory(serviceName, mainCategoryName);
