@@ -24,8 +24,8 @@ public class MetaDataService {
     public List<QueryResponseMeta> getMetaDataWithMainCategory(String serviceName, String mainCategoryName) {
         return metaDataMapper.getMetaDataWithMainCategory(serviceName, mainCategoryName);
     }
-    public List<QueryResponseMeta> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer amount, Integer pageNo) {
-        return metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName, amount, pageNo);
+    public List<QueryResponseMeta> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName) {
+        return metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
     }
 
 }
