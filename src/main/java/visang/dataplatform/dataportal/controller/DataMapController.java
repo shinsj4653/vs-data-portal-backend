@@ -27,7 +27,7 @@ public class DataMapController {
     private final DataMapService dataMapService;
     static ObjectMapper mapper = new ObjectMapper();
 
-    @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “대분류 카테고리” 단위까지 모두 가져오는 API")
+    @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "데이터 맵에 필요한 정보를 “대분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/main")
     public ResponseDto<Map<String, String>> getMapMainData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapMainData();
@@ -35,7 +35,7 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵에 필요한 데이터를 “중분류 카테고리” 단위까지 모두 가져오는 API")
+    @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "데이터 맵에 필요한 정보를 “중분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/sub")
     public ResponseDto<Map<String, String>> getMapSubData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapService.getMapSubData();
@@ -43,16 +43,14 @@ public class DataMapController {
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 맵 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @Operation(summary = "데이터 맵 데이터 셋 정보 조회 API", description = "데이터 맵 화면의 대분류 기준 주요 데이터 셋 정보를 반환해주는 API")
     @GetMapping("dataset/all")
     public ResponseDto<List<String>> getAllDataset() {
         List<String> result = dataMapService.getAllDataset();
-        System.out.println();
-        return ResponseUtil.SUCCESS("데이터 맵 대분류 데이터 셋 조회에 성공하였습니다.", result);
+        return ResponseUtil.SUCCESS("데이터 맵 데이터 셋 조회에 성공하였습니다.", result);
     }
-
-
-
+    
+    // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수
     static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
         int id = 0;
 
@@ -104,12 +102,14 @@ public class DataMapController {
         // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
         return convertMapToJson(mapper.writeValueAsString(rootNode));
     }
+    
+    // String 데이터를 Map 구조의 Json Object 데이터로 변환해주는 함수
     static Map<String, String> convertMapToJson(String json) throws JsonProcessingException {
         // "loc": null와 "children" : null 인 부분을 String 상에서 제거
         String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
         String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");
 
-        // String을 JsonObject로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
+        // String을 Json Object로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
         String cleanedJsonString = removeTrailingCommas(childrenRemoved);
         Map<String, String> map = mapper.readValue(cleanedJsonString, Map.class);
 
@@ -117,6 +117,7 @@ public class DataMapController {
 
     }
 
+    // Json Object 로 파싱할 때 오류를 낼 수 있는 콤마부분을 삭제해주는 함수
     static String removeTrailingCommas(String jsonString) {
         Pattern pattern = Pattern.compile(",(?=\\s*\\})|,(?=\\s*\\])");
         Matcher matcher = pattern.matcher(jsonString);
