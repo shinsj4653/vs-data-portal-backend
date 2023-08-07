@@ -28,14 +28,14 @@ public class DataOrgController {
 
     private final DataOrgService dataOrgService;
 
-    @Operation(summary = "데이터 조직도 전체 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도에 포함된 컴퍼니명, 서비스명을 반환해주는 API")
+    @Operation(summary = "데이터 조직도 전체 정보 조회 API", description = "데이터 기반 조직도에 포함된 컴퍼니명, 서비스명을 모두 반환해주는 API")
     @GetMapping("allorginfo")
     public ResponseDto<Map<String, String>> getAllOrgInfo() throws JsonProcessingException {
         List<QueryResponseAllOrgData> queryResponse = dataOrgService.getAllOrgInfo();
         return ResponseUtil.SUCCESS("데이터 조직도 전체 정보 조회에 성공하였습니다.", refactorOrgData(queryResponse));
     }
 
-    @Operation(summary = "데이터 조직도 서비스 시스템 정보 조회 API", description = "데이터 기반 조직도 메뉴를 클릭 시 나오는 조직도 화면 상에서, 원하는 서비스 클릭 시 해당 서비스의 시스템 정보를 반환해주는 API")
+    @Operation(summary = "데이터 조직도 서비스 시스템 정보 조회 API", description = "데이터 기반 조직도에서 서비스 클릭 시 해당 서비스의 시스템 정보를 반환해주는 API")
     @GetMapping("service/systeminfo")
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
         List<QueryResponseSystemInfo> queryResponse = dataOrgService.getSystemInfo(name);
@@ -56,6 +56,7 @@ public class DataOrgController {
         }
     }
 
+    // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수
     private Map<String, String> refactorOrgData(List<QueryResponseAllOrgData> list) throws JsonProcessingException {
 
         int id = 0;
@@ -79,6 +80,7 @@ public class DataOrgController {
         return convertMapToJson(mapper.writeValueAsString(rootNode));
     }
 
+    // 트리 구조로 변환해줄 때, 서비스 매니저는 여러 명 이므로 하나의 리스트 안에 매니저 정보가 담겨지도록 하는 함수
     private List<ServiceManagerDto> makeManagerList(List<QueryResponseSystemInfo> queryResponse) {
         List<ServiceManagerDto> managerList = new ArrayList<>();
         for (QueryResponseSystemInfo r : queryResponse) {

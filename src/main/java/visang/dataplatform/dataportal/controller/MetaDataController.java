@@ -25,14 +25,14 @@ public class MetaDataController {
 
     private final MetaDataService metaDataService;
 
-    @Operation(summary = "서비스에 따른 대분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @Operation(summary = "서비스에 따른 대분류 데이터 셋 정보 조회 API", description = "각 서비스에 해당하는 대분류 카테고리 이름 정보를 메타 정보 테이블에 많이 존재하는 기준으로 반환해주는 API")
     @PostMapping("dataset/main")
     public ResponseDto<List<String>> getMainDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
         List<String> result = metaDataService.getMainDataset(request.getService_name(), limit);
         return ResponseUtil.SUCCESS("서비스에 따른 대분류 데이터 셋 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "비상교육 데이터 맵 메뉴를 클릭하였을 때 보여지는 데이터 맵 화면에서 모든 주요 데이터 셋의 이름 정보를 반환해주는 API")
+    @Operation(summary = "서비스에 따른 중분류 데이터 셋 정보 조회 API", description = "각 서비스에 해당하는 중분류 카테고리 이름 정보를 메타 정보 테이블에 많이 존재하는 기준으로 반환해주는 API")
     @PostMapping("dataset/sub")
     public ResponseDto<List<String>> getSubDataset(@RequestBody DatasetRequest request, @RequestParam(required = false, value = "limit") Integer limit) {
         List<String> result = metaDataService.getSubDataset(request.getService_name(), limit);
@@ -52,6 +52,8 @@ public class MetaDataController {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
+
+    // QueryResponseMeta에서 SubCategoryDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<SubCategoryDto> makeCategoryTree(List<QueryResponseMeta> result) {
 
         List<SubCategoryDto> list = new ArrayList<>();
@@ -64,6 +66,7 @@ public class MetaDataController {
 
     }
 
+    // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {
 
         List<TableMetaInfoDto> list = new ArrayList<>();
