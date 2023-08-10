@@ -33,4 +33,14 @@
         where tsi.service_name = trim(#{name});
     </select>
 
+    <!-- 데이터 조직도 : 원하는 서비스에 해당하는 시스템 정보 보여주기 -->
+    <select id="getSystemByTarget" resultType="String">
+        select tsi.service_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        left join tb_service_target_mapping tstm on tsi.service_id = tstm.service_id
+        left join tb_service_target_info tsti on tstm.target_id = tsti.target_id
+        where tsti.target_name = trim(#{targetName});
+    </select>
+
 </mapper>

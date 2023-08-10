@@ -23,4 +23,8 @@ public class DataOrgService {
     public List<QueryResponseSystemInfo> getSystemInfo(String name) {
         return dataOrgMapper.getSystemInfo(name);
     }
+
+    public List<String> getSystemByTarget(String targetName) {
+        return dataOrgMapper.getSystemByTarget(targetName);
+    }
 }

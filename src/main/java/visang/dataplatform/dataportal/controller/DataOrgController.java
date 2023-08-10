@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import visang.dataplatform.dataportal.request.dataorg.ServiceTargetRequest;
 import visang.dataplatform.dataportal.response.common.ResponseDto;
 import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.dto.dataorg.DataOrgDto;
@@ -54,6 +55,13 @@ public class DataOrgController {
             );
             return ResponseUtil.SUCCESS("데이터 조직도 원하는 서비스의 시스템 정보 조회에 성공하였습니다.", result);
         }
+    }
+
+    @Operation(summary = "데이터 조직도 타켓 기준 서비스 명 조회 API", description = "데이터 기반 조직도에서 서비스 대상을 눌렀을 시, 해당 대상과 관련된 서비스 명 반환해주는 API")
+    @PostMapping("service/target")
+    public ResponseDto<List<String>> getSystemByTarget(@RequestBody ServiceTargetRequest req){
+        List<String> result = dataOrgService.getSystemByTarget(req.getTarget_name());
+        return ResponseUtil.SUCCESS("해당 타켓에 해당하는 서비스 명 정보 조회에 성공하였습니다.", result);
     }
 
     // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수
