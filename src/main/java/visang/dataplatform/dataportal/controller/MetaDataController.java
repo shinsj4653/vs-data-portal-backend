@@ -53,6 +53,7 @@ public class MetaDataController {
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
 
+
     // QueryResponseMeta에서 SubCategoryDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<SubCategoryDto> makeCategoryTree(List<QueryResponseMeta> result) {
 
