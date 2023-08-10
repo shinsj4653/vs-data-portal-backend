@@ -4,9 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.request.metadata.MainDatasetRequest;
 import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
 import visang.dataplatform.dataportal.request.metadata.SubDatasetRequest;
+import visang.dataplatform.dataportal.request.metadata.TableSearchRequest;
 import visang.dataplatform.dataportal.response.common.ResponseDto;
 import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
@@ -14,6 +16,7 @@ import visang.dataplatform.dataportal.model.dto.metadata.SubCategoryDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +56,12 @@ public class MetaDataController {
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
 
+    @Operation(summary = "테이블ID 혹은 이름 기준 검색 결과 조회 API", description = "데이터 맵에서 중분류 정보를 클릭하거나 메타 데이터 메뉴에서 각 대분류 내의 중분류 정보를 클릭하면, 해당 중분류 영역안에 속하는 테이블 메타 데이터 정보들을 모두 가져오는 API")
+    @PostMapping("search/tableinfo")
+    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
+        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getTable_keyword());
+        return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.",result);
+    }
 
     // QueryResponseMeta에서 SubCategoryDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<SubCategoryDto> makeCategoryTree(List<QueryResponseMeta> result) {

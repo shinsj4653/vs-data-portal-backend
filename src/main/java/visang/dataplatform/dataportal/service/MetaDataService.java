@@ -3,6 +3,7 @@ package visang.dataplatform.dataportal.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 
@@ -26,6 +27,10 @@ public class MetaDataService {
     }
     public List<QueryResponseMeta> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName) {
         return metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
+    }
+
+    public List<TableSearchDto> getTableSearchResult(String serviceName, String tableKeyword){
+        return metaDataMapper.getTableSearchResult(serviceName, tableKeyword);
     }
 
 }
