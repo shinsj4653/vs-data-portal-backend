@@ -56,7 +56,7 @@ public class MetaDataController {
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
     }
 
-    @Operation(summary = "테이블ID 혹은 이름 기준 검색 결과 조회 API", description = "데이터 맵에서 중분류 정보를 클릭하거나 메타 데이터 메뉴에서 각 대분류 내의 중분류 정보를 클릭하면, 해당 중분류 영역안에 속하는 테이블 메타 데이터 정보들을 모두 가져오는 API")
+    @Operation(summary = "테이블ID 혹은 이름 기준 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
     @PostMapping("search/tableinfo")
     public ResponseDto<List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
         List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getTable_keyword());
