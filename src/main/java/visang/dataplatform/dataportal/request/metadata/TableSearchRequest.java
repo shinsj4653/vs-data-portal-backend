@@ -12,4 +12,11 @@ public class TableSearchRequest {
 
     @Schema(description = "테이블 키워드")
     private String table_keyword;
+
+    @Schema(description = "페이지 번호")
+    private Integer page_no;
+
+    @Schema(description = "페이지 당 갯수")
+    private Integer amount_per_page;
+
 }

@@ -16,7 +16,6 @@ import visang.dataplatform.dataportal.model.dto.metadata.SubCategoryDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,9 +57,9 @@ public class MetaDataController {
 
     @Operation(summary = "테이블ID 혹은 이름 기준 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
     @PostMapping("search/tableinfo")
-    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
-        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getTable_keyword());
-        return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.",result);
+    public ResponseDto< List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
+        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getTable_keyword(), req.getPage_no(), req.getAmount_per_page());
+        return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.", result);
     }
 
     // QueryResponseMeta에서 SubCategoryDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

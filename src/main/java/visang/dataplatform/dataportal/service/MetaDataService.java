@@ -29,8 +29,8 @@ public class MetaDataService {
         return metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String serviceName, String tableKeyword){
-        return metaDataMapper.getTableSearchResult(serviceName, tableKeyword);
+    public List<TableSearchDto> getTableSearchResult(String serviceName, String tableKeyword, Integer pageNo, Integer amountPerPage){
+        return metaDataMapper.getTableSearchResult(serviceName, tableKeyword, pageNo, amountPerPage);
     }
 
 }
