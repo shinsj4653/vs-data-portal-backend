@@ -4,9 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.request.metadata.MainDatasetRequest;
 import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
 import visang.dataplatform.dataportal.request.metadata.SubDatasetRequest;
+import visang.dataplatform.dataportal.request.metadata.TableSearchRequest;
 import visang.dataplatform.dataportal.response.common.ResponseDto;
 import visang.dataplatform.dataportal.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
@@ -51,6 +53,13 @@ public class MetaDataController {
     public ResponseDto<List<TableMetaInfoDto>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
         List<QueryResponseMeta> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", makeMetaInfoTree(result));
+    }
+
+    @Operation(summary = "테이블ID 혹은 이름 기준 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
+    @PostMapping("search/tableinfo")
+    public ResponseDto< List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
+        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getTable_keyword(), req.getPage_no(), req.getAmount_per_page());
+        return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.", result);
     }
 
     // QueryResponseMeta에서 SubCategoryDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

@@ -78,6 +78,32 @@
         where tsi.service_name = trim(#{serviceName}) and tmc.main_category_name = trim(#{mainCategoryName}) and tsc.sub_category_name = trim(#{subCategoryName});
     </select>
 
+    <!-- 테이블ID 혹은 테이블명으로 검색 시, 해당 결과값 반환 -->
+    <select id="getTableSearchResult" resultType="TableSearchDto" fetchSize="1000">
+        WITH filtered_tables AS (
+            SELECT
+                ttmi.table_id,
+                ttmi.table_name,
+                ttmi.table_comment,
+                ttmi.small_clsf_name,
+                COUNT(*) OVER () AS total_num
+            FROM tb_company_info
+                     JOIN tb_service_info tsi ON tb_company_info.company_id = tsi.company_id
+                     JOIN tb_table_meta_info ttmi ON tsi.service_id = ttmi.service_id
+            WHERE tsi.service_name = trim(#{serviceName}) AND (ttmi.table_id ILIKE concat('%', trim(#{tableKeyword}), '%') OR ttmi.table_name like concat('%', trim(#{tableKeyword}), '%'))
+        )
+        SELECT
+            table_id,
+            table_name,
+            table_comment,
+            small_clsf_name,
+            total_num
+        FROM filtered_tables
+        ORDER BY table_id
+        limit #{amountPerPage}
+        offset (#{pageNo} - 1) * #{amountPerPage};
+    </select>
+
 
 
 </mapper>

@@ -23,7 +23,7 @@ spring:
 
 mybatis: # type을 쉽게 쓰기 위해서 dto 패키지를 type-aliaes에 설정
   mapper-locations: /mappers/**/*.xml
-  type-aliases-package: visang.dataplatform.dataportal.model.entity
+  type-aliases-package: visang.dataplatform.dataportal.model
   config-location: classpath:mybatis/mybatis-config.xml
 
 springfox:
