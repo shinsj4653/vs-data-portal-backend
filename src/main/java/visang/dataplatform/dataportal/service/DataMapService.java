@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class DataMapService {
 
     private final DataMapMapper dataMapMapper;
-    static ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper = new ObjectMapper();
 
     public Map<String, String> getMapMainData() throws JsonProcessingException {
         List<QueryResponseDataMap> list = dataMapMapper.getMapMainData();
