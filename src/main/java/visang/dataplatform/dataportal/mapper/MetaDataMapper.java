@@ -11,10 +11,6 @@ import java.util.List;
 public interface MetaDataMapper {
     List<String> getMainDataset(@Param("serviceName") String serviceName, @Param("limit") Integer limit);
     List<String> getSubDataset(@Param("serviceName") String serviceName, @Param("mainCategoryName") String mainCategoryName, @Param("limit") Integer limit);
-
-    List<QueryResponseMeta> getMetaDataWithMainCategory(@Param("serviceName") String serviceName, @Param("mainCategoryName") String mainCategoryName);
     List<QueryResponseMeta> getMetaDataWithSubCategory(@Param("serviceName") String serviceName, @Param("mainCategoryName") String mainCategoryName , @Param("subCategoryName") String subCategoryName);
-
     List<TableSearchDto> getTableSearchResult(@Param("serviceName") String serviceName, @Param("tableKeyword") String tableKeyword, @Param("pageNo") Integer pageNo, @Param("amountPerPage") Integer amountPerPage);
-
 }
