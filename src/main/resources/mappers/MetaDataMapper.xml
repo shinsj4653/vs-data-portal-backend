@@ -50,46 +50,33 @@
 
     <!-- 서비스와 대분류 및 중분류 카테고리에 해당하는 메타 테이블 정보를 반환  -->
     <select id="getMetaDataWithSubCategory" resultType="QueryResponseMeta" fetchSize="1000">
-        select distinct tsc.sub_category_name,
-                        ttmi.table_meta_info_id,
-                        ttmi.table_id,
-                        ttmi.table_name,
-                        ttmi.table_comment,
-                        ttmi.small_clsf_name
+        select tsc.sub_category_name,
+               ttmi.table_meta_info_id,
+               ttmi.table_id,
+               ttmi.table_name,
+               ttmi.table_comment,
+               ttmi.small_clsf_name
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
-        left join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
-        left join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
-        left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
+        join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
         where tsi.service_name = trim(#{serviceName}) and tmc.main_category_name = trim(#{mainCategoryName}) and tsc.sub_category_name = trim(#{subCategoryName});
     </select>
 
     <!-- 테이블ID 혹은 테이블명으로 검색 시, 해당하는 메타 테이블 정보 반환 -->
     <select id="getTableSearchResult" resultType="TableSearchDto" fetchSize="1000">
-        WITH filtered_tables AS (
-            SELECT
-                ttmi.table_id,
-                ttmi.table_name,
-                ttmi.table_comment,
-                ttmi.small_clsf_name,
-                COUNT(*) OVER () AS total_num
-            FROM tb_company_info
-                     JOIN tb_service_info tsi ON tb_company_info.company_id = tsi.company_id
-                     JOIN tb_table_meta_info ttmi ON tsi.service_id = ttmi.service_id
-            WHERE tsi.service_name = trim(#{serviceName}) AND (ttmi.table_id ILIKE concat('%', trim(#{tableKeyword}), '%') OR ttmi.table_name like concat('%', trim(#{tableKeyword}), '%'))
-        )
-        SELECT
-            table_id,
-            table_name,
-            table_comment,
-            small_clsf_name,
-            total_num
-        FROM filtered_tables
-        ORDER BY table_id
+        select ttmi.table_id,
+               ttmi.table_name,
+               ttmi.table_comment,
+               ttmi.small_clsf_name,
+               count(*) over () as total_num
+        from tb_company_info
+        join tb_service_info tsi on tb_company_info.company_id = tsi.company_id
+        join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        where tsi.service_name = trim(#{serviceName}) and (ttmi.table_id ilike concat('%', trim(#{tableKeyword}), '%') or ttmi.table_name like concat('%', trim(#{tableKeyword}), '%'))
         limit #{amountPerPage}
         offset (#{pageNo} - 1) * #{amountPerPage};
     </select>
-
-
 
 </mapper>
