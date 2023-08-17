@@ -5,22 +5,14 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.request.dataorg.ServiceTargetRequest;
-import visang.dataplatform.dataportal.response.common.ResponseDto;
-import visang.dataplatform.dataportal.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.model.dto.dataorg.DataOrgDto;
-import visang.dataplatform.dataportal.model.dto.dataorg.ServiceManagerDto;
+import visang.dataplatform.dataportal.model.request.dataorg.ServiceTargetRequest;
+import visang.dataplatform.dataportal.model.response.common.ResponseDto;
+import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.dto.dataorg.ServiceSystemInfoDto;
-import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseAllOrgData;
-import visang.dataplatform.dataportal.model.entity.dataorg.QueryResponseSystemInfo;
 import visang.dataplatform.dataportal.service.DataOrgService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static visang.dataplatform.dataportal.service.DataMapService.convertMapToJson;
-import static visang.dataplatform.dataportal.service.DataMapService.mapper;
 
 
 @RestController

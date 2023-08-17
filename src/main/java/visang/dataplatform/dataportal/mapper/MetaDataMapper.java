@@ -3,7 +3,7 @@ package visang.dataplatform.dataportal.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
+import visang.dataplatform.dataportal.query.metadata.QueryResponseMeta;
 
 import java.util.List;
 

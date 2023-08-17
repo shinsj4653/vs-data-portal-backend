@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
+import visang.dataplatform.dataportal.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 
 import java.util.ArrayList;
