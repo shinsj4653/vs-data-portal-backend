@@ -25,21 +25,18 @@ import java.util.regex.Pattern;
 public class DataMapController {
 
     private final DataMapService dataMapService;
-    static ObjectMapper mapper = new ObjectMapper();
 
     @Operation(summary = "데이터 맵 대분류 정보 조회 API", description = "데이터 맵에 필요한 정보를 “대분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/main")
     public ResponseDto<Map<String, String>> getMapMainData() throws JsonProcessingException {
-        List<QueryResponseDataMap> list = dataMapService.getMapMainData();
-        Map<String, String> result = refactorMapData(list, true);
+        Map<String, String> result = dataMapService.getMapMainData();
         return ResponseUtil.SUCCESS("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
     @Operation(summary = "데이터 맵 중분류 정보 조회 API", description = "데이터 맵에 필요한 정보를 “중분류 카테고리” 단위까지 모두 가져오는 API")
     @GetMapping("category/sub")
     public ResponseDto<Map<String, String>> getMapSubData() throws JsonProcessingException {
-        List<QueryResponseDataMap> list = dataMapService.getMapSubData();
-        Map<String, String> result = refactorMapData(list, false);
+        Map<String, String> result = dataMapService.getMapSubData();
         return ResponseUtil.SUCCESS("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다.", result);
     }
 
@@ -49,79 +46,4 @@ public class DataMapController {
         List<String> result = dataMapService.getAllDataset();
         return ResponseUtil.SUCCESS("데이터 맵 데이터 셋 조회에 성공하였습니다.", result);
     }
-    
-    // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수
-    static Map<String, String> refactorMapData(List<QueryResponseDataMap> list, Boolean isMain) throws JsonProcessingException {
-        int id = 0;
-
-        DataMapDto rootNode = new DataMapDto("비상교육", "#00b2e2", "node-" + (id++));
-
-        for (QueryResponseDataMap data : list) {
-            String companyName = data.getCompany_name();
-            String companyColor = data.getCompany_color();
-            String companyId = "node-" + (id++);
-
-            String serviceName = data.getService_name();
-            String serviceColor = data.getService_color();
-            String serviceId = "node-" + (id++);
-
-            String mainSubjectName = data.getMain_category_name();
-            String mainSubjectColor = data.getMain_category_color();
-            String mainSubjectId = "node-" + (id++);
-
-            String subSubjectName = data.getSub_category_name();
-            String subSubjectColor = data.getSub_category_color();
-            String subSubjectId = "node-" + (id++);
-
-            DataMapDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
-
-            if (isMain){
-                if (mainSubjectName != null) {
-                    DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
-                    serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
-                } else {
-                    companyNode.findOrCreateChild(serviceName, serviceColor, serviceId, 1);
-                }
-            } else {
-                if (mainSubjectName != null) {
-                    DataMapDto serviceNode = companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
-
-                    if (subSubjectName != null) {
-                        DataMapDto mainSubjectNode = serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId);
-                        mainSubjectNode.findOrCreateChild(subSubjectName, subSubjectColor, subSubjectId, 1);
-                    } else {
-                        serviceNode.findOrCreateChild(mainSubjectName, mainSubjectColor, mainSubjectId, 1);
-                    }
-                } else{
-                    companyNode.findOrCreateChild(serviceName, serviceColor, serviceId, 1);
-                }
-            }
-
-        }
-
-        // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
-        return convertMapToJson(mapper.writeValueAsString(rootNode));
-    }
-    
-    // String 데이터를 Map 구조의 Json Object 데이터로 변환해주는 함수
-    static Map<String, String> convertMapToJson(String json) throws JsonProcessingException {
-        // "loc": null와 "children" : null 인 부분을 String 상에서 제거
-        String locRemoved = json.replaceAll("\"loc\"\\s*:\\s*null(,)?", "");
-        String childrenRemoved = locRemoved.replaceAll("\"children\"\\s*:\\s*\\[\\]\\s*(,)?", "");
-
-        // String을 Json Object로 파싱할 때, 끝 부분에 따라오는 콤마들을 제거해줘야 에러가 안남
-        String cleanedJsonString = removeTrailingCommas(childrenRemoved);
-        Map<String, String> map = mapper.readValue(cleanedJsonString, Map.class);
-
-        return map;
-
-    }
-
-    // Json Object 로 파싱할 때 오류를 낼 수 있는 콤마부분을 삭제해주는 함수
-    static String removeTrailingCommas(String jsonString) {
-        Pattern pattern = Pattern.compile(",(?=\\s*\\})|,(?=\\s*\\])");
-        Matcher matcher = pattern.matcher(jsonString);
-        return matcher.replaceAll("");
-    }
-
 }

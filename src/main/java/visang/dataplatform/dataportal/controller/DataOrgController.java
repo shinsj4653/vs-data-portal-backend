@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static visang.dataplatform.dataportal.controller.DataMapController.*;
+import static visang.dataplatform.dataportal.service.DataMapService.convertMapToJson;
+import static visang.dataplatform.dataportal.service.DataMapService.mapper;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -32,29 +34,20 @@ public class DataOrgController {
     @Operation(summary = "데이터 조직도 전체 정보 조회 API", description = "데이터 기반 조직도에 포함된 컴퍼니명, 서비스명을 모두 반환해주는 API")
     @GetMapping("allorginfo")
     public ResponseDto<Map<String, String>> getAllOrgInfo() throws JsonProcessingException {
-        List<QueryResponseAllOrgData> queryResponse = dataOrgService.getAllOrgInfo();
-        return ResponseUtil.SUCCESS("데이터 조직도 전체 정보 조회에 성공하였습니다.", refactorOrgData(queryResponse));
+        Map<String, String> result = dataOrgService.getAllOrgInfo();
+        return ResponseUtil.SUCCESS("데이터 조직도 전체 정보 조회에 성공하였습니다.", result);
     }
 
     @Operation(summary = "데이터 조직도 서비스 시스템 정보 조회 API", description = "데이터 기반 조직도에서 서비스 클릭 시 해당 서비스의 시스템 정보를 반환해주는 API")
     @GetMapping("service/systeminfo")
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
-        List<QueryResponseSystemInfo> queryResponse = dataOrgService.getSystemInfo(name);
-        if (queryResponse.size() == 0){
+        ServiceSystemInfoDto result = dataOrgService.getSystemInfo(name);
+        if (result == null){
             return ResponseUtil.FAILURE("비상교육 내에 존재하는 서비스 명을 입력하거나, 입력 값을 다시 한 번 확인해주시길 바랍니다.", null);
         } else {
-            List<ServiceManagerDto> managerList = makeManagerList(queryResponse);
-            ServiceSystemInfoDto result = new ServiceSystemInfoDto(
-                    queryResponse.get(0).getCompany_name(),
-                    queryResponse.get(0).getService_name(),
-                    queryResponse.get(0).getService_web_url(),
-                    queryResponse.get(0).getService_os(),
-                    queryResponse.get(0).getService_was(),
-                    queryResponse.get(0).getService_db(),
-                    managerList
-            );
             return ResponseUtil.SUCCESS("데이터 조직도 원하는 서비스의 시스템 정보 조회에 성공하였습니다.", result);
         }
+
     }
 
     @Operation(summary = "데이터 조직도 타켓 기준 서비스 명 조회 API", description = "데이터 기반 조직도에서 서비스 대상을 눌렀을 시, 해당 대상과 관련된 서비스 명 반환해주는 API")
@@ -64,36 +57,4 @@ public class DataOrgController {
         return ResponseUtil.SUCCESS("해당 타켓에 해당하는 서비스 명 정보 조회에 성공하였습니다.", result);
     }
 
-    // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수
-    private Map<String, String> refactorOrgData(List<QueryResponseAllOrgData> list) throws JsonProcessingException {
-
-        int id = 0;
-
-        DataOrgDto rootNode = new DataOrgDto("비상교육", "#00b2e2", "node-" + (id++));
-
-        for (QueryResponseAllOrgData data : list) {
-            String companyName = data.getCompany_name();
-            String companyColor = data.getCompany_color();
-            String companyId = "node-" + (id++);
-
-            String serviceName = data.getService_name();
-            String serviceColor = data.getService_color();
-            String serviceId = "node-" + (id++);
-
-            DataOrgDto companyNode = rootNode.findOrCreateChild(companyName, companyColor, companyId);
-            companyNode.findOrCreateChild(serviceName, serviceColor, serviceId);
-        }
-
-        // Map 형태 데이터를 String으로 변환해서 파라미터로 넘겨주기
-        return convertMapToJson(mapper.writeValueAsString(rootNode));
-    }
-
-    // 트리 구조로 변환해줄 때, 서비스 매니저는 여러 명 이므로 하나의 리스트 안에 매니저 정보가 담겨지도록 하는 함수
-    private List<ServiceManagerDto> makeManagerList(List<QueryResponseSystemInfo> queryResponse) {
-        List<ServiceManagerDto> managerList = new ArrayList<>();
-        for (QueryResponseSystemInfo r : queryResponse) {
-            managerList.add(new ServiceManagerDto(r.getService_mngr_tkcg(), r.getService_mngr_dept(), r.getService_mngr_name()));
-        }
-        return managerList;
-    }
 }
