@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.dataorg.DataOrgDto;
 import visang.dataplatform.dataportal.model.dto.dataorg.ServiceManagerDto;
 import visang.dataplatform.dataportal.model.dto.dataorg.ServiceSystemInfoDto;
-import visang.dataplatform.dataportal.query.dataorg.QueryResponseAllOrgData;
-import visang.dataplatform.dataportal.query.dataorg.QueryResponseSystemInfo;
+import visang.dataplatform.dataportal.model.query.dataorg.QueryResponseAllOrgData;
+import visang.dataplatform.dataportal.model.query.dataorg.QueryResponseSystemInfo;
 import visang.dataplatform.dataportal.mapper.DataOrgMapper;
 
 import java.util.ArrayList;

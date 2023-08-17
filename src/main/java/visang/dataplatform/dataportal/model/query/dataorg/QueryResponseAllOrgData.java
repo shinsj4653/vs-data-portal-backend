@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.query.dataorg;
+package visang.dataplatform.dataportal.model.query.dataorg;
 
 import lombok.Getter;
 

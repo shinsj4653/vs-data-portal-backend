@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.mapper.DataMapMapper;
 import visang.dataplatform.dataportal.model.dto.datamap.DataMapDto;
-import visang.dataplatform.dataportal.query.datamap.QueryResponseDataMap;
+import visang.dataplatform.dataportal.model.query.datamap.QueryResponseDataMap;
 
 import java.util.List;
 import java.util.Map;

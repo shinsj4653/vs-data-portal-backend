@@ -1,7 +1,7 @@
 package visang.dataplatform.dataportal.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import visang.dataplatform.dataportal.query.datamap.QueryResponseDataMap;
+import visang.dataplatform.dataportal.model.query.datamap.QueryResponseDataMap;
 
 import java.util.List;
 
