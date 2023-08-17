@@ -84,8 +84,17 @@
         join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
         where 1=1
             and tsi.service_name = trim(#{serviceName})
-            and (ttmi.table_id ilike concat('%', trim(#{tableKeyword}), '%')
-            or ttmi.table_name like concat('%', trim(#{tableKeyword}), '%'))
+          <choose>
+              <when test="searchCondition == 'table_id_or_name'">
+                  and (ttmi.table_id ilike concat('%', trim(#{tableKeyword}), '%')
+                  or ttmi.table_name like concat('%', trim(#{tableKeyword}), '%'))
+              </when>
+              <when test="searchCondition == 'small_clsf_name'">
+                  and ttmi.small_clsf_name like concat('%', trim(#{tableKeyword}), '%')
+              </when>
+              <otherwise>
+              </otherwise>
+          </choose>
         limit #{amountPerPage}
         offset (#{pageNo} - 1) * #{amountPerPage};
     </select>

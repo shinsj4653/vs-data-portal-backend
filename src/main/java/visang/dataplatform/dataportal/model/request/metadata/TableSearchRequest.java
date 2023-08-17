@@ -10,6 +10,9 @@ public class TableSearchRequest {
     @Schema(description = "서비스 명")
     private String service_name;
 
+    @Schema(description = "검색 조건")
+    private String search_condition;
+
     @Schema(description = "테이블 키워드")
     private String table_keyword;
 
