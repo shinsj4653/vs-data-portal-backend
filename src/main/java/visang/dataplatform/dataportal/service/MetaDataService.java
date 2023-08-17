@@ -29,8 +29,8 @@ public class MetaDataService {
         return makeMetaInfoTree(res);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String serviceName, String tableKeyword, Integer pageNo, Integer amountPerPage){
-        return metaDataMapper.getTableSearchResult(serviceName, tableKeyword, pageNo, amountPerPage);
+    public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage){
+        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, tableKeyword, pageNo, amountPerPage);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
