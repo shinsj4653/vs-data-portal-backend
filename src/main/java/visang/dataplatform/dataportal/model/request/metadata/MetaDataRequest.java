@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.request.metadata;
+package visang.dataplatform.dataportal.model.request.metadata;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

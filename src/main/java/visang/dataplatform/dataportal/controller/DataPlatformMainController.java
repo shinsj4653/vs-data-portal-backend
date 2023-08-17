@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
-import visang.dataplatform.dataportal.request.dpmain.DatasetSearchRequest;
-import visang.dataplatform.dataportal.response.common.ResponseDto;
-import visang.dataplatform.dataportal.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.request.dpmain.DatasetSearchRequest;
+import visang.dataplatform.dataportal.model.response.common.ResponseDto;
+import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataPlatformMainService;
 
 import java.util.List;

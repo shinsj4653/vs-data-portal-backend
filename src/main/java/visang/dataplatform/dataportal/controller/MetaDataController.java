@@ -5,18 +5,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.request.metadata.MainDatasetRequest;
-import visang.dataplatform.dataportal.request.metadata.MetaDataRequest;
-import visang.dataplatform.dataportal.request.metadata.SubDatasetRequest;
-import visang.dataplatform.dataportal.request.metadata.TableSearchRequest;
-import visang.dataplatform.dataportal.response.common.ResponseDto;
-import visang.dataplatform.dataportal.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.model.entity.metadata.QueryResponseMeta;
-import visang.dataplatform.dataportal.model.dto.metadata.SubCategoryDto;
+import visang.dataplatform.dataportal.model.request.metadata.MainDatasetRequest;
+import visang.dataplatform.dataportal.model.request.metadata.MetaDataRequest;
+import visang.dataplatform.dataportal.model.request.metadata.SubDatasetRequest;
+import visang.dataplatform.dataportal.model.request.metadata.TableSearchRequest;
+import visang.dataplatform.dataportal.model.response.common.ResponseDto;
+import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

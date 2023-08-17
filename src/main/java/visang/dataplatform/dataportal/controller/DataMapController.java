@@ -1,22 +1,18 @@
 package visang.dataplatform.dataportal.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.model.dto.datamap.DataMapDto;
-import visang.dataplatform.dataportal.model.entity.datamap.QueryResponseDataMap;
-import visang.dataplatform.dataportal.response.common.ResponseDto;
-import visang.dataplatform.dataportal.response.common.ResponseUtil;
+import visang.dataplatform.dataportal.model.response.common.ResponseDto;
+import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.DataMapService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor

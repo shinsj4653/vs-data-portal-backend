@@ -1,4 +1,4 @@
-package visang.dataplatform.dataportal.request.dpmain;
+package visang.dataplatform.dataportal.model.request.dpmain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

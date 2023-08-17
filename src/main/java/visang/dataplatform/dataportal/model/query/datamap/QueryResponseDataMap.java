@@ -1,8 +1,6 @@
-package visang.dataplatform.dataportal.model.entity.datamap;
+package visang.dataplatform.dataportal.model.query.datamap;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class QueryResponseDataMap {
