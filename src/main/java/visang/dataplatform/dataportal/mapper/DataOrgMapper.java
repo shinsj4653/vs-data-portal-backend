@@ -12,4 +12,5 @@ public interface DataOrgMapper {
     List<QueryResponseAllOrgData> getAllOrgInfo();
     List<QueryResponseSystemInfo> getSystemInfo(String name);
     List<String> getSystemByTarget(@Param("targetName") String targetName);
+    List<String> getSystemByMainDataset(@Param("mainDataset") String mainDataset);
 }
