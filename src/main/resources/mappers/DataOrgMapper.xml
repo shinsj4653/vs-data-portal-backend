@@ -43,4 +43,14 @@
         where tsti.target_name = trim(#{targetName});
     </select>
 
+    <!-- 데이터 조직도 : 검색한 대분류 데이터셋을 가지고 있는 서비스명 반환 -->
+    <select id="getSystemByMainDataset" resultType="String">
+        select distinct tsi.service_name
+        from tb_company_info tci
+        join tb_service_info tsi on tci.company_id = tsi.company_id
+        join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
+        where tmc.main_category_name like concat('%', trim(#{keyword}), '%');
+    </select>
+
 </mapper>

@@ -54,7 +54,7 @@
     </select>
 
     <!-- 서비스와 대분류 및 중분류 카테고리에 해당하는 메타 테이블 정보를 반환  -->
-    <select id="getMetaDataWithSubCategory" resultType="QueryResponseMeta" fetchSize="1000">
+    <select id="getMetaDataWithSubCategory" resultType="QueryResponseMeta" fetchSize="1000" flushCache="true">
         select tsc.sub_category_name,
                ttmi.table_meta_info_id,
                ttmi.table_id,
@@ -72,8 +72,8 @@
             and tsc.sub_category_name = trim(#{subCategoryName});
     </select>
 
-    <!-- 테이블ID 혹은 테이블명으로 검색 시, 해당하는 메타 테이블 정보 반환 -->
-    <select id="getTableSearchResult" resultType="TableSearchDto" fetchSize="1000">
+    <!-- 검색 시, 선택한 검색 기준과 입력한 검색 키워드에 해당하는 메타 테이블 정보 반환 -->
+    <select id="getTableSearchResult" resultType="TableSearchDto" fetchSize="1000" flushCache="true">
         select ttmi.table_id,
                ttmi.table_name,
                ttmi.table_comment,
