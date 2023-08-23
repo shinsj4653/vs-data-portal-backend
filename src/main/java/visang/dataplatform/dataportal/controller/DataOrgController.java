@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import visang.dataplatform.dataportal.exception.notfound.dataorg.NotFoundServiceSystemInfoException;
 import visang.dataplatform.dataportal.model.request.dataorg.SearchByMainDatasetRequest;
 import visang.dataplatform.dataportal.model.request.dataorg.ServiceTargetRequest;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
@@ -36,7 +37,7 @@ public class DataOrgController {
     public ResponseDto<ServiceSystemInfoDto> getSystemInfo(@RequestParam String name) {
         ServiceSystemInfoDto result = dataOrgService.getSystemInfo(name);
         if (result == null){
-            return ResponseUtil.FAILURE("비상교육 내에 존재하는 서비스 명을 입력하거나, 입력 값을 다시 한 번 확인해주시길 바랍니다.", null);
+            throw new NotFoundServiceSystemInfoException();
         } else {
             return ResponseUtil.SUCCESS("데이터 조직도 원하는 서비스의 시스템 정보 조회에 성공하였습니다.", result);
         }
