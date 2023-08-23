@@ -45,15 +45,15 @@ public class DataOrgController {
 
     @Operation(summary = "데이터 조직도 타켓 기준 서비스 명 조회 API", description = "데이터 기반 조직도에서 서비스 대상을 눌렀을 시, 해당 대상과 관련된 서비스 명 반환해주는 API")
     @PostMapping("service/target")
-    public ResponseDto<List<String>> getSystemByTarget(@RequestBody ServiceTargetRequest req){
-        List<String> result = dataOrgService.getSystemByTarget(req.getTarget_name());
+    public ResponseDto<List<String>> getServiceByTarget(@RequestBody ServiceTargetRequest req){
+        List<String> result = dataOrgService.getServiceByTarget(req.getTarget_name());
         return ResponseUtil.SUCCESS("해당 타켓에 해당하는 서비스 명 정보 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "데이터 조직도 대분류 데이터 셋 기준 서비스 명 조회 API", description = "데이터 기반 조직도에서 대분류 데이터 셋 검색 시, 해당 대상과 관련된 서비스 명 반환해주는 API")
-    @PostMapping("search/maindataset")
-    public ResponseDto<List<String>> getSystemByMainDataset(@RequestBody SearchByMainDatasetRequest req){
-        List<String> result = dataOrgService.getSystemByMainDataset(req.getMainDataset());
+    @Operation(summary = "데이터 조직도 데이터 셋 기준 서비스 명 조회 API", description = "데이터 기반 조직도에서 데이터 셋 검색 시, 해당 대상과 관련된 서비스 명 반환해주는 API")
+    @PostMapping("search/dataset")
+    public ResponseDto<List<String>> getServiceByDataset(@RequestBody SearchByMainDatasetRequest req){
+        List<String> result = dataOrgService.getServiceByDataset(req.getKeyword());
         return ResponseUtil.SUCCESS("검색한 데이터 셋에 해당하는 서비스 명 정보 조회에 성공하였습니다.", result);
     }
 
