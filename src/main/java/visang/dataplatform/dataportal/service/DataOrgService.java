@@ -51,8 +51,8 @@ public class DataOrgService {
 
     }
 
-    public List<String> getSystemByTarget(String targetName) {
-        return dataOrgMapper.getSystemByTarget(targetName);
+    public List<String> getServiceByTarget(String targetName) {
+        return dataOrgMapper.getServiceByTarget(targetName);
     }
     public List<String> getSystemByMainDataset(String mainDataset) {
         return dataOrgMapper.getSystemByMainDataset(mainDataset);
