@@ -54,8 +54,8 @@ public class DataOrgService {
     public List<String> getServiceByTarget(String targetName) {
         return dataOrgMapper.getServiceByTarget(targetName);
     }
-    public List<String> getSystemByMainDataset(String mainDataset) {
-        return dataOrgMapper.getSystemByMainDataset(mainDataset);
+    public List<String> getServiceByDataset(String keyword) {
+        return dataOrgMapper.getServiceByDataset(keyword);
     }
 
     // 리스트 형태의 데이터를 트리 구조로 변환해주는 함수

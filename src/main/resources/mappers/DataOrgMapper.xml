@@ -44,13 +44,16 @@
     </select>
 
     <!-- 데이터 조직도 : 검색한 데이터셋을 지니고 있는 서비스명 조회 -->
-    <select id="getSystemByMainDataset" resultType="String">
+    <select id="getServiceByDataset" resultType="String">
         select distinct tsi.service_name
         from tb_company_info tci
         join tb_service_info tsi on tci.company_id = tsi.company_id
         join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
         join tb_main_category tmc on ttmi.main_category_id = tmc.main_category_id
-        where tmc.main_category_name like concat('%', trim(#{mainDataset}), '%');
+        join tb_sub_category tsc on ttmi."sub_category_id" = tsc."sub_category_id"
+        where 1=1
+            and tmc.main_category_name like concat('%', trim(#{keyword}), '%')
+            or tsc.sub_category_name like concat('%', trim(#{keyword}), '%')
     </select>
 
 </mapper>
