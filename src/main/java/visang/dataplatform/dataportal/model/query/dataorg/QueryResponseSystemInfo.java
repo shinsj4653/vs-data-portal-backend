@@ -6,6 +6,8 @@ import lombok.Getter;
 public class QueryResponseSystemInfo {
     private String company_name;
     private String service_name;
+
+    private String service_description;
     private String service_web_url;
     private String service_os;
     private String service_was;
