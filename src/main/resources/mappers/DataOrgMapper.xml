@@ -20,6 +20,7 @@
     <select id="getSystemInfo" resultType="QueryResponseSystemInfo">
         select tci.company_name,
                tsi.service_name,
+               tsi.service_description,
                tssi.service_web_url,
                tssi.service_os,
                tssi.service_was,

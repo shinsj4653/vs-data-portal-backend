@@ -12,9 +12,6 @@ public class TableSearchDto {
     @Schema(description = "테이블 ID")
     private String table_id;
 
-    @Schema(description = "테이블명")
-    private String table_name;
-
     @Schema(description = "테이블 설명")
     private String table_comment;
 

@@ -25,8 +25,9 @@ public class DataMapControllerTest {
 
     private MockMvc mockMvc;
 
-    @DisplayName("데이터 맵 대분류 정보 반환 API 테스트")
+
     @Test
+    @DisplayName("데이터 맵 대분류 정보 반환 API 테스트")
     public void 데이터맵_대분류_반환() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
 
@@ -37,8 +38,8 @@ public class DataMapControllerTest {
 
     }
 
-    @DisplayName("데이터 맵 중분류 정보 반환 API 테스트")
     @Test
+    @DisplayName("데이터 맵 중분류 정보 반환 API 테스트")
     public void 데이터맵_중분류_반환() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
 
@@ -49,8 +50,8 @@ public class DataMapControllerTest {
 
     }
 
-    @DisplayName("데이터 맵 주요 데이터셋 반환 API 테스트")
     @Test
+    @DisplayName("데이터 맵 주요 데이터셋 반환 API 테스트")
     public void 데이터맵_주요_데이터셋_반환() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
 

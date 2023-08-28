@@ -14,6 +14,8 @@ public class ServiceSystemInfoDto {
     private String company_name;
     @Schema(description = "서비스 명")
     private String service_name;
+    @Schema(description = "서비스 상세 설명")
+    private String service_description;
     @Schema(description = "서비스 웹 사이트 url 주소")
     private String service_web_url;
     @Schema(description = "서비스 OS 정보")

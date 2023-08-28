@@ -11,7 +11,6 @@ public class QueryResponseMeta {
 
     private String table_meta_info_id;
     private String table_id;
-    private String table_name;
     private String table_comment;
     private String small_clsf_name;
 

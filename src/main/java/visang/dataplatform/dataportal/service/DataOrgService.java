@@ -40,6 +40,7 @@ public class DataOrgService {
             ServiceSystemInfoDto result = new ServiceSystemInfoDto(
                     queryResponse.get(0).getCompany_name(),
                     queryResponse.get(0).getService_name(),
+                    queryResponse.get(0).getService_description(),
                     queryResponse.get(0).getService_web_url(),
                     queryResponse.get(0).getService_os(),
                     queryResponse.get(0).getService_was(),

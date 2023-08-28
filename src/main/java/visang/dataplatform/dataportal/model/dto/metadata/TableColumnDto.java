@@ -11,9 +11,6 @@ public class TableColumnDto {
 
     @Schema(description = "컬럼 ID")
     private String table_col_id;
-
-    @Schema(description = "컬럼명 (한글명)")
-    private String table_col_name;
     
     @Schema(description = "데이터 타입")
     private String table_col_datatype;
