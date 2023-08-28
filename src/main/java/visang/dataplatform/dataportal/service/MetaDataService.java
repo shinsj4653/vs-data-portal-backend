@@ -46,7 +46,7 @@ public class MetaDataService {
         List<TableMetaInfoDto> list = new ArrayList<>();
 
         for (QueryResponseMeta q : result) {
-            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_name(), q.getTable_comment(), q.getSmall_clsf_name());
+            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name());
             list.add(metaData);
         }
         return list;

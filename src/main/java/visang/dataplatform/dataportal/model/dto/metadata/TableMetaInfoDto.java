@@ -16,9 +16,6 @@ public class TableMetaInfoDto {
     @Schema(description = "테이블 아이디 명")
     private String table_id;
 
-    @Schema(description = "테이블 명")
-    private String table_name;
-
     @Schema(description = "테이블 코멘트")
     private String table_comment;
 
