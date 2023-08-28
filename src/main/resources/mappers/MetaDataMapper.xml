@@ -84,10 +84,10 @@
             and tsi.service_name = trim(#{serviceName})
           <choose>
               <when test="searchCondition == 'table_id'">
-                  and (ttmi.table_id ilike concat('%', trim(#{tableKeyword}), '%')
+                  and ttmi.table_id ilike concat('%', trim(#{tableKeyword}), '%')
               </when>
               <when test="searchCondition == 'table_comment'">
-                  and (ttmi.table_comment like concat('%', trim(#{tableKeyword}), '%')
+                  and ttmi.table_comment like concat('%', trim(#{tableKeyword}), '%')
               </when>
               <when test="searchCondition == 'small_clsf_name'">
                   and ttmi.small_clsf_name like concat('%', trim(#{tableKeyword}), '%')
