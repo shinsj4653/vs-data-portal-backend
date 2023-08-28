@@ -57,7 +57,7 @@ public class MetaDataService {
         List<TableColumnDto> list = new ArrayList<>();
 
         for (QueryResponseTableColumnInfo q : result) {
-            TableColumnDto colData = new TableColumnDto(q.getTable_col_id(), q.getTable_col_name(), q.getTable_col_datatype(), q.getTable_col_comment());
+            TableColumnDto colData = new TableColumnDto(q.getTable_col_id(), q.getTable_col_datatype(), q.getTable_col_comment());
             list.add(colData);
         }
         return list;

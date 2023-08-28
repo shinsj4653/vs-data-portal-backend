@@ -102,7 +102,6 @@
     <!-- 메타 테이블 선택 시, 해당 테이블의 컬럼 정보 반환 -->
     <select id="getTableColumnInfo" resultType="QueryResponseTableColumnInfo" fetchSize="1000">
         select ttmdi.table_col_id,
-               ttmdi.table_col_name,
                ttmdi.table_col_datatype,
                ttmdi.table_col_comment
         from tb_table_meta_info ttmi
