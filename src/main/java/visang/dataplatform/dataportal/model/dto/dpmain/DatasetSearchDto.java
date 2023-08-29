@@ -10,6 +10,9 @@ public class DatasetSearchDto {
     @Schema(description = "서비스 명")
     private String service_name;
     
-    @Schema(description = "데이터 셋 명")
-    private String dataset_name;
+    @Schema(description = "대분류 주제영역")
+    private String main_category_name;
+
+    @Schema(description = "중분류 주제영역")
+    private String sub_category_name;
 }
