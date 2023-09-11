@@ -2,6 +2,7 @@ package visang.dataplatform.dataportal.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
@@ -14,11 +15,12 @@ import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("metadata")
-@Api(tags = { "MetaDataInfo API" }, description = "메타데이터 정보 API")
+@Api(tags = {"MetaDataInfo API"}, description = "메타데이터 정보 API")
 public class MetaDataController {
 
     private final MetaDataService metaDataService;
@@ -46,16 +48,22 @@ public class MetaDataController {
 
     @Operation(summary = "검색 조건 별 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
     @PostMapping("search/tableinfo")
-    public ResponseDto< List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
+    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
         List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getSearch_condition(), req.getTable_keyword(), req.getPage_no(), req.getAmount_per_page());
         return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.", result);
     }
 
     @Operation(summary = "메타 테이블의 컬럼 정보 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
     @PostMapping("tablecolumninfo")
-    public ResponseDto< List<TableColumnDto>> getTableColumnInfo(@RequestBody TableColumnInfoRequest req) {
+    public ResponseDto<List<TableColumnDto>> getTableColumnInfo(@RequestBody TableColumnInfoRequest req) {
         List<TableColumnDto> result = metaDataService.getTableColumnInfo(req.getTable_id());
         return ResponseUtil.SUCCESS("메타 데이터 테이블 컬럼명을 조회 성공했습니다.", result);
     }
 
+    @Operation(summary = "비상교육 전체 메타 데이터 검색 API", description = "메타 테이블 데이터 검색 기준인 table_id, table_comment, 그리고 small_clsf_name 중 하나라도 검색 키워드를 포함하고 있을 시, 해당 결과 반환해주는 API")
+    @GetMapping("search/totalinfo")
+    public ResponseDto<TableSearchDto> getTotalTableSearchResult(@RequestParam String keyword) {
+        List<TableSearchDto> result = metaDataService.getTotalTableSearchResult(keyword);
+        return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
+    }
 }

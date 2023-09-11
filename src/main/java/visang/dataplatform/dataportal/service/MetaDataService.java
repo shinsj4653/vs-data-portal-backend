@@ -40,6 +40,11 @@ public class MetaDataService {
         return makeTableColumnDto(list);
     }
 
+    public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
+
+        
+    }
+
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {
 
@@ -62,6 +67,5 @@ public class MetaDataService {
         }
         return list;
     }
-
 
 }
