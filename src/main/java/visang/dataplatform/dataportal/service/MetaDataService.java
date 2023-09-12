@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRank;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
@@ -60,11 +61,17 @@ public class MetaDataService {
 
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
+        log.info("method=GET, requestURI=/members, keyword={}", keyword);
 
         return searchResult.stream()
                 .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
                 .collect(Collectors.toList());
     }
+
+//    public List<TableSearchKeywordRank> getTableSearchRank() {
+//
+//
+//    }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {

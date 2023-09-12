@@ -47,6 +47,13 @@ dependencies {
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.9.3'
 	implementation 'org.elasticsearch:elasticsearch:7.9.3'
 
+	// spring boot log to elastic search
+	implementation 'com.internetitem:logback-elasticsearch-appender:1.6'
+	implementation 'dev.akkinoc.spring.boot:logback-access-spring-boot-starter:3.2.1'
+
+	// spring boot log to logstash
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
+
 	implementation "org.springframework.boot:spring-boot-starter-json"
     testImplementation 'junit:junit:4.13.1'
 
