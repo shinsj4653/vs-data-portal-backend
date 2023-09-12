@@ -61,8 +61,8 @@ public class MetaDataController {
     }
 
     @Operation(summary = "비상교육 전체 메타 데이터 검색 API", description = "메타 테이블 데이터 검색 기준인 table_id, table_comment, 그리고 small_clsf_name 중 하나라도 검색 키워드를 포함하고 있을 시, 해당 결과 반환해주는 API")
-    @GetMapping("search/totalinfo")
-    public ResponseDto<TableSearchDto> getTotalTableSearchResult(@RequestParam String keyword) {
+    @GetMapping("search/total")
+    public ResponseDto<List<TableSearchDto>> getTotalTableSearchResult(@RequestParam String keyword) {
         List<TableSearchDto> result = metaDataService.getTotalTableSearchResult(keyword);
         return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
     }

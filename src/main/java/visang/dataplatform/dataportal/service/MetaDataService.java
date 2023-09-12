@@ -2,6 +2,7 @@ package visang.dataplatform.dataportal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
@@ -9,9 +10,13 @@ import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
+import visang.dataplatform.dataportal.utils.ElasticUtil;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -42,7 +47,31 @@ public class MetaDataService {
 
     public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
 
-        
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+
+        // index : tb_table_meta_info-YYYY.MM.DD
+        LocalDate now = LocalDate.now();
+
+        // fields
+        List<String> fields = new ArrayList<>();
+        fields.add("table_id");
+        fields.add("table_comment");
+        fields.add("small_clsf_name");
+
+//        "data": [
+//        {
+//            "table_id": "TB_DGNSS_ASIGN_MEM",
+//                "table_comment": "진단 배정 회원 관리를 위한 테이블",
+//                "small_clsf_name": "회원",
+//                "total_num": 10
+//        },
+
+        String indexName = "tb_table_meta_info-" + now;
+        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
+
+        return searchResult.stream()
+                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), mapData.size()))
+                .collect(Collectors.toList());
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

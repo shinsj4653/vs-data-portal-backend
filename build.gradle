@@ -41,6 +41,12 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
 
+	/* elasticsearch */
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.1'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.9.3'
+	implementation 'org.elasticsearch:elasticsearch:7.9.3'
+
 	implementation "org.springframework.boot:spring-boot-starter-json"
     testImplementation 'junit:junit:4.13.1'
 

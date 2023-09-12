@@ -30,3 +30,4 @@ springfox:
   documentation:
     swagger-ui:
       base-url: /api
+
