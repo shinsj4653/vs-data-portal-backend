@@ -50,7 +50,7 @@ public class ElasticUtil {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, String.valueOf(fields)));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, fields.toArray(new String[fields.size()])));
 
         // set size
         if (size != null) {

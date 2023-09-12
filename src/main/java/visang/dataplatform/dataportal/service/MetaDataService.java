@@ -58,19 +58,11 @@ public class MetaDataService {
         fields.add("table_comment");
         fields.add("small_clsf_name");
 
-//        "data": [
-//        {
-//            "table_id": "TB_DGNSS_ASIGN_MEM",
-//                "table_comment": "진단 배정 회원 관리를 위한 테이블",
-//                "small_clsf_name": "회원",
-//                "total_num": 10
-//        },
-
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
 
         return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), mapData.size()))
+                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
                 .collect(Collectors.toList());
     }
 
