@@ -2,6 +2,10 @@ package visang.dataplatform.dataportal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
@@ -19,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 @Slf4j
 @Service
@@ -62,7 +68,7 @@ public class MetaDataService {
 
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-        log.info("method=GET, requestURI=/metadata/search/total, keyword={}", keyword);
+        log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
         
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         return searchResult.stream()
@@ -86,6 +92,9 @@ public class MetaDataService {
 
         String indexName = "logstash-searchlog-" + now;
         List<Map<String, Object>> searchResult = client.getTableSearchRank(indexName, uri, gte, lte, 10000);
+
+        // 검색어 순위 -> 결과 리스트 순회하면서 keyword 집계
+
 
         return searchResult;
     }

@@ -12,49 +12,21 @@
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>localhost:4560</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+
+<!--            <provider class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">-->
+<!--                <pattern>-->
+<!--                    {-->
+<!--                        "keyword": "%message"-->
+<!--                    }-->
+<!--                </pattern>-->
+<!--            </provider>-->
+
             <timeZone>GMT+9</timeZone>
             <timestampPattern>yyyy-MM-dd'T'HH:mm:ss</timestampPattern>
             <fieldNames>
                 <timestamp>time</timestamp>
             </fieldNames>
         </encoder>
-<!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder">-->
-<!--            <fieldNames>-->
-<!--                <timestamp>timestamp</timestamp>-->
-<!--                <message>message</message>-->
-<!--                <requestUri>requestUri</requestUri>-->
-<!--                <requestUriPath>requestUriPath</requestUriPath>-->
-<!--                <requestUriQuery>requestUriQuery</requestUriQuery>-->
-<!--            </fieldNames>-->
-<!--        </encoder>-->
-
-<!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
-<!--            <providers>-->
-<!--                <loggerName />-->
-<!--            </providers>-->
-<!--        </encoder>-->
-
-
-        <!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
-<!--            <providers>-->
-<!--                <mdc />-->
-<!--                <pattern>-->
-<!--                    &lt;!&ndash; 아래와 같은 키밸류 타입이 들어가면서 나중에 키바나에서 찾기 수월함&ndash;&gt;-->
-<!--                    <pattern>{"serviceID":"myServiceName"}</pattern>-->
-<!--                </pattern>-->
-
-<!--                &lt;!&ndash;<version />&ndash;&gt;-->
-<!--                <context />-->
-<!--                <threadName />-->
-<!--                <logLevel />-->
-<!--                <message />-->
-<!--                <loggerName />-->
-<!--                <logstashMarkers />-->
-<!--                <stackTrace />-->
-<!--                <callerData />-->
-<!--            </providers>-->
-<!--        </encoder>-->
-
     </appender>
 
     <root level="INFO">
@@ -62,3 +34,40 @@
         <appender-ref ref="LOGSTASH" />
     </root>
 </configuration>
+
+        <!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder">-->
+        <!--            <fieldNames>-->
+        <!--                <timestamp>timestamp</timestamp>-->
+        <!--                <message>message</message>-->
+        <!--                <requestUri>requestUri</requestUri>-->
+        <!--                <requestUriPath>requestUriPath</requestUriPath>-->
+        <!--                <requestUriQuery>requestUriQuery</requestUriQuery>-->
+        <!--            </fieldNames>-->
+        <!--        </encoder>-->
+
+        <!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+        <!--            <providers>-->
+        <!--                <loggerName />-->
+        <!--            </providers>-->
+        <!--        </encoder>-->
+
+
+        <!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+        <!--            <providers>-->
+        <!--                <mdc />-->
+        <!--                <pattern>-->
+        <!--                    &lt;!&ndash; 아래와 같은 키밸류 타입이 들어가면서 나중에 키바나에서 찾기 수월함&ndash;&gt;-->
+        <!--                    <pattern>{"serviceID":"myServiceName"}</pattern>-->
+        <!--                </pattern>-->
+
+        <!--                &lt;!&ndash;<version />&ndash;&gt;-->
+        <!--                <context />-->
+        <!--                <threadName />-->
+        <!--                <logLevel />-->
+        <!--                <message />-->
+        <!--                <loggerName />-->
+        <!--                <logstashMarkers />-->
+        <!--                <stackTrace />-->
+        <!--                <callerData />-->
+        <!--            </providers>-->
+        <!--        </encoder>-->
