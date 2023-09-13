@@ -1,7 +1,5 @@
 package visang.dataplatform.dataportal.utils;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.*;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
@@ -14,18 +12,23 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -77,7 +80,7 @@ public class ElasticUtil {
 
     }
 
-    public List<Map<String, Object>> getTableSearchRank(
+    public List<TableSearchKeywordRankDto> getTableSearchRank(
             String index, String uri, String gte, String lte, Integer size
     ) {
         SearchRequest searchRequest = new SearchRequest(index);
@@ -95,9 +98,12 @@ public class ElasticUtil {
 
         searchSourceBuilder.query(boolQuery);
 
-        // time, message 필드만 받아오도록
-        String[] includes = new String[]{"time", "message"};
+        // time, requestURI, keyword 필드만 받아오도록
+        String[] includes = new String[]{"time", "requestURI", "keyword"};
         searchSourceBuilder.fetchSource(includes, null);
+
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK").field("keyword.keyword");
+        searchSourceBuilder.aggregation(aggregationBuilder);
 
         // set size
         if (size != null) {
@@ -107,14 +113,19 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
         searchRequest.scroll(TimeValue.timeValueMinutes(1));
 
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<TableSearchKeywordRankDto> list = new ArrayList<>();
         try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-            SearchHits searchHits = response.getHits();
-            for (SearchHit hit : searchHits) {
-                Map<String, Object> sourceMap = hit.getSourceAsMap();
-                list.add(sourceMap);
+
+            RestStatus status = response.status();
+            if (status == RestStatus.OK) {
+                Aggregations aggregations = response.getAggregations();
+                Terms keywordAggs = aggregations.get("KEYWORD_RANK");
+                for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
+                    list.add(new TableSearchKeywordRankDto(bucket.getKey().toString(), (int) bucket.getDocCount()));
+                }
             }
+
         } catch (IOException e) {}
 
         return list;

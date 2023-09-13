@@ -2,16 +2,11 @@ package visang.dataplatform.dataportal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRank;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
@@ -69,14 +64,14 @@ public class MetaDataService {
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
         log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
-        
+
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         return searchResult.stream()
                 .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
                 .collect(Collectors.toList());
     }
 
-    public List<Map<String, Object>> getTableSearchRank(TableSearchRankRequest request) {
+    public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
         // message 안에 uri 가 포함된 로그만 필터링
         String uri = request.getUri();
@@ -91,12 +86,7 @@ public class MetaDataService {
         LocalDate now = LocalDate.now();
 
         String indexName = "logstash-searchlog-" + now;
-        List<Map<String, Object>> searchResult = client.getTableSearchRank(indexName, uri, gte, lte, 10000);
-
-        // 검색어 순위 -> 결과 리스트 순회하면서 keyword 집계
-
-
-        return searchResult;
+        return client.getTableSearchRank(indexName, uri, gte, lte, 10000);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

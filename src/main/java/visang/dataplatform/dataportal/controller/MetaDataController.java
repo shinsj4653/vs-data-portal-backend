@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
 import visang.dataplatform.dataportal.model.request.metadata.*;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
@@ -70,8 +71,8 @@ public class MetaDataController {
 
     @Operation(summary = "메타 테이블 검색어 실시간 순위 집계 API", description = "메타 테이블 데이터 검색 키워드의 실시간 검색 횟수 순위를 반환해주는 API")
     @PostMapping("search/rank")
-    public ResponseDto<List<Map<String, Object>>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
-        List<Map<String, Object>> result = metaDataService.getTableSearchRank(request);
+    public ResponseDto<List<TableSearchKeywordRankDto>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
+        List<TableSearchKeywordRankDto> result = metaDataService.getTableSearchRank(request);
         return ResponseUtil.SUCCESS("특정 시간대의 검색어 순위 집계에 성공했습니다.", result);
     }
 }
