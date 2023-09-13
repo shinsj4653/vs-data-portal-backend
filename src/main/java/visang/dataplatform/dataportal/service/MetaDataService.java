@@ -61,7 +61,7 @@ public class MetaDataService {
 
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-        log.info("method=GET, requestURI=/members, keyword={}", keyword);
+        log.info("method=GET, requestURI=/metadata/search/total, keyword={}", keyword);
 
         return searchResult.stream()
                 .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
