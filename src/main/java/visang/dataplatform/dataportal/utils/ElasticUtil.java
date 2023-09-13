@@ -81,7 +81,7 @@ public class ElasticUtil {
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String index, String uri, String gte, String lte, Integer size
+            String index, String uri, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -102,12 +102,14 @@ public class ElasticUtil {
         String[] includes = new String[]{"time", "requestURI", "keyword"};
         searchSourceBuilder.fetchSource(includes, null);
 
-        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK").field("keyword.keyword");
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK")
+                                                                        .field("keyword.keyword")
+                                                                        .size(rankResultSize);
         searchSourceBuilder.aggregation(aggregationBuilder);
 
         // set size
-        if (size != null) {
-            searchSourceBuilder.size(size);
+        if (logResultSize != null) {
+            searchSourceBuilder.size(logResultSize);
         }
 
         searchRequest.source(searchSourceBuilder);

@@ -31,15 +31,17 @@ public class MetaDataService {
     public List<String> getMainDataset(String serviceName, Integer limit) {
         return metaDataMapper.getMainDataset(serviceName, limit);
     }
+
     public List<String> getSubDataset(String serviceName, String mainCategoryName, Integer limit) {
         return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }
+
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName) {
         List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
         return makeMetaInfoTree(res);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage){
+    public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage) {
         return metaDataMapper.getTableSearchResult(serviceName, searchCondition, tableKeyword, pageNo, amountPerPage);
     }
 
@@ -49,6 +51,9 @@ public class MetaDataService {
     }
 
     public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
+
+        // 빈 키워드인지 체크
+        validateBlankKeyword(keyword);
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
@@ -86,7 +91,7 @@ public class MetaDataService {
         LocalDate now = LocalDate.now();
 
         String indexName = "logstash-searchlog-" + now;
-        return client.getTableSearchRank(indexName, uri, gte, lte, 10000);
+        return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
@@ -100,6 +105,7 @@ public class MetaDataService {
         }
         return list;
     }
+
     // QueryResponseTableColumnInfo에서 TableColumnDto로 변환하여 리스트 형태로 반환해주는 함수
     private List<TableColumnDto> makeTableColumnDto(List<QueryResponseTableColumnInfo> result) {
 
@@ -110,5 +116,12 @@ public class MetaDataService {
             list.add(colData);
         }
         return list;
+    }
+
+    // 메타 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기
+    private void validateBlankKeyword(String keyword) {
+        if (keyword.equals("") || keyword.equals("undefined") || keyword.equals(null))  {
+
+        }
     }
 }
