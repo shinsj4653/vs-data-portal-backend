@@ -1,5 +1,7 @@
 package visang.dataplatform.dataportal.utils;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.*;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
@@ -8,7 +10,10 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -73,9 +78,47 @@ public class ElasticUtil {
     }
 
     public List<Map<String, Object>> getTableSearchRank(
-            String index, String query, List<String> fields, Integer size
+            String index, String uri, String gte, String lte, Integer size
     ) {
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
+        // match -> message : URI
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        boolQuery.must(QueryBuilders.matchQuery("message", uri));
+
+        // range -> gte to lte
+        RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
+                .gte(gte)
+                .lte(lte);
+        boolQuery.must(rangeQuery);
+
+        searchSourceBuilder.query(boolQuery);
+
+        // time, message 필드만 받아오도록
+        String[] includes = new String[]{"time", "message"};
+        searchSourceBuilder.fetchSource(includes, null);
+
+        // set size
+        if (size != null) {
+            searchSourceBuilder.size(size);
+        }
+
+        searchRequest.types("_search");
+        searchRequest.source(searchSourceBuilder);
+        searchRequest.scroll(TimeValue.timeValueMinutes(1));
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits searchHits = response.getHits();
+            for (SearchHit hit : searchHits) {
+                Map<String, Object> sourceMap = hit.getSourceAsMap();
+                list.add(sourceMap);
+            }
+        } catch (IOException e) {}
+
+        return list;
     }
 
 }

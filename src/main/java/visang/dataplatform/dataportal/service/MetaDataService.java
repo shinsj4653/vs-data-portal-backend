@@ -69,22 +69,17 @@ public class MetaDataService {
                 .collect(Collectors.toList());
     }
 
-    public List<TableSearchKeywordRank> getTableSearchRank(String message, String gte, String lte) {
+    public List<Map<String, Object>> getTableSearchRank(String uri, String gte, String lte) {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
         // index : logstash-searchlog-YYYY-MM-DD
         LocalDate now = LocalDate.now();
 
-        // fields
-        List<String> fields = new ArrayList<>();
-        fields.add("time");
-        fields.add("message");
-
         String indexName = "logstash-searchlog-" + now;
-        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, message, gte, lte, fields, 10000);
-        
+        List<Map<String, Object>> searchResult = client.getTableSearchRank(indexName, uri, gte, lte, 10000);
 
+        return searchResult;
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
@@ -109,5 +104,4 @@ public class MetaDataService {
         }
         return list;
     }
-
 }
