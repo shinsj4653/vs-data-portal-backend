@@ -50,7 +50,7 @@ public class MetaDataService {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
-        // index : tb_table_meta_info-YYYY.MM.DD
+        // index : tb_table_meta_info-YYYY-MM-DD
         LocalDate now = LocalDate.now();
 
         // fields
@@ -62,16 +62,30 @@ public class MetaDataService {
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
         log.info("method=GET, requestURI=/metadata/search/total, keyword={}", keyword);
-
+        
+        // 검색 결과 -> TableSearchDto로 감싸주는 작업
         return searchResult.stream()
                 .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
                 .collect(Collectors.toList());
     }
 
-//    public List<TableSearchKeywordRank> getTableSearchRank() {
-//
-//
-//    }
+    public List<TableSearchKeywordRank> getTableSearchRank(String message, String gte, String lte) {
+
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+
+        // index : logstash-searchlog-YYYY-MM-DD
+        LocalDate now = LocalDate.now();
+
+        // fields
+        List<String> fields = new ArrayList<>();
+        fields.add("time");
+        fields.add("message");
+
+        String indexName = "logstash-searchlog-" + now;
+        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, message, gte, lte, fields, 10000);
+        
+
+    }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {

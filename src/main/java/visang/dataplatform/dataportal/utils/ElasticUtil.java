@@ -72,4 +72,10 @@ public class ElasticUtil {
 
     }
 
+    public List<Map<String, Object>> getTableSearchRank(
+            String index, String query, List<String> fields, Integer size
+    ) {
+
+    }
+
 }

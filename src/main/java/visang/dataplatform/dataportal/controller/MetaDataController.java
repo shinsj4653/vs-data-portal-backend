@@ -67,4 +67,6 @@ public class MetaDataController {
 
         return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
     }
+
+
 }
