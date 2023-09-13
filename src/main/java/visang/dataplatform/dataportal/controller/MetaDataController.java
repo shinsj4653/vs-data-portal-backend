@@ -14,6 +14,7 @@ import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Map;
 
@@ -64,15 +65,13 @@ public class MetaDataController {
     @GetMapping("search/total")
     public ResponseDto<List<TableSearchDto>> getTotalTableSearchResult(@RequestParam(value = "keyword") String keyword) {
         List<TableSearchDto> result = metaDataService.getTotalTableSearchResult(keyword);
-
         return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
     }
 
     @Operation(summary = "메타 테이블 검색어 실시간 순위 집계 API", description = "메타 테이블 데이터 검색 키워드의 실시간 검색 횟수 순위를 반환해주는 API")
-    @GetMapping("search/total")
-    public ResponseDto<List<Map<String, Object>>> getTableSearchRank(@RequestBody ) {
-        List<TableSearchDto> result = metaDataService.getTotalTableSearchResult(keyword);
-
-        return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
+    @PostMapping("search/rank")
+    public ResponseDto<List<Map<String, Object>>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
+        List<Map<String, Object>> result = metaDataService.getTableSearchRank(request);
+        return ResponseUtil.SUCCESS("특정 시간대의 검색어 순위 집계에 성공했습니다.", result);
     }
 }

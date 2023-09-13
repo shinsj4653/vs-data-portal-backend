@@ -104,7 +104,6 @@ public class ElasticUtil {
             searchSourceBuilder.size(size);
         }
 
-        searchRequest.types("_search");
         searchRequest.source(searchSourceBuilder);
         searchRequest.scroll(TimeValue.timeValueMinutes(1));
 

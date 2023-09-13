@@ -11,6 +11,7 @@ import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRank;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
+import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequest;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
 import java.time.LocalDate;
@@ -69,7 +70,14 @@ public class MetaDataService {
                 .collect(Collectors.toList());
     }
 
-    public List<Map<String, Object>> getTableSearchRank(String uri, String gte, String lte) {
+    public List<Map<String, Object>> getTableSearchRank(TableSearchRankRequest request) {
+
+        // message 안에 uri 가 포함된 로그만 필터링
+        String uri = request.getUri();
+
+        // 검색 시간대
+        String gte = request.getGte();
+        String lte = request.getLte();
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 

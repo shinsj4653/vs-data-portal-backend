@@ -30,7 +30,7 @@
 
 <!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
 <!--            <providers>-->
-<!--                <timestamp />-->
+<!--                <loggerName />-->
 <!--            </providers>-->
 <!--        </encoder>-->
 
