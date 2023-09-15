@@ -3,6 +3,7 @@ package visang.dataplatform.dataportal.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
@@ -120,8 +121,7 @@ public class MetaDataService {
 
     // 메타 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기
     private void validateBlankKeyword(String keyword) {
-        if (keyword.equals("") || keyword.equals("undefined") || keyword.equals(null))  {
-
-        }
+        if (keyword.equals("") || keyword.equals("undefined") || keyword.equals(null))
+            throw new BlankSearchKeywordException();
     }
 }
