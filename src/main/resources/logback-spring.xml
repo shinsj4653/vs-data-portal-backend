@@ -8,19 +8,19 @@
     </appender>
 
     <!-- Logstash -->
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:4560</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <timeZone>GMT+9</timeZone>
-            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss</timestampPattern>
-            <fieldNames>
-                <timestamp>time</timestamp>
-            </fieldNames>
-        </encoder>
-    </appender>
+<!--    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--        <destination>43.201.105.114:5000</destination>-->
+<!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder">-->
+<!--            <timeZone>GMT+9</timeZone>-->
+<!--            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss</timestampPattern>-->
+<!--            <fieldNames>-->
+<!--                <timestamp>time</timestamp>-->
+<!--            </fieldNames>-->
+<!--        </encoder>-->
+<!--    </appender>-->
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="LOGSTASH" />
+<!--        <appender-ref ref="LOGSTASH" />-->
     </root>
 </configuration>
