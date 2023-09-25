@@ -109,4 +109,19 @@
         where ttmi.table_id = #{tableId};
     </select>
 
+    <!-- 메타 테이블 선택 시, 해당 테이블의 컬럼 정보 반환 -->
+    <select id="getTableTotalSearchFullScan" resultType="TableSearchDto" fetchSize="1000">
+        select ttmi.table_id,
+               ttmi.table_comment,
+               ttmi.small_clsf_name,
+               count(*) over () as total_num
+        from tb_company_info
+                 join tb_service_info tsi on tb_company_info.company_id = tsi.company_id
+                 join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        where 1 = 1
+            and ttmi.table_id ilike concat('%', trim(#{keyword}), '%')
+            or ttmi.table_comment like concat('%', trim (#{keyword}), '%')
+            or ttmi.small_clsf_name like concat('%', trim (#{keyword}), '%')
+    </select>
+
 </mapper>

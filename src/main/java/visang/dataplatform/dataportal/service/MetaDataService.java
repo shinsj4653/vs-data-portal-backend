@@ -71,12 +71,17 @@ public class MetaDataService {
 
         String indexName = "tb_table_meta_info-" + now;
         List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-        log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
+
+        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
+            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
+        }
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         return searchResult.stream()
                 .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
                 .collect(Collectors.toList());
+
+        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
@@ -123,7 +128,7 @@ public class MetaDataService {
 
     // 메타 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기
     private void validateBlankKeyword(String keyword) {
-        if (keyword.equals("") || keyword.equals("undefined") || keyword.equals(null))
+        if (keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))
             throw new BlankSearchKeywordException();
     }
 }
