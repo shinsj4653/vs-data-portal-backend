@@ -55,33 +55,33 @@ public class MetaDataService {
 
         // ci/cd restart test
 
-        // 빈 키워드인지 체크
-        validateBlankKeyword(keyword);
+        // 빈 키워드인지 체크validateBlankKeyword(keyword);
+        ////
+        ////        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+        ////
+        ////        // index : tb_table_meta_info-YYYY-MM-DD
+        ////        LocalDate now = LocalDate.now();
+        ////
+        ////        // fields
+        ////        List<String> fields = new ArrayList<>();
+        ////        fields.add("table_id");
+        ////        fields.add("table_comment");
+        ////        fields.add("small_clsf_name");
+        ////
+        ////        String indexName = "tb_table_meta_info-" + now;
+        ////        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
+        ////
+        ////        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
+        ////            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
+        ////        }
+        ////
+        ////        // 검색 결과 -> TableSearchDto로 감싸주는 작업
+        ////        return searchResult.stream()
+        ////                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
+        ////                .collect(Collectors.toList());
+//
 
-        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-
-        // index : tb_table_meta_info-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-
-        // fields
-        List<String> fields = new ArrayList<>();
-        fields.add("table_id");
-        fields.add("table_comment");
-        fields.add("small_clsf_name");
-
-        String indexName = "tb_table_meta_info-" + now;
-        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-
-        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
-        }
-
-        // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
-                .collect(Collectors.toList());
-
-        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
+        return metaDataMapper.getTableTotalSearchFullScan(keyword);
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
