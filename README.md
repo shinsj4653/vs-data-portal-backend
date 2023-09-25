@@ -227,3 +227,16 @@ public class DataMapControllerTest {
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
 - 로컬 환경에서는 ELK 플랫폼을 성공적으로 구현하였지만, EC2 인스턴스에서는 `docker-compose 사용으로 인한 서버 용량 초과 문제 발생`으로 서버 환경이 급격하게 느려지는 현상이 발생하여 아직 도입에 성공하지 못하였다.
 - 현재 `t3a.medium` 요금제에서 더 높은 성능의 요금제로 업그레이드 하거나 `AWS의 OpenSearch 서비스`를 활용해보는 방법을 도입해볼 예정이다.
+
+## 참고 사항
+- 회사 프로젝트의 접근 권한은 private이기 때문에, 제 리포지토리에 보이도록 하기 위해 `main 브랜치만 가져온 상태`입니다.
+- 제 레포에서는 Github Actions의 Deploy 실패 문구가 보이지만, `실제 현업에서는 정상작동` 하고 있습니다.
+
+![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/787fcdc3-686f-4363-9066-adcf37970793)
+*현업에서 사용되었던, 혹은 사용중인 브랜치명 목록들*  
+
+
+
+![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/811ab1df-f5c6-4c97-9fd3-b5f73935c673)
+*정상 작동한 Github Actions의 Workflows 이력*
+
