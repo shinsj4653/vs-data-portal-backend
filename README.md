@@ -179,7 +179,7 @@ public class ControllerAdvice {
     }
 }
 ```
-- `BadRequset` 및 `NotFound` 카테고리에 속하는 예외를 생성한 후, 모든 예외는 `DataportalException` 예외 클래스를 상속받도록 하여 관리함
+- `BadRequest` 및 `NotFound` 카테고리에 속하는 예외를 생성한 후, 모든 예외는 `DataportalException` 예외 클래스를 상속받도록 하여 관리함
 
 
 ### 5. MockMvc 기반 Controller 테스팅
