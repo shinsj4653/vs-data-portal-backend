@@ -39,15 +39,16 @@
 
 ## 나의 주요 구현 기능
 
-### 1. 메타 데이터 검색 
-![es_before_gif](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/ae236471-1955-406e-acb8-abd805fc2d99)  
+### 1. 메타 데이터 검색  
+
+https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86e0f1cd-6621-409f-b176-d5bd5f7b2a82  
+
 
 *ElasticSearch 도입 전*  
 
 
 
-
-![es_after_gif](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/44dacf5a-a735-4dcf-88c0-0f5015356b02)  
+https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/a82fe416-162c-4125-a922-1fb7e569e124
 
 *ElasticSearch 도입 후*
 
@@ -55,7 +56,11 @@
 - `문제은행` 키워드로 검색 시, 도입 전에는 해당 문자열이 그대로 포함된 결과값만 나왔지만 도입 이후에는 `문제`, `은행` 과 같이 더 세밀한 단위까지 나뉘어진 문자열 검색을 수행한 결과를 반환해줌
 
 ### 2. 실시간 검색어 순위
-![search_rank_gif](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/e45d9ce9-3c92-45d5-9b6a-67742ba19be9)  
+
+
+https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/1cd75b06-36e7-46c3-be88-bf176d95f53c
+
+
 *Kibana Console에서 실행한 실시간 검색어 순위 집계 결과*  
 
 - 검색 API 사용시, 다음 형식으로 로그를 전송하였고 이를 `logback-spring.xml` 파일을 이용하여 Logstash를 거친 후 ElasticSearch로 로그가 전송되도록 함
@@ -65,7 +70,11 @@ log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("ke
 - requestURI, 검색 키워드, 그리고 검색을 시도한 시간대 범위(gte, lte)를 지정한 후, `QueryDSL` 요청을 통해 조건에 맞는 로그를 필터링 함
 - 이후, ElasticSearch의 `Bucket Aggregation` 기능을 통해 같은 검색 키워드 별로 `집계 수`를 계산하여 반환해주는 로직을 구현함
 
-![search_api_gif](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/362c3424-bd4d-49ea-b631-483f79bae8e3)  
+
+https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/109960da-a5fe-45a7-ac0c-4ebe86bf7b2b
+
+
+
 *JAVA 프로젝트 기반 실시간 검색어 순위 결과 조회 API 구현*  
 
 - Java 환경에서 ElasticSearch의 인스턴스 생성 및 활용, 그리고 QueryDSL 요청과 응답을 받기 위해 `RestHighLevelClient` 와 `검색 및 QueryDSL API` 사용하였고, JSON Object로 가공된 형태로 반환해주는 API를 완성시킴
