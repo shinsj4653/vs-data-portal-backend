@@ -13,9 +13,9 @@
 - [나의 주요 구현 기능](#나의-주요-구현-기능)
   * [1. 메타 데이터 검색](#1-메타-데이터-검색)
   * [2. 실시간 검색어 순위](#2-실시간-검색어-순위)
-  * [3. Filter 기반 XSS 공격 방지](#3-filter-기반-xss-공격-방지)
+  * [3. MockMvc 기반 Controller 테스팅](#5-mockmvc-기반-controller-테스팅)
   * [4. ControllerAdvice를 이용한 예외처리](#4-controlleradvice를-이용한-예외처리)
-  * [5. MockMvc 기반 Controller 테스팅](#5-mockmvc-기반-controller-테스팅)
+  * [5. Filter 기반 XSS 공격 방지](#3-filter-기반-xss-공격-방지)
 - [향후 개선 사항](#향후-개선-사항)
   * [1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결](#1-ec2-인스턴스에-elk-플랫폼-성공적으로-연결)
 - [참고 사항](#참고-사항)
@@ -70,7 +70,107 @@ log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("ke
 
 - Java 환경에서 ElasticSearch의 인스턴스 생성 및 활용, 그리고 QueryDSL 요청과 응답을 받기 위해 `RestHighLevelClient` 와 `검색 및 QueryDSL API` 사용하였고, JSON Object로 가공된 형태로 반환해주는 API를 완성시킴
 
-### 3. Filter 기반 XSS 공격 방지
+### 3. MockMvc 기반 Controller 테스팅
+- `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
+- 컨트롤러 테스팅을 위한 Http 호출을 담당하는 `MockMvc` 객체를 중심으로 테스트 코드 작성
+
+```java
+@ExtendWith(MockitoExtension.class)
+public class DataMapControllerTest {
+
+    @Mock
+    private DataMapService dataMapService;
+
+    @InjectMocks
+    private DataMapController dataMapController;
+
+    private MockMvc mockMvc;
+
+
+    @Test
+    @DisplayName("데이터 맵 대분류 정보 반환 API 테스트")
+    public void 데이터맵_대분류_반환() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
+
+        mockMvc.perform(get("/datamap/category/main"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다."));
+
+    }
+
+    @Test
+    @DisplayName("데이터 맵 중분류 정보 반환 API 테스트")
+    public void 데이터맵_중분류_반환() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
+
+        mockMvc.perform(get("/datamap/category/sub"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다."));
+
+    }
+
+    @Test
+    @DisplayName("데이터 맵 주요 데이터셋 반환 API 테스트")
+    public void 데이터맵_주요_데이터셋_반환() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
+
+        mockMvc.perform(get("/datamap/dataset/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("데이터 맵 모든 주요 데이터 셋 조회에 성공하였습니다."));
+
+    }
+}
+```
+
+### 4. ControllerAdvice를 이용한 예외처리
+- try, catch 문을 이용한 예외처리 대신, `@Controller` 어노테이션이 적용된 모든 곳에서 발생되는 예외에 대해 처리해주는 기능 구현
+- `@ExceptionHandler` 어노테이션을 메서드에 선언하고 특정 예외 클래스 지정을 통해 해당 예외가 발생하였을 때 메서드에 정의한 로직을 처리할 수 있도록 해줌
+```java
+@Slf4j
+@RestControllerAdvice
+public class ControllerAdvice {
+    private static final int FIELD_ERROR_CODE_INDEX = 0;
+    private static final int FIELD_ERROR_MESSAGE_INDEX = 1;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleInputFieldException(MethodArgumentNotValidException e) {
+        FieldError mainError = e.getFieldErrors().get(0);
+        String[] errorInfo = Objects.requireNonNull(mainError.getDefaultMessage()).split(":");
+
+        int code = Integer.parseInt(errorInfo[FIELD_ERROR_CODE_INDEX]);
+        String message = errorInfo[FIELD_ERROR_MESSAGE_INDEX];
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(code, message));
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ErrorResponse> sqlExceptionHandle(DataportalException e) {
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(DataportalException.class)
+    public ResponseEntity<ErrorResponse> handleDataportalException(DataportalException e) {
+        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> unhandledException(Exception e, HttpServletRequest request) {
+        log.error("UnhandledException: {} {} errMessage={}\n",
+                request.getMethod(),
+                request.getRequestURI(),
+                e.getMessage()
+        );
+        return ResponseEntity.internalServerError()
+                .body(new ErrorResponse(9999, "일시적으로 접속이 원활하지 않습니다. 데이터 플랫폼 Cell 팀으로 문의 부탁드립니다."));
+    }
+}
+```
+- `BadRequest` 및 `NotFound` 카테고리에 속하는 예외를 생성한 후, 모든 예외는 `DataportalException` 예외 클래스를 상속받도록 하여 관리함
+
+### 5. Filter 기반 XSS 공격 방지
 - 기존에 사용한 `lucy-xss-servlet-filter`는 form data 전송 방식에는 적용되지만, `@RequestBody` 로 전달되는 JSON 요청은 처리해주지 않으므로, `MessageConverter`를 사용하는 방법을 택함.
 ```java
 // HTMLCharacterEscapes.java
@@ -135,107 +235,6 @@ public class XssConfig implements WebMvcConfigurer {
 }
 ```
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
-
-### 4. ControllerAdvice를 이용한 예외처리
-- try, catch 문을 이용한 예외처리 대신, `@Controller` 어노테이션이 적용된 모든 곳에서 발생되는 예외에 대해 처리해주는 기능 구현
-- `@ExceptionHandler` 어노테이션을 메서드에 선언하고 특정 예외 클래스 지정을 통해 해당 예외가 발생하였을 때 메서드에 정의한 로직을 처리할 수 있도록 해줌
-```java
-@Slf4j
-@RestControllerAdvice
-public class ControllerAdvice {
-    private static final int FIELD_ERROR_CODE_INDEX = 0;
-    private static final int FIELD_ERROR_MESSAGE_INDEX = 1;
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleInputFieldException(MethodArgumentNotValidException e) {
-        FieldError mainError = e.getFieldErrors().get(0);
-        String[] errorInfo = Objects.requireNonNull(mainError.getDefaultMessage()).split(":");
-
-        int code = Integer.parseInt(errorInfo[FIELD_ERROR_CODE_INDEX]);
-        String message = errorInfo[FIELD_ERROR_MESSAGE_INDEX];
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(code, message));
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ErrorResponse> sqlExceptionHandle(DataportalException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(DataportalException.class)
-    public ResponseEntity<ErrorResponse> handleDataportalException(DataportalException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> unhandledException(Exception e, HttpServletRequest request) {
-        log.error("UnhandledException: {} {} errMessage={}\n",
-                request.getMethod(),
-                request.getRequestURI(),
-                e.getMessage()
-        );
-        return ResponseEntity.internalServerError()
-                .body(new ErrorResponse(9999, "일시적으로 접속이 원활하지 않습니다. 데이터 플랫폼 Cell 팀으로 문의 부탁드립니다."));
-    }
-}
-```
-- `BadRequest` 및 `NotFound` 카테고리에 속하는 예외를 생성한 후, 모든 예외는 `DataportalException` 예외 클래스를 상속받도록 하여 관리함
-
-
-### 5. MockMvc 기반 Controller 테스팅
-- `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
-- 컨트롤러 테스팅을 위한 Http 호출을 담당하는 `MockMvc` 객체를 중심으로 테스트 코드 작성
-
-```java
-@ExtendWith(MockitoExtension.class)
-public class DataMapControllerTest {
-
-    @Mock
-    private DataMapService dataMapService;
-
-    @InjectMocks
-    private DataMapController dataMapController;
-
-    private MockMvc mockMvc;
-
-
-    @Test
-    @DisplayName("데이터 맵 대분류 정보 반환 API 테스트")
-    public void 데이터맵_대분류_반환() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
-
-        mockMvc.perform(get("/datamap/category/main"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.message").value("데이터 맵 대분류 단위까지의 데이터 조회에 성공하였습니다."));
-
-    }
-
-    @Test
-    @DisplayName("데이터 맵 중분류 정보 반환 API 테스트")
-    public void 데이터맵_중분류_반환() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
-
-        mockMvc.perform(get("/datamap/category/sub"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.message").value("데이터 맵 중분류 단위까지의 데이터 조회에 성공하였습니다."));
-
-    }
-
-    @Test
-    @DisplayName("데이터 맵 주요 데이터셋 반환 API 테스트")
-    public void 데이터맵_주요_데이터셋_반환() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(dataMapController).build();
-
-        mockMvc.perform(get("/datamap/dataset/all"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.message").value("데이터 맵 모든 주요 데이터 셋 조회에 성공하였습니다."));
-
-    }
-}
-```
 
 ## 향후 개선 사항
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
