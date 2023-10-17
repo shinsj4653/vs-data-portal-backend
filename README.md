@@ -4,7 +4,7 @@
 
 ![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/a018f734-9114-4330-a257-0090f28e9a91)
 
-접속 URL : http://43.201.105.114:3000/
+접속 URL : [http://15.164.6.183:3000](http://15.164.6.183:3000)
 
 ## 목차
 - [포털의 기능](#포털의-기능)
