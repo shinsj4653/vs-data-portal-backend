@@ -11,8 +11,8 @@
 - [사용 기술 스택](#사용-기술-스택)
 - [ERD](#erd)
 - [나의 주요 구현 기능](#나의-주요-구현-기능)
-  * [1. 메타 데이터 검색](#1-메타-데이터-검색)
-  * [2. 실시간 검색어 순위](#2-실시간-검색어-순위)
+  * [1. 메타 데이터 검색 정확도 향상](#1-메타-데이터-검색-정확도-향상)
+  * [2. 실시간 검색어 순위 조회](#2-실시간-검색어-순위-조회)
   * [3. MockMvc 기반 Controller 테스팅](#5-mockmvc-기반-controller-테스팅)
   * [4. ControllerAdvice를 이용한 예외처리](#4-controlleradvice를-이용한-예외처리)
   * [5. Filter 기반 XSS 공격 방지](#3-filter-기반-xss-공격-방지)
@@ -30,8 +30,9 @@
 - `Database` : PostgreSQL 42.5.0, AWS RDS
 - `Deploy` : Github Actions, AWS S3 & CodeDeploy
 - `API Docs` : Swagger 3.0.0
-- `Logging` : Logback, Logstash
-- `ElasticSearch` : RestHighLevelClient, Query DSL API
+- `Logging` : Logback
+- `ELK Stack` : ElasticSearch, Logstash, Kibana, Bucket Aggregation
+- `ELK Stack With Java` : RestHighLevelClient, QueryDSL API
 - `Controller Testing` : MockMVC
 
 ## ERD
@@ -39,7 +40,7 @@
 
 ## 나의 주요 구현 기능
 
-### 1. 메타 데이터 검색  
+### 1. 메타 데이터 검색 정확도 향상
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86e0f1cd-6621-409f-b176-d5bd5f7b2a82  
 
@@ -55,29 +56,93 @@ https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/a82fe416-16
 - 메타 데이터 검색 기준 중, `한글로 구성된 테이블 설명 및 하위주제`에 `역색인화`를 도입한 빠른 검색 기능 구현을 위해, ElasticSearch의 한글 형태소 분석기인 `Nori Tokenizer` 를 설치 후, 메타 데이터 컬럼에 적용
 - `문제은행` 키워드로 검색 시, 도입 전에는 해당 문자열이 그대로 포함된 결과값만 나왔지만 도입 이후에는 `문제`, `은행` 과 같이 더 세밀한 단위까지 나뉘어진 문자열 검색을 수행한 결과를 반환해줌
 
-### 2. 실시간 검색어 순위
+### 2. 실시간 검색어 순위 조회
 
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/1cd75b06-36e7-46c3-be88-bf176d95f53c
 
-
 *Kibana Console에서 실행한 실시간 검색어 순위 집계 결과*  
 
-- 검색 API 사용시, 다음 형식으로 로그를 전송하였고 이를 `logback-spring.xml` 파일을 이용하여 Logstash를 거친 후 ElasticSearch로 로그가 전송되도록 함
 ```java
 log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
 ```
-- requestURI, 검색 키워드, 그리고 검색을 시도한 시간대 범위(gte, lte)를 지정한 후, `QueryDSL` 요청을 통해 조건에 맞는 로그를 필터링 함
+
+- 검색 기능 사용시, 위와 같은 형식으로 `검색 기록 로그`를 전송하였고 이를 `logback-spring.xml` 파일을 이용하여 `Logstash를 거친 후 ElasticSearch로` 로그가 전송되도록 함
+
+ 
+- 검색 기능에 사용할 `DB 테이블 저장용 설정 파일`과 `검색 로그 전송 관리용 설정 파일`을 따로 분리한 후, 동시에 실행시키기 위해 Logstash의 `pipelines.yml` 파일을 활용
+
+```java
+<!-- Logstash -->
+<appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    <destination>localhost:4560</destination>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        <timeZone>GMT+9</timeZone>
+        <timestampPattern>yyyy-MM-dd'T'HH:mm:ss</timestampPattern>
+        <fieldNames>
+            <timestamp>time</timestamp>
+        </fieldNames>
+    </encoder>
+</appender>
+```
+
+*Logstash Logback Encoder의 timeZone 및 timestampPattern 옵션 활용*  
+
+- 한국 시간대 기준 포맷을 완성하기 위해, `Logstash Logback Encoder` 기능 활용
+- 이를 통해, 명확한 시간 형식이 담긴 로그를 일라스틱 서치로 전송할 수 있었음
+
+```java
+SearchRequest searchRequest = new SearchRequest(index);
+SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+// match -> message : URI
+BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+boolQuery.must(QueryBuilders.matchQuery("message", uri));
+
+// range -> gte to lte
+RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
+                                            .gte(gte)
+                                            .lte(lte);
+boolQuery.must(rangeQuery);
+
+searchSourceBuilder.query(boolQuery);
+
+// time, requestURI, keyword 필드만 받아오도록
+String[] includes = new String[]{"time", "requestURI", "keyword"};
+searchSourceBuilder.fetchSource(includes, null);
+
+TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK")
+                                                                .field("keyword.keyword")
+                                                                .size(rankResultSize);
+searchSourceBuilder.aggregation(aggregationBuilder);
+```
+- 로그 필터링 시, requestURI 값과 검색 키워드, 그리고 검색을 시도한 시간대 범위(gte, lte)를 지정한 후, `QueryDSL` 요청을 통해 조건에 맞는 로그를 필터링 함
 - 이후, ElasticSearch의 `Bucket Aggregation` 기능을 통해 같은 검색 키워드 별로 `집계 수`를 계산하여 반환해주는 로직을 구현함
+- 자바 환경 내에서 실시간 순위 요청 API의 결괏값을 받기 위해 `SearchSourceBuilder` 및 `RestHighLevelClient` 를 활용함
 
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/109960da-a5fe-45a7-ac0c-4ebe86bf7b2b
+```java
+List<TableSearchKeywordRankDto> list = new ArrayList<>();
+try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
+    RestStatus status = response.status();
+    if (status == RestStatus.OK) {
+                Aggregations aggregations = response.getAggregations();
+                Terms keywordAggs = aggregations.get("KEYWORD_RANK");
+                for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
+                    list.add(new TableSearchKeywordRankDto(bucket.getKey().toString(), (int) bucket.getDocCount()));
+                }
+          }
 
+    } catch (IOException e) {}
 
+    return list;
+```
 *JAVA 프로젝트 기반 실시간 검색어 순위 결과 조회 API 구현*  
 
-- Java 환경에서 ElasticSearch의 인스턴스 생성 및 활용, 그리고 QueryDSL 요청과 응답을 받기 위해 `RestHighLevelClient` 와 `검색 및 QueryDSL API` 사용하였고, JSON Object로 가공된 형태로 반환해주는 API를 완성시킴
+- 검색 키워드 별로 집계된 실시간 순위 결과를 최종적으로 `JSON Object로 가공된 형태로 반환해주는 API`를 완성시킴
 
 ### 3. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
