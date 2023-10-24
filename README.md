@@ -13,9 +13,10 @@
 - [나의 주요 구현 기능](#나의-주요-구현-기능)
   * [1. 메타 데이터 검색 정확도 향상](#1-메타-데이터-검색-정확도-향상)
   * [2. 실시간 검색어 순위 조회](#2-실시간-검색어-순위-조회)
-  * [3. MockMvc 기반 Controller 테스팅](#5-mockmvc-기반-controller-테스팅)
+  * [3. MockMvc 기반 Controller 테스팅](#3-mockmvc-기반-controller-테스팅)
   * [4. ControllerAdvice를 이용한 예외처리](#4-controlleradvice를-이용한-예외처리)
-  * [5. Filter 기반 XSS 공격 방지](#3-filter-기반-xss-공격-방지)
+  * [5. Filter 기반 XSS 공격 방지](#5-filter-기반-xss-공격-방지)
+  * [6. React Query를 통한 API 데이터 관리](#6-React-Query를-통한-API-데이터-관리)
 - [향후 개선 사항](#향후-개선-사항)
   * [1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결](#1-ec2-인스턴스에-elk-플랫폼-성공적으로-연결)
 - [참고 사항](#참고-사항)
@@ -309,6 +310,13 @@ public class XssConfig implements WebMvcConfigurer {
 }
 ```
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
+
+### 6. React Query를 통한 API 데이터 관리
+
+*staleTime 옵션을 이용하여 서버에서 데이터를 다시 가져오는 시간 조정*  
+
+- 서버 API 의 `반복적인 비동기 데이터 호출을 방지`하고, `서버에 대한 부하를 줄이기` 위해 React Query 사용
+- 포털 서비스 내 `데이터의 최신 정보를 유지` 및 `네트워크 요청 최적화`
 
 ## 향후 개선 사항
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
