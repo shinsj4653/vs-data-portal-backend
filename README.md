@@ -312,7 +312,28 @@ public class XssConfig implements WebMvcConfigurer {
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
 
 ### 6. React Query를 통한 API 데이터 관리
-![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/610f6661-92c4-4b36-a5cb-4f3902c2aa3e)  
+```javascript
+import { useQuery } from 'react-query';
+import { fetchMetaDataMainDataset, fetchMetaDataSubDataset, fetchMetaDataTableInfo, fetchMetaDataTableSearch, fetchMetaTableColumnInfo, fetchMetaDataTotalSearch } from '../api/metaDataApi';
+
+export const useMetadataMainDataSet = (serviceName) => {
+	return useQuery(['metaDataMainDataSet', serviceName], () => fetchMetaDataMainDataset(serviceName), {
+		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
+	}); 
+};
+
+export const useMetadataSubDataSet = (serviceName, mainCategoryName) => {
+	return useQuery(['metaDataSubDataSet', mainCategoryName], () => fetchMetaDataSubDataset(serviceName, mainCategoryName), {
+		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
+	});
+};
+
+export const useMetadataTableInfo = (serviceName, mainCategoryName, subCategoryName) => {
+	return useQuery(['metaDataTableInfo', subCategoryName], () => fetchMetaDataTableInfo(serviceName, mainCategoryName, subCategoryName), {
+		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
+	});
+};
+```
 
 
 *staleTime 옵션을 이용하여 서버에서 데이터를 다시 가져오는 시간 조정*  
