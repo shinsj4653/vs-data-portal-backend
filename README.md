@@ -33,7 +33,7 @@
 - `API Docs` : Swagger 3.0.0
 - `Logging` : Logback
 - `ELK Stack` : ElasticSearch, Logstash, Kibana, Bucket Aggregation
-- `ELK Stack With Java` : RestHighLevelClient, QueryDSL API
+- `Java REST Client` : RestHighLevelClient, Search API
 - `Controller Testing` : MockMVC
 
 ## ERD
@@ -119,7 +119,7 @@ searchSourceBuilder.aggregation(aggregationBuilder);
 ```
 - 로그 필터링 시, requestURI 값과 검색 키워드, 그리고 검색을 시도한 시간대 범위(gte, lte)를 지정한 후, `QueryDSL` 요청을 통해 조건에 맞는 로그를 필터링 함
 - 이후, ElasticSearch의 `Bucket Aggregation` 기능을 통해 같은 검색 키워드 별로 `집계 수`를 계산하여 반환해주는 로직을 구현함
-- 자바 환경 내에서 실시간 순위 요청 API의 결괏값을 받기 위해 `SearchSourceBuilder` 및 `RestHighLevelClient` 를 활용함
+- 집계된 결괏값을 자바 환경내에서 받기 위해 `Java High Level REST Client` 를 활용함
 
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/109960da-a5fe-45a7-ac0c-4ebe86bf7b2b
@@ -312,6 +312,8 @@ public class XssConfig implements WebMvcConfigurer {
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
 
 ### 6. React Query를 통한 API 데이터 관리
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/610f6661-92c4-4b36-a5cb-4f3902c2aa3e)  
+
 
 *staleTime 옵션을 이용하여 서버에서 데이터를 다시 가져오는 시간 조정*  
 
