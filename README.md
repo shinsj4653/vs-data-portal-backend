@@ -4,7 +4,9 @@
 
 ![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/a018f734-9114-4330-a257-0090f28e9a91)
 
-접속 URL : [http://15.164.6.183:3000](http://15.164.6.183:3000)
+접속 URL : [http://15.164.6.183:3000](http://15.164.6.183:3000)  
+
+포트폴리오 첨부 : [Portfolio - Google Drive Link](https://drive.google.com/file/d/1Vw2GYcxdarz9q8yJThoAexuRRRFI3waJ/view?usp=drive_link)
 
 ## 목차
 - [포털의 기능](#포털의-기능)
