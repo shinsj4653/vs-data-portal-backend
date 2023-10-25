@@ -345,7 +345,7 @@ export const useMetadataTableInfo = (serviceName, mainCategoryName, subCategoryN
 
 ## 향후 개선 사항
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
-- EC2 인스턴스에서 `docker` 를 활용하여 ELK 연동에 성공하였지만, 인스턴스의 서버 용량 초과 문제 발생으로 EC2 실행 속도가 급격하게 느려지는 현상이 발생하여 현재는 로컬 환경으로 세팅해둔 상태이다.
+- EC2 인스턴스에서 `docker-compose` 를 활용하여 ELK 플랫폼 연동에 성공하였지만, 인스턴스의 서버 용량 초과 문제 발생으로 서버 실행 속도가 급격하게 느려지는 현상이 발생하여 현재는 로컬 환경으로 세팅해둔 상태이다.
 - 현재의 `t3a.medium` 요금제에서 더 높은 성능의 요금제로 업그레이드 하거나 `AWS의 OpenSearch 서비스`를 활용해보는 방법을 도입해볼 예정이다.
 
 ## 참고 사항
