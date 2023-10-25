@@ -35,7 +35,7 @@
 - `API Docs` : Swagger 3.0.0
 - `Logging` : Logback
 - `ELK Stack` : ElasticSearch, Logstash, Kibana, Bucket Aggregation
-- `Java REST Client` : RestHighLevelClient, Search API
+- `ElasticSearch with Java` : Java High Level REST Client, Search API
 - `Controller Testing` : MockMVC
 
 ## ERD
