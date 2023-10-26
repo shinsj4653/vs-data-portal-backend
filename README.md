@@ -72,6 +72,26 @@ log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("ke
 
 - 검색 기능 사용시, 위와 같은 형식으로 `검색 기록 로그`를 전송하였고 이를 `logback-spring.xml` 파일을 이용하여 `Logstash를 거친 후 ElasticSearch로` 로그가 전송되도록 함
 
+```yaml
+# List of pipelines to be loaded by Logstash
+#
+# This document must be a list of dictionaries/hashes, where the keys/values are pipeline settings.
+# Default values for omitted settings are read from the `logstash.yml` file.
+# When declaring multiple pipelines, each MUST have its own `pipeline.id`.
+#
+# Example of two pipelines:
+#
+- pipeline.id: id_database
+  pipeline.workers: 1
+  path.config: "../bin/logstash-database.conf"
+
+- pipeline.id: id_searchlog
+  pipeline.workers: 1
+  path.config: "../bin/logstash-searchlog.conf"
+```
+
+*logstash의 multi pipeline 기능 활용*  
+
  
 - 검색 기능에 사용할 `DB 테이블 저장용 설정 파일`과 `검색 로그 전송 관리용 설정 파일`을 따로 분리한 후, 동시에 실행시키기 위해 Logstash의 `pipelines.yml` 파일을 활용
 
