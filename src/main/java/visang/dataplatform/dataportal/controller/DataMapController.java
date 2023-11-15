@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("datamap")
+@RequestMapping("apis/datamap")
 @Api(tags = { "DataMap API" }, description = "데이터 맵 API")
 public class DataMapController {
 

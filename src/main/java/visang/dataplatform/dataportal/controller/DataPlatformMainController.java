@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("dpmain")
+@RequestMapping("apis/dpmain")
 @Api(tags = { "DataPlatform Main API" }, description = "데이터 포털 메인 API")
 public class DataPlatformMainController {
 

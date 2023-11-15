@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("metadata")
+@RequestMapping("apis/metadata")
 @Api(tags = {"MetaDataInfo API"}, description = "메타데이터 정보 API")
 public class MetaDataController {
 
