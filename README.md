@@ -198,6 +198,7 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
 ### 4. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
 - 컨트롤러 테스팅을 위한 Http 호출을 담당하는 `MockMvc` 객체를 중심으로 테스트 코드 작성
+- `MockMVCBuilders`의 사용 용도를 스프링 컨트롤러와의 연동을 중심으로 이해
 
 ```java
 @ExtendWith(MockitoExtension.class)
