@@ -175,7 +175,25 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
 - 검색 키워드 별로 집계된 실시간 순위 결과를 최종적으로 `JSON Object로 가공된 형태로 반환해주는 API`를 완성시킴
 
 ### 3. MyBatis의 Mapper 성능 개선
-
+```XML
+<!-- 메타 테이블 선택 시, 해당 테이블의 컬럼 정보 반환 -->
+    <select id="getTableTotalSearchFullScan" resultType="TableSearchDto" fetchSize="1000">
+        select ttmi.table_id,
+               ttmi.table_comment,
+               ttmi.small_clsf_name,
+               count(*) over () as total_num
+        from tb_company_info
+                 join tb_service_info tsi on tb_company_info.company_id = tsi.company_id
+                 join tb_table_meta_info ttmi on tsi.service_id = ttmi.service_id
+        where 1 = 1
+            and ttmi.table_id ilike concat('%', trim(#{keyword}), '%')
+            or ttmi.table_comment like concat('%', trim (#{keyword}), '%')
+            or ttmi.small_clsf_name like concat('%', trim (#{keyword}), '%')
+    </select>
+```
+- 해당 코드는 예전 LIKE문을 통한 Full Text Search를 하였을 때의 SQL문의 Mapper
+- visualVM으로 서버 속도 측정 결과, MyBatis의 `DefaultResultSetHandler.shouldProcessMoreRows()`가 대부분의 시간 차지
+- 즉, 다음 row를 찾는 작업을 개선할 필요를 느꼈고, 이를 위해 Mapper의 `fetchSize` 옵션을 10에서 1000으로 조정
 
 ### 4. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
