@@ -12,13 +12,14 @@
 - [포털의 기능](#포털의-기능)
 - [사용 기술 스택](#사용-기술-스택)
 - [ERD](#erd)
+- [VPC Architecture](#VPC-Architecture)
 - [나의 주요 구현 기능](#나의-주요-구현-기능)
   * [1. 메타 데이터 검색 정확도 향상](#1-메타-데이터-검색-정확도-향상)
   * [2. 실시간 검색어 순위 조회](#2-실시간-검색어-순위-조회)
   * [3. MockMvc 기반 Controller 테스팅](#3-mockmvc-기반-controller-테스팅)
-  * [4. ControllerAdvice를 이용한 예외처리](#4-controlleradvice를-이용한-예외처리)
-  * [5. Filter 기반 XSS 공격 방지](#5-filter-기반-xss-공격-방지)
-  * [6. React Query를 통한 API 데이터 관리](#6-React-Query를-통한-API-데이터-관리)
+  * [4. Filter 기반 XSS 공격 방지](#4-filter-기반-xss-공격-방지)
+  * [5. AWS VPC를 통한 망분리](#5-AWS-VPC를-통한-망분리)
+ 
 - [향후 개선 사항](#향후-개선-사항)
   * [1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결](#1-ec2-인스턴스에-elk-플랫폼-성공적으로-연결)
 - [참고 사항](#참고-사항)
@@ -40,6 +41,10 @@
 
 ## ERD
 ![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/cb38098c-ac34-40f5-9c1f-11ce7010658e)
+
+## VPC Architecture
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/9184b4c1-bdce-4950-b91a-e037c20346b4)
+
 
 ## 나의 주요 구현 기능
 
@@ -222,52 +227,7 @@ public class DataMapControllerTest {
 }
 ```
 
-### 4. ControllerAdvice를 이용한 예외처리
-- try, catch 문을 이용한 예외처리 대신, `@Controller` 어노테이션이 적용된 모든 곳에서 발생되는 예외에 대해 처리해주는 기능 구현
-- `@ExceptionHandler` 어노테이션을 메서드에 선언하고 특정 예외 클래스 지정을 통해 해당 예외가 발생하였을 때 메서드에 정의한 로직을 처리할 수 있도록 해줌
-```java
-@Slf4j
-@RestControllerAdvice
-public class ControllerAdvice {
-    private static final int FIELD_ERROR_CODE_INDEX = 0;
-    private static final int FIELD_ERROR_MESSAGE_INDEX = 1;
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleInputFieldException(MethodArgumentNotValidException e) {
-        FieldError mainError = e.getFieldErrors().get(0);
-        String[] errorInfo = Objects.requireNonNull(mainError.getDefaultMessage()).split(":");
-
-        int code = Integer.parseInt(errorInfo[FIELD_ERROR_CODE_INDEX]);
-        String message = errorInfo[FIELD_ERROR_MESSAGE_INDEX];
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(code, message));
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ErrorResponse> sqlExceptionHandle(DataportalException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(DataportalException.class)
-    public ResponseEntity<ErrorResponse> handleDataportalException(DataportalException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponse(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> unhandledException(Exception e, HttpServletRequest request) {
-        log.error("UnhandledException: {} {} errMessage={}\n",
-                request.getMethod(),
-                request.getRequestURI(),
-                e.getMessage()
-        );
-        return ResponseEntity.internalServerError()
-                .body(new ErrorResponse(9999, "일시적으로 접속이 원활하지 않습니다. 데이터 플랫폼 Cell 팀으로 문의 부탁드립니다."));
-    }
-}
-```
-- `BadRequest` 및 `NotFound` 카테고리에 속하는 예외를 생성한 후, 모든 예외는 `DataportalException` 예외 클래스를 상속받도록 하여 관리함
-
-### 5. Filter 기반 XSS 공격 방지
+### 4. Filter 기반 XSS 공격 방지
 - 기존에 사용한 `lucy-xss-servlet-filter`는 form data 전송 방식에는 적용되지만, `@RequestBody` 로 전달되는 JSON 요청은 처리해주지 않으므로, `MessageConverter`를 사용하는 방법을 택함.
 ```java
 // HTMLCharacterEscapes.java
@@ -333,35 +293,7 @@ public class XssConfig implements WebMvcConfigurer {
 ```
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
 
-### 6. React Query를 통한 API 데이터 관리
-```javascript
-import { useQuery } from 'react-query';
-import { fetchMetaDataMainDataset, fetchMetaDataSubDataset, fetchMetaDataTableInfo, fetchMetaDataTableSearch, fetchMetaTableColumnInfo, fetchMetaDataTotalSearch } from '../api/metaDataApi';
-
-export const useMetadataMainDataSet = (serviceName) => {
-	return useQuery(['metaDataMainDataSet', serviceName], () => fetchMetaDataMainDataset(serviceName), {
-		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
-	}); 
-};
-
-export const useMetadataSubDataSet = (serviceName, mainCategoryName) => {
-	return useQuery(['metaDataSubDataSet', mainCategoryName], () => fetchMetaDataSubDataset(serviceName, mainCategoryName), {
-		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
-	});
-};
-
-export const useMetadataTableInfo = (serviceName, mainCategoryName, subCategoryName) => {
-	return useQuery(['metaDataTableInfo', subCategoryName], () => fetchMetaDataTableInfo(serviceName, mainCategoryName, subCategoryName), {
-		staleTime: 1000 * 60 * 60 * 24, // 24시간 동안 유효
-	});
-};
-```
-
-
-*staleTime 옵션을 이용하여 서버에서 데이터를 다시 가져오는 시간 조정*  
-
-- 서버 API 의 `반복적인 비동기 데이터 호출을 방지`하고, `서버에 대한 부하를 줄이기` 위해 React Query 사용
-- 포털 서비스 내 `데이터의 최신 정보를 유지` 및 `네트워크 요청 최적화`
+### 5. AWS VPC를 통한 망분리
 
 ## 향후 개선 사항
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
