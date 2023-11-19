@@ -65,6 +65,13 @@
 4. 내부에서 외부로의 접속 가능하게 해주는 `NAT 게이트웨이`
 5. 외부에서 SSH 방식으로 인스턴스에 접속하는 것을 허용해주는 `Bastion Host`
 
+- 로드밸런서 도메인 주소 접속에 대한 리버스 프록시 설정
+
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/1e2a31ae-1a6e-4975-b844-7fb379318033)  
+- ALB는 IP 고정 불가능하여 항상 `도메인 기반으로 사용` 해야함
+- 해당 도메인 주소에 대한 CORS 오류를 `리버스 프록시`를 통해 해결
+
+
 ### 2. 메타 데이터 검색 정확도 향상
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86e0f1cd-6621-409f-b176-d5bd5f7b2a82  
