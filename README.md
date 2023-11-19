@@ -14,11 +14,11 @@
 - [ERD](#erd)
 - [VPC Architecture](#VPC-Architecture)
 - [나의 주요 구현 기능](#나의-주요-구현-기능)
-  * [1. 메타 데이터 검색 정확도 향상](#1-메타-데이터-검색-정확도-향상)
-  * [2. 실시간 검색어 순위 조회](#2-실시간-검색어-순위-조회)
-  * [3. MockMvc 기반 Controller 테스팅](#3-mockmvc-기반-controller-테스팅)
-  * [4. Filter 기반 XSS 공격 방지](#4-filter-기반-xss-공격-방지)
-  * [5. AWS VPC를 통한 망분리](#5-AWS-VPC를-통한-망분리)
+  * [1. AWS VPC를 통한 망분리](#1-AWS-VPC를-통한-망분리)
+  * [2. 메타 데이터 검색 정확도 향상](#2-메타-데이터-검색-정확도-향상)
+  * [3. 실시간 검색어 순위 조회](#3-실시간-검색어-순위-조회)
+  * [4. MockMvc 기반 Controller 테스팅](#4-mockmvc-기반-controller-테스팅)
+  * [5. Filter 기반 XSS 공격 방지](#5-filter-기반-xss-공격-방지)
  
 - [향후 개선 사항](#향후-개선-사항)
   * [1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결](#1-ec2-인스턴스에-elk-플랫폼-성공적으로-연결)
@@ -48,7 +48,24 @@
 
 ## 나의 주요 구현 기능
 
-### 1. 메타 데이터 검색 정확도 향상
+### 1. AWS VPC를 통한 망분리
+
+> 포털 내 DB 테이블에 `개인정보 존재 가능성` 발견
+> -> 해당 정보 유출을 막기 위해 public, private 서브넷으로 분리
+
+- 서브넷 분리 이유
+1. 내부 인스턴스에 인터넷을 통한 접근 통제
+2. 외부에 노출되는 면접 최소화
+3. 회사 내 ISMS 보안 규정 만족하기 위해
+
+- 사용한 주요 기능
+1. 인터넷 접속을 위한 `Internet Gateway`
+2. 한 서브넷에서 다른 서브넷으로 가기 위한 `Routing Table`
+3. 특정 경로 및 포트에 대상 그룹 매핑을 통해 서버의 부하 분산을 해주는 `Application Load Balancer`
+4. 내부에서 외부로의 접속 가능하게 해주는 `NAT 게이트웨이`
+5. 외부에서 SSH 방식으로 인스턴스에 접속하는 것을 허용해주는 `Bastion Host`
+
+### 2. 메타 데이터 검색 정확도 향상
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86e0f1cd-6621-409f-b176-d5bd5f7b2a82  
 
@@ -64,7 +81,7 @@ https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/a82fe416-16
 - 메타 데이터 검색 기준 중, `한글로 구성된 테이블 설명 및 하위주제`에 `역색인화`를 도입한 빠른 검색 기능 구현을 위해, ElasticSearch의 한글 형태소 분석기인 `Nori Tokenizer` 를 설치 후, 메타 데이터 컬럼에 적용
 - `문제은행` 키워드로 검색 시, 도입 전에는 해당 문자열이 그대로 포함된 결과값만 나왔지만 도입 이후에는 `문제`, `은행` 과 같이 더 세밀한 단위까지 나뉘어진 문자열 검색을 수행한 결과를 반환해줌
 
-### 2. 실시간 검색어 순위 조회
+### 3. 실시간 검색어 순위 조회
 
 
 https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/1cd75b06-36e7-46c3-be88-bf176d95f53c
@@ -172,7 +189,7 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
 
 - 검색 키워드 별로 집계된 실시간 순위 결과를 최종적으로 `JSON Object로 가공된 형태로 반환해주는 API`를 완성시킴
 
-### 3. MockMvc 기반 Controller 테스팅
+### 4. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
 - 컨트롤러 테스팅을 위한 Http 호출을 담당하는 `MockMvc` 객체를 중심으로 테스트 코드 작성
 
@@ -227,7 +244,7 @@ public class DataMapControllerTest {
 }
 ```
 
-### 4. Filter 기반 XSS 공격 방지
+### 5. Filter 기반 XSS 공격 방지
 - 기존에 사용한 `lucy-xss-servlet-filter`는 form data 전송 방식에는 적용되지만, `@RequestBody` 로 전달되는 JSON 요청은 처리해주지 않으므로, `MessageConverter`를 사용하는 방법을 택함.
 ```java
 // HTMLCharacterEscapes.java
@@ -292,8 +309,6 @@ public class XssConfig implements WebMvcConfigurer {
 }
 ```
 - `CharacterEscapes` 를 상속하는 클래스 `HtmlCharacterEscapes` 를 만들어 처리해야 할 특수문자를 지정하고 변환한 후, `ObjectMapper`에 `HtmlCharacterEscapes` 를 설정하고 `MessageConverter`에 등록하여 Response가 클라이언트로 넘어가기 전에 처리해주는 로직 구현
-
-### 5. AWS VPC를 통한 망분리
 
 ## 향후 개선 사항
 ### 1. EC2 인스턴스에 ELK 플랫폼 성공적으로 연결
