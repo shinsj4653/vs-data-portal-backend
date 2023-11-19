@@ -6,7 +6,7 @@
 
 포털 퍼블릭 URL : [DataPortal Public URL](http://15.164.6.183:3000)  
 
-포트폴리오 첨부 : [Portfolio - Google Drive Link](https://drive.google.com/file/d/1F-pkXaRJD4mTwu-xKPrgqZMCYbtfDI1g/view?usp=sharing)
+포트폴리오 첨부 : [Portfolio - Google Drive Link](https://drive.google.com/file/d/1_urQlpdor0qqJrpDbI_zxVH9__oygEIi/view?usp=sharing)
 
 ## 목차
 - [포털의 기능](#포털의-기능)
