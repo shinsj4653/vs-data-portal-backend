@@ -173,6 +173,8 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
 *JAVA 프로젝트 기반 실시간 검색어 순위 결과 조회 API 구현*  
 
 - 검색 키워드 별로 집계된 실시간 순위 결과를 최종적으로 `JSON Object로 가공된 형태로 반환해주는 API`를 완성시킴
+- `DefaultResultSetHandler`의 동작원리를 보며, `shouldProcessMoreRows()` 함수 실행이 오래걸린다는 사실을 발견함
+- 기본값인 10 에서 1000으로 수정하여, 한 번에 가져오는 행의 갯수 증가 
 
 ### 3. MyBatis의 Mapper 성능 개선
 ```XML
@@ -192,8 +194,8 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
     </select>
 ```
 - 해당 코드는 예전 LIKE문을 통한 Full Text Search를 하였을 때의 SQL문의 Mapper
-- visualVM으로 서버 속도 측정 결과, MyBatis의 `DefaultResultSetHandler.shouldProcessMoreRows()`가 대부분의 시간 차지
-- 즉, 다음 row를 찾는 작업을 개선할 필요를 느꼈고, 이를 위해 Mapper의 `fetchSize` 옵션을 10에서 1000으로 조정
+- 매핑해주는 
+- 
 
 ### 4. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
