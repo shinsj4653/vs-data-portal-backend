@@ -7,6 +7,7 @@ spring:
     password: vsDpcPortal1#
     hikari:
       maximum-pool-size: 4
+      
 
   # --- local H2 db --- #
 #      url: jdbc:h2:tcp://localhost/~/visang-dataportal #4?
