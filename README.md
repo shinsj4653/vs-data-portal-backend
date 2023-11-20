@@ -6,7 +6,7 @@
 
 포털 퍼블릭 URL : [DataPortal Public URL](http://15.164.6.183:3000)  
 
-포트폴리오 첨부 : [Portfolio - Google Drive Link](https://drive.google.com/file/d/1_urQlpdor0qqJrpDbI_zxVH9__oygEIi/view?usp=sharing)
+포트폴리오 첨부 : [Portfolio - Google Drive Link](https://drive.google.com/file/d/1rCx8donoAre1j5P602D7En8D3FzhYQhr/view?usp=sharing)
 
 ## 목차
 - [포털의 기능](#포털의-기능)
@@ -193,7 +193,7 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
 ```
 - 해당 코드는 LIKE문 기반의 Full Text Search를 하였을 때의 SQL문의 Mapper
 - MyBatis에서 SQL문 실행을 담당하는 `DefaultResultSetHandler`의 동작원리를 보며, `shouldProcessMoreRows()` 함수 실행이 오래걸린다는 사실을 발견함
-- 기본값인 10 에서 1000으로 수정하여, 한 번에 가져오는 행의 갯수 증가 
+- 기본값인 10 에서 1000으로 수정하여, 한 번에 가져오는 행의 갯수 증가
 
 ### 4. MockMvc 기반 Controller 테스팅
 - `@InjectMocks` 를 통해 테스트할 대상의 가짜 객체를 주입받을 수 있다는 점을 활용
