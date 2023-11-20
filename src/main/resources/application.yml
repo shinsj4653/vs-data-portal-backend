@@ -2,9 +2,9 @@ spring:
   # database
   # --- rds postgresql db --- #
   datasource:
-    url: jdbc:postgresql://vs-dpc-dataportal-db-prod-01.cuerrc1vwpjd.ap-northeast-2.rds.amazonaws.com:5432/vs_dp_data_service
-    username: pionada_ai_poc
-    password: pocAiPionada1#
+    url: jdbc:postgresql://vs-dpc-portal-db-prod-01.cuerrc1vwpjd.ap-northeast-2.rds.amazonaws.com:5432/vs_dp_data_portal
+    username: vs_dpc_portal
+    password: vsDpcPortal1#
     hikari:
       maximum-pool-size: 4
 
