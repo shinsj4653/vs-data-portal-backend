@@ -192,7 +192,7 @@ try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
     </select>
 ```
 - 해당 코드는 LIKE문 기반의 Full Text Search를 하였을 때의 SQL문의 Mapper
-- `DefaultResultSetHandler`의 동작원리를 보며, `shouldProcessMoreRows()` 함수 실행이 오래걸린다는 사실을 발견함
+- MyBatis에서 SQL문 실행을 담당하는 `DefaultResultSetHandler`의 동작원리를 보며, `shouldProcessMoreRows()` 함수 실행이 오래걸린다는 사실을 발견함
 - 기본값인 10 에서 1000으로 수정하여, 한 번에 가져오는 행의 갯수 증가 
 
 ### 4. MockMvc 기반 Controller 테스팅
