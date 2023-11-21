@@ -96,10 +96,10 @@ public class MetaDataService {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
-        // index : logstash-searchlog-YYYY-MM-DD
+        // index : metadata_search_log-YYYY-MM-DD
         LocalDate now = LocalDate.now();
 
-        String indexName = "logstash-searchlog-" + now;
+        String indexName = "metadata_search_log-" + now;
         return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
     }
 
