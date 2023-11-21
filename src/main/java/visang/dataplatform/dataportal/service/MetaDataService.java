@@ -43,6 +43,10 @@ public class MetaDataService {
     }
 
     public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage) {
+
+        if (!(tableKeyword.equals("") || tableKeyword.equals("undefined") || tableKeyword.equals(null) || tableKeyword == null || tableKeyword.equals("null"))) {
+            log.info("{} {}", keyValue("requestURI", "/metadata/search/tableinfo"), keyValue("keyword", tableKeyword));
+        }
         return metaDataMapper.getTableSearchResult(serviceName, searchCondition, tableKeyword, pageNo, amountPerPage);
     }
 
@@ -88,7 +92,7 @@ public class MetaDataService {
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
         // message 안에 uri 가 포함된 로그만 필터링
-        String uri = request.getUri();
+        //String uri = request.getUri();
 
         // 검색 시간대
         String gte = request.getGte();
@@ -100,7 +104,7 @@ public class MetaDataService {
         LocalDate now = LocalDate.now();
 
         String indexName = "metadata_search_log-" + now;
-        return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
+        return client.getTableSearchRank(indexName, gte, lte, 10000, 10);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

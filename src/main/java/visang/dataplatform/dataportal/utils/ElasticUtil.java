@@ -80,14 +80,14 @@ public class ElasticUtil {
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String index, String uri, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String index, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // match -> message : URI
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.must(QueryBuilders.matchQuery("message", uri));
+//        boolQuery.must(QueryBuilders.matchQuery("message", uri));
 
         // range -> gte to lte
         RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
