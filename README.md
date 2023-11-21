@@ -1,4 +1,4 @@
-﻿# VISANG Dataportal Web Service
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/66abe3be-6aae-49f7-a9c1-22b51e68d165)﻿# VISANG Dataportal Web Service
 ## 비상교육의 데이터와 서비스를 한 곳에서 제공하고 통합하는 웹 기반의 플랫폼
 > 최종목표 : 비상교육의 모든 데이터(정형, 비정형)를 통합하고 표준화하여 비상교육 임직원들에게 데이터를 손쉽게 검색 및 제공하기 위한 서비스
 
@@ -58,8 +58,7 @@ https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86e0f1cd-66
 *ElasticSearch 도입 전*  
 
 
-
-https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/a82fe416-162c-4125-a922-1fb7e569e124
+https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/c66aee1b-4533-403e-9684-da1d66bf9da9  
 
 *ElasticSearch 도입 후*
 
