@@ -50,19 +50,21 @@ public class ElasticUtil {
     }
 
     public List<Map<String, Object>> getTotalTableSearch(
-            String index, String query, List<String> fields, Integer size
+            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
     ) {
 
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, fields.toArray(new String[fields.size()])));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
 
-        // set size
-        if (size != null) {
-            searchSourceBuilder.size(size);
-        }
+        // set from -> 검색결과 시작 지점(0부터 count)
+        searchSourceBuilder.from(pageNo * amountPerPage);
+
+        // set size -> 검색결과 반환 갯수
+        searchSourceBuilder.size(amountPerPage);
+
         searchRequest.source(searchSourceBuilder);
 
         List<Map<String, Object>> list = new ArrayList<>();
@@ -80,14 +82,14 @@ public class ElasticUtil {
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String index, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String index, String uri, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // match -> message : URI
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-//        boolQuery.must(QueryBuilders.matchQuery("message", uri));
+        boolQuery.must(QueryBuilders.matchQuery("message", uri));
 
         // range -> gte to lte
         RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")

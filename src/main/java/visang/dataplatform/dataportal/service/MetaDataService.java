@@ -2,6 +2,8 @@ package visang.dataplatform.dataportal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
@@ -28,6 +30,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 public class MetaDataService {
 
     private final MetaDataMapper metaDataMapper;
+    private static final Logger log = LoggerFactory.getLogger(MetaDataService.class);
 
     public List<String> getMainDataset(String serviceName, Integer limit) {
         return metaDataMapper.getMainDataset(serviceName, limit);
@@ -42,12 +45,50 @@ public class MetaDataService {
         return makeMetaInfoTree(res);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage) {
+    public List<TableSearchDto> getTableSearchResult(String searchCondition, String keyword, Integer pageNo, Integer amountPerPage) {
 
-        if (!(tableKeyword.equals("") || tableKeyword.equals("undefined") || tableKeyword.equals(null) || tableKeyword == null || tableKeyword.equals("null"))) {
-            log.info("{} {}", keyValue("requestURI", "/metadata/search/tableinfo"), keyValue("keyword", tableKeyword));
+        // 빈 키워드인지 체크
+        validateBlankKeyword(keyword);
+        
+        // 검색 시, 검색 로그를 로그스태시로 전송
+        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
+            log.info("{} {}", keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
-        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, tableKeyword, pageNo, amountPerPage);
+
+        log.info("pageNo : {}", pageNo);
+        log.info("amountPerPage : {}", amountPerPage);
+
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+
+        // index : tb_table_meta_info-YYYY-MM-DD
+        LocalDate now = LocalDate.now();
+        String indexName = "tb_table_meta_info-" + now;
+
+        // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
+        List<String> fields = new ArrayList<>();
+
+        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
+            fields.add("table_id");
+        }
+        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
+            fields.add("table_comment");
+        }
+        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
+            fields.add("small_clsf_name");
+        }
+        
+        // ES QueryDSL 검색결과 반환
+        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+
+        // 검색 결과 -> TableSearchDto로 감싸주는 작업
+        return searchResult.stream()
+                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
+                .collect(Collectors.toList());
+        
+        
+        
+
+//        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
     }
 
     public List<TableColumnDto> getTableColumnInfo(String tableId) {
@@ -55,44 +96,43 @@ public class MetaDataService {
         return makeTableColumnDto(list);
     }
 
-    public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
-
-        // ci/cd restart test
-
-        // 빈 키워드인지 체크
-        validateBlankKeyword(keyword);
-
-        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-
-        // index : tb_table_meta_info-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-
-        // fields
-        List<String> fields = new ArrayList<>();
-        fields.add("table_id");
-        fields.add("table_comment");
-        fields.add("small_clsf_name");
-
-        String indexName = "tb_table_meta_info-" + now;
-        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-
-        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
-        }
-
-        // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
-                .collect(Collectors.toList());
-
-
-        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
-    }
+//    public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
+//
+//        // ci/cd restart test
+//
+//
+//
+//        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+//
+//        // index : tb_table_meta_info-YYYY-MM-DD
+//        LocalDate now = LocalDate.now();
+//
+//        // fields
+//        List<String> fields = new ArrayList<>();
+//        fields.add("table_id");
+//        fields.add("table_comment");
+//        fields.add("small_clsf_name");
+//
+//        String indexName = "tb_table_meta_info-" + now;
+//        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
+//
+//        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
+//            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
+//        }
+//
+//        // 검색 결과 -> TableSearchDto로 감싸주는 작업
+//        return searchResult.stream()
+//                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
+//                .collect(Collectors.toList());
+//
+//
+//        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
+//    }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
         // message 안에 uri 가 포함된 로그만 필터링
-        //String uri = request.getUri();
+        String uri = request.getUri();
 
         // 검색 시간대
         String gte = request.getGte();
@@ -104,7 +144,7 @@ public class MetaDataService {
         LocalDate now = LocalDate.now();
 
         String indexName = "metadata_search_log-" + now;
-        return client.getTableSearchRank(indexName, gte, lte, 10000, 10);
+        return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

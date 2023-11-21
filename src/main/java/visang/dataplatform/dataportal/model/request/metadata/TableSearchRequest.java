@@ -7,9 +7,6 @@ import lombok.Getter;
 @Schema(description = "메타 테이블 정보 화면에서, 테이블 ID 값 기준 검색 결과 조회 API 요청 Body")
 public class TableSearchRequest {
 
-    @Schema(description = "서비스 명")
-    private String service_name;
-
     @Schema(description = "검색 조건")
     private String search_condition;
 
