@@ -39,8 +39,8 @@ public class MetaDataService {
     }
 
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
-        List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName, pageNo, amountPerPage);
-        return makeMetaInfoTree(res);
+        List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
+        return makeMetaInfoTree(res, pageNo, amountPerPage);
     }
 
     public List<TableSearchDto> getTableSearchResult(String searchCondition, String keyword, Integer pageNo, Integer amountPerPage) {
@@ -141,11 +141,19 @@ public class MetaDataService {
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
-    private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {
+    private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result, Integer pageNo, Integer amountPerPage) {
 
         List<TableMetaInfoDto> list = new ArrayList<>();
+        int startIdx = (pageNo - 1) * amountPerPage;
+        int endIdx = startIdx + amountPerPage;
+        
+        // 만약 마지막 인덱스가 result 크기 넘어갈 경우, size() 값으로 마지막 인덱스 세팅
+        if (startIdx + amountPerPage > result.size()) {
+            endIdx = result.size();
+        }
 
-        for (QueryResponseMeta q : result) {
+        for (int idx = startIdx; idx < endIdx; idx++) {
+            QueryResponseMeta q = result.get(idx);
             TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name(), result.size());
             list.add(metaData);
         }
