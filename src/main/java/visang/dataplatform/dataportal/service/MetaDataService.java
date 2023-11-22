@@ -83,11 +83,8 @@ public class MetaDataService {
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
+                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name"))))
                 .collect(Collectors.toList());
-        
-        
-        
 
 //        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
     }
