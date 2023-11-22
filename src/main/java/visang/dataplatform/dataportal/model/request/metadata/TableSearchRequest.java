@@ -16,7 +16,6 @@ public class TableSearchRequest {
     @Schema(description = "검색 조건")
     private String search_condition;
 
-    @NotNull
     @Schema(description = "검색 키워드")
     private String keyword;
 
