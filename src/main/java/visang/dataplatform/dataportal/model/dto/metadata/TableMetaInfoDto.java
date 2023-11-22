@@ -23,5 +23,5 @@ public class TableMetaInfoDto {
     private String small_clsf_name;
 
     @Schema(description = "검색 결과 총 갯수")
-    private long total_num;
+    private int total_num;
 }
