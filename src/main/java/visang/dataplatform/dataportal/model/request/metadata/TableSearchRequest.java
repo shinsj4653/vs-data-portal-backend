@@ -20,7 +20,7 @@ public class TableSearchRequest {
     @Schema(description = "검색 키워드")
     private String keyword;
 
-    @PositiveOrZero
+    @Positive
     @Schema(description = "페이지 번호")
     private Integer page_no;
 

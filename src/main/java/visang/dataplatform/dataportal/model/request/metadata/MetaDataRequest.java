@@ -24,7 +24,7 @@ public class MetaDataRequest {
     @Schema(description = "중분류 명")
     private String sub_category_name;
 
-    @PositiveOrZero
+    @Positive
     @Schema(description = "페이지 번호")
     private Integer page_no;
 

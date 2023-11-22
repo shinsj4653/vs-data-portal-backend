@@ -63,7 +63,7 @@ public class ElasticUtil {
         searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
 
         // set from -> 검색결과 시작 지점(0부터 count)
-        searchSourceBuilder.from(pageNo * amountPerPage);
+        searchSourceBuilder.from((pageNo - 1) * amountPerPage);
 
         // set size -> 검색결과 반환 갯수
         searchSourceBuilder.size(amountPerPage);
