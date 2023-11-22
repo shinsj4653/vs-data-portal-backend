@@ -30,8 +30,6 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 public class MetaDataService {
 
     private final MetaDataMapper metaDataMapper;
-    private static final Logger log = LoggerFactory.getLogger(MetaDataService.class);
-
     public List<String> getMainDataset(String serviceName, Integer limit) {
         return metaDataMapper.getMainDataset(serviceName, limit);
     }
