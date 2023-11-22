@@ -38,8 +38,8 @@ public class MetaDataService {
         return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }
 
-    public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName) {
-        List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
+    public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
+        List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName, pageNo, amountPerPage);
         return makeMetaInfoTree(res);
     }
 
