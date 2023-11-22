@@ -77,12 +77,9 @@ public class MetaDataService {
         }
         
         // ES QueryDSL 검색결과 반환
-        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        List<TableSearchDto> searchResult = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
 
-        // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name"))))
-                .collect(Collectors.toList());
+        return searchResult;
 
 //        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
     }
@@ -149,7 +146,7 @@ public class MetaDataService {
         List<TableMetaInfoDto> list = new ArrayList<>();
 
         for (QueryResponseMeta q : result) {
-            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name());
+            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name(), list.size());
             list.add(metaData);
         }
         return list;

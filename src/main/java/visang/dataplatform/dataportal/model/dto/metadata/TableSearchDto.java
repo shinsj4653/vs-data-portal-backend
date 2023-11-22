@@ -17,4 +17,7 @@ public class TableSearchDto {
 
     @Schema(description = "테이블 소주제명")
     private String small_clsf_name;
+
+    @Schema(description = "검색 결과 총 갯수")
+    private long total_num;
 }

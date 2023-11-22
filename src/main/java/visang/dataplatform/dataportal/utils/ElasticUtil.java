@@ -1,6 +1,7 @@
 package visang.dataplatform.dataportal.utils;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -21,6 +22,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Component;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,7 +52,7 @@ public class ElasticUtil {
         return self;
     }
 
-    public List<Map<String, Object>> getTotalTableSearch(
+    public List<TableSearchDto> getTotalTableSearch(
             String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
     ) {
 
@@ -67,17 +70,22 @@ public class ElasticUtil {
 
         searchRequest.source(searchSourceBuilder);
 
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<TableSearchDto> result = new ArrayList<>();
+
         try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
+            long totalHits =  response.getHits().getTotalHits().value;
+
+            // 검색 결과 -> TableSearchDto로 감싸주는 작업
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceMap = hit.getSourceAsMap();
-                list.add(sourceMap);
+                result.add(new TableSearchDto(String.valueOf(sourceMap.get("table_id")), String.valueOf(sourceMap.get("table_comment")), String.valueOf(sourceMap.get("small_clsf_name")), totalHits));
             }
+
         } catch (IOException e) {}
 
-        return list;
+        return result;
 
     }
 
