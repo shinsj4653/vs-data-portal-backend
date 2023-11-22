@@ -68,9 +68,7 @@
         where 1=1
             and tsi.service_name = trim(#{serviceName})
             and tmc.main_category_name = trim(#{mainCategoryName})
-            and tsc.sub_category_name = trim(#{subCategoryName})
-        limit #{amountPerPage}
-        offset (#{pageNo} - 1) * #{amountPerPage};
+            and tsc.sub_category_name = trim(#{subCategoryName});
     </select>
 
     <!-- 검색 시, 선택한 검색 기준과 입력한 검색 키워드에 해당하는 메타 테이블 정보 반환 -->
@@ -97,6 +95,8 @@
               <otherwise>
               </otherwise>
           </choose>
+        limit #{amountPerPage}
+        offset (#{pageNo} - 1) * #{amountPerPage};
     </select>
 
     <!-- 메타 테이블 선택 시, 해당 테이블의 컬럼 정보 반환 -->
