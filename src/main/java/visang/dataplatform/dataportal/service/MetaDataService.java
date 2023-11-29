@@ -61,7 +61,7 @@ public class MetaDataService {
 
         // index : tb_table_meta_info-YYYY-MM-DD
         LocalDate now = LocalDate.now();
-        String indexName = "tb_table_meta_info-" + now;
+        String indexName = "tb_table_meta_info";
 
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
