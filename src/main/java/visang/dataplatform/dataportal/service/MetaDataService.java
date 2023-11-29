@@ -52,7 +52,7 @@ public class MetaDataService {
         
         // 검색 시, 검색 로그를 로그스태시로 전송
         if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-            log.info("{} {}", keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
+            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 
         log.info("pageNo : {}", pageNo);
