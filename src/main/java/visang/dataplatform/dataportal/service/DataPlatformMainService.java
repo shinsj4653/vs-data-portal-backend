@@ -30,7 +30,6 @@ public class DataPlatformMainService {
         // 빈 키워드인지 체크
         validateBlankKeyword(keyword);
 
-
         // 검색 시, 검색 로그를 로그스태시로 전송
         if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
             log.info("{} {}", keyValue("requestURI", "/dpmain/search/service-dataset"), keyValue("keyword", keyword));
