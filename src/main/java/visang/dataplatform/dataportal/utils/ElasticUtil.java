@@ -52,7 +52,7 @@ public class ElasticUtil {
         return self;
     }
 
-    public List<TableSearchDto> getTotalTableSearch(
+    public SearchHits getTotalTableSearch(
             String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
     ) {
 
@@ -70,23 +70,14 @@ public class ElasticUtil {
 
         searchRequest.source(searchSourceBuilder);
 
-        List<TableSearchDto> result = new ArrayList<>();
-
         try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
-            long totalHits =  response.getHits().getTotalHits().value;
-
-            // 검색 결과 -> TableSearchDto로 감싸주는 작업
-            for (SearchHit hit : searchHits) {
-                Map<String, Object> sourceMap = hit.getSourceAsMap();
-                result.add(new TableSearchDto(String.valueOf(sourceMap.get("table_id")), String.valueOf(sourceMap.get("table_comment")), String.valueOf(sourceMap.get("small_clsf_name")), totalHits));
-            }
+            return searchHits;
 
         } catch (IOException e) {}
 
-        return result;
-
+        return null;
     }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(

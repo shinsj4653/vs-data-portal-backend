@@ -15,8 +15,8 @@
                  join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
         where 1=1
             and tsi.service_name like concat('%', trim(#{keyword}), '%')
-           or tmc.main_category_name like concat('%', trim(#{keyword}), '%')
-           or tsc.sub_category_name like concat('%', trim(#{keyword}), '%')
+            or tmc.main_category_name like concat('%', trim(#{keyword}), '%')
+            or tsc.sub_category_name like concat('%', trim(#{keyword}), '%')
         order by 1;
     </select>
 

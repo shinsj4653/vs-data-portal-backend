@@ -2,6 +2,8 @@ package visang.dataplatform.dataportal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -59,9 +61,8 @@ public class MetaDataService {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
-        // index : tb_table_meta_info-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-        String indexName = "tb_table_meta_info-2023-11-27";
+        // index : tb_table_meta_info
+        String indexName = "tb_table_meta_info";
 
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
@@ -77,9 +78,16 @@ public class MetaDataService {
         }
         
         // ES QueryDSL 검색결과 반환
-        List<TableSearchDto> searchResult = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        List<TableSearchDto> result = new ArrayList<>();
 
-        return searchResult;
+        // 검색 결과 -> TableSearchDto로 감싸주는 작업
+        for (SearchHit hit : searchHits) {
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            result.add(new TableSearchDto(String.valueOf(sourceMap.get("service_name")), String.valueOf(sourceMap.get("main_category_name")), String.valueOf(sourceMap.get("sub_category_name")), searchHits.getTotalHits().value));
+        }
+
+        return result;
 
 //        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
     }
