@@ -84,7 +84,7 @@ public class MetaDataService {
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            result.add(new TableSearchDto(String.valueOf(sourceMap.get("service_name")), String.valueOf(sourceMap.get("main_category_name")), String.valueOf(sourceMap.get("sub_category_name")), searchHits.getTotalHits().value));
+            result.add(new TableSearchDto(String.valueOf(sourceMap.get("table_id")), String.valueOf(sourceMap.get("table_comment")), String.valueOf(sourceMap.get("small_clsf_name")), searchHits.getTotalHits().value));
         }
 
         return result;
