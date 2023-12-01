@@ -19,9 +19,7 @@ import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequ
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
@@ -89,6 +87,24 @@ public class MetaDataService {
         return result;
 
 //        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
+    }
+
+    public List<String> getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+        SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
+
+        // 중복 제거 위한 Set
+        Set<String> result = new HashSet<>();
+
+        // 결과 json 리스트에서, 단어 가져오기
+        for (SearchHit hit : searchHits) {
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            result.add(String.valueOf(sourceMap.get("small_clsf_name")));
+        }
+
+        // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
+        return new ArrayList<>(result);
+
     }
 
     public List<TableColumnDto> getTableColumnInfo(String tableId) {

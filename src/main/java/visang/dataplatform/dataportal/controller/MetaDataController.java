@@ -62,6 +62,12 @@ public class MetaDataController {
         List<TableColumnDto> result = metaDataService.getTableColumnInfo(req.getTable_id());
         return ResponseUtil.SUCCESS("메타 데이터 테이블 컬럼명을 조회 성공했습니다.", result);
     }
+    @Operation(summary = "자동완성 된 검색어 결과 조회 API", description = "메타 데이터 검색 페이지에서 검색어 입력 시, 자동완성 결과 반환해주는 API")
+    @PostMapping("search/autocomplete")
+    public ResponseDto<List<String>> getAutoCompleteSearchWords(@Valid @RequestBody AutoCompleteSearchRequest req) {
+        List<String> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearchCondition(), req.getKeyword());
+        return ResponseUtil.SUCCESS("메타 데이터 검색어 자동완성 결과 조회 성공했습니다.", result);
+    }
 
 //    @Operation(summary = "비상교육 전체 메타 데이터 검색 API", description = "메타 테이블 데이터 검색 기준인 table_id, table_comment, 그리고 small_clsf_name 중 하나라도 검색 키워드를 포함하고 있을 시, 해당 결과 반환해주는 API")
 //    @GetMapping("search/total")

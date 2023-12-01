@@ -9,10 +9,9 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -41,7 +40,6 @@ public class ElasticUtil {
     private RestClientBuilder restClientBuilder;
 
     public ElasticUtil(String hostname, int port) {
-
         HttpHost host = new HttpHost(hostname, port);
         restClientBuilder = RestClient.builder(host);
     }
@@ -79,6 +77,41 @@ public class ElasticUtil {
 
         return null;
     }
+
+    public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        // BoolQueryBuilder
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        // Add fuzzy query
+        FuzzyQueryBuilder fuzzyQuery = QueryBuilders.fuzzyQuery(searchCondition + ".keyword", keyword).fuzziness(Fuzziness.ONE);
+        boolQueryBuilder.should(fuzzyQuery);
+
+        // Add match phrase prefix query
+        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
+        boolQueryBuilder.should(matchPhrasePrefixQuery);
+
+        // Add the bool query to the search source builder
+        searchSourceBuilder.query(boolQueryBuilder);
+
+        // Set the search source builder to the search request
+        searchRequest.source(searchSourceBuilder);
+
+        // Execute the search request and handle the response
+        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits searchHits = response.getHits();
+            return searchHits;
+
+        } catch (IOException e) {}
+
+        return null;
+
+    }
+
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
             String index, String uri, String gte, String lte, Integer logResultSize, Integer rankResultSize
