@@ -9,11 +9,9 @@ import javax.validation.constraints.NotEmpty;
 @Schema(description = "메타 데이터 페이지에서 검색 시, 검색어 자동완성 결과 API 요청 Body")
 public class AutoCompleteSearchRequest {
 
-    @NotEmpty
     @Schema(description = "ES Index명")
     private String index;
 
-    @NotEmpty
     @Schema(description = "검색 기준")
     private String searchCondition;
 

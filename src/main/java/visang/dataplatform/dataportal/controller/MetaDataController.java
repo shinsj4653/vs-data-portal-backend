@@ -64,7 +64,7 @@ public class MetaDataController {
     }
     @Operation(summary = "자동완성 된 검색어 결과 조회 API", description = "메타 데이터 검색 페이지에서 검색어 입력 시, 자동완성 결과 반환해주는 API")
     @PostMapping("search/autocomplete")
-    public ResponseDto<List<String>> getAutoCompleteSearchWords(@Valid @RequestBody AutoCompleteSearchRequest req) {
+    public ResponseDto<List<String>> getAutoCompleteSearchWords(@RequestBody AutoCompleteSearchRequest req) {
         List<String> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearchCondition(), req.getKeyword());
         return ResponseUtil.SUCCESS("메타 데이터 검색어 자동완성 결과 조회 성공했습니다.", result);
     }
