@@ -94,7 +94,7 @@ public class MetaDataService {
         SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
 
         // 중복 제거 위한 Set
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
 
         // 결과 json 리스트에서, 단어 가져오기
         for (SearchHit hit : searchHits) {
