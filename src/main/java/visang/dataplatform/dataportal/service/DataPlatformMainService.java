@@ -9,6 +9,8 @@ import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchK
 import visang.dataplatform.dataportal.mapper.DataPlatformMainMapper;
 import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
+import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequest;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
 import java.time.LocalDate;
@@ -62,6 +64,24 @@ public class DataPlatformMainService {
 
 
         //return dataPlatformMapper.getServiceList(keyword);
+    }
+
+    public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
+
+        // api 종류가 검색 api에 해당하는 로그만 집계
+        String apiType = request.getApiType();
+
+        // 검색 시간대
+        String gte = request.getGte();
+        String lte = request.getLte();
+
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+
+        // index : metadata_search_log-YYYY-MM-DD
+        LocalDate now = LocalDate.now();
+
+        String indexName = "search_log-" + now;
+        return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
     }
 
     // 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기

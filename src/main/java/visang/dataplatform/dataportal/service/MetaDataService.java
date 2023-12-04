@@ -113,23 +113,7 @@ public class MetaDataService {
         return makeTableColumnDto(list);
     }
 
-    public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
-        // api 종류가 검색 api에 해당하는 로그만 집계
-        String apiType = request.getApiType();
-
-        // 검색 시간대
-        String gte = request.getGte();
-        String lte = request.getLte();
-
-        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-
-        // index : metadata_search_log-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-
-        String indexName = "search_log-" + now;
-        return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
-    }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result, Integer pageNo, Integer amountPerPage) {

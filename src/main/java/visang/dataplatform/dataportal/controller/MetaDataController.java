@@ -68,11 +68,4 @@ public class MetaDataController {
         List<String> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearchConditions(), req.getKeyword());
         return ResponseUtil.SUCCESS("메타 데이터 검색어 자동완성 결과 조회 성공했습니다.", result);
     }
-
-    @Operation(summary = "메타 테이블 검색어 실시간 순위 집계 API", description = "메타 테이블 데이터 검색 키워드의 실시간 검색 횟수 순위를 반환해주는 API")
-    @PostMapping("search/rank")
-    public ResponseDto<List<TableSearchKeywordRankDto>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
-        List<TableSearchKeywordRankDto> result = metaDataService.getTableSearchRank(request);
-        return ResponseUtil.SUCCESS("특정 시간대의 검색어 순위 집계에 성공했습니다.", result);
-    }
 }
