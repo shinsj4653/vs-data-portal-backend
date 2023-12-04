@@ -17,6 +17,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -114,14 +115,14 @@ public class ElasticUtil {
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String index, String uri, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String index, String apiType, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // match -> message : URI
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.must(QueryBuilders.matchQuery("message", uri));
+        boolQuery.filter(QueryBuilders.termQuery("apiType.keyword", apiType));
 
         // range -> gte to lte
         RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
@@ -137,7 +138,9 @@ public class ElasticUtil {
 
         TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK")
                                                                         .field("keyword.keyword")
-                                                                        .size(rankResultSize);
+                                                                        .size(rankResultSize)
+                                                                        .minDocCount(1)
+                                                                        .order(BucketOrder.aggregation("_count", false));
         searchSourceBuilder.aggregation(aggregationBuilder);
 
         // set size

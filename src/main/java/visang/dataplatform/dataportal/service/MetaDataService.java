@@ -115,8 +115,8 @@ public class MetaDataService {
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
-        // message 안에 uri 가 포함된 로그만 필터링
-        String uri = request.getUri();
+        // api 종류가 검색 api에 해당하는 로그만 집계
+        String apiType = request.getApiType();
 
         // 검색 시간대
         String gte = request.getGte();
@@ -127,8 +127,8 @@ public class MetaDataService {
         // index : metadata_search_log-YYYY-MM-DD
         LocalDate now = LocalDate.now();
 
-        String indexName = "metadata_search_log-" + now;
-        return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
+        String indexName = "search_log-" + now;
+        return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
     }
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수

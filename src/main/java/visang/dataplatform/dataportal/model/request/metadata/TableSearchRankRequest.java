@@ -8,8 +8,8 @@ import lombok.Getter;
 @Schema(description = "메타 테이블 검색어 실시간 순위 집계 API 요청 Body")
 public class TableSearchRankRequest {
 
-    // 검색 API 경로
-    private String uri;
+    // 원하는 로그가 전송되는 API 종류
+    private String apiType;
 
     // 검색 시간대 시작시간
     private String gte;
