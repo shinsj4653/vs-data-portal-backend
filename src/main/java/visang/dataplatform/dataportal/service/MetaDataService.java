@@ -47,11 +47,6 @@ public class MetaDataService {
 
         // 빈 키워드인지 체크
         //validateBlankKeyword(keyword);
-        
-        // 검색 시, 검색 로그를 로그스태시로 전송
-        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
-        }
 
         log.info("pageNo : {}", pageNo);
         log.info("amountPerPage : {}", amountPerPage);
@@ -77,6 +72,11 @@ public class MetaDataService {
         // ES QueryDSL 검색결과 반환
         SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<TableSearchDto> result = new ArrayList<>();
+
+        // 검색 결과가 있는 경우에만 검색 로그 전송
+        if (searchHits.getTotalHits().value > 0) {
+            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
+        }
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         for (SearchHit hit : searchHits) {
