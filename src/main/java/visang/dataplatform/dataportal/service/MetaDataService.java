@@ -99,7 +99,7 @@ public class MetaDataService {
         // 결과 json 리스트에서, 단어 가져오기
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            result.add(String.valueOf(sourceMap.get("small_clsf_name")));
+            result.add(String.valueOf(sourceMap.get(searchCondition)));
         }
 
         // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
@@ -111,39 +111,6 @@ public class MetaDataService {
         List<QueryResponseTableColumnInfo> list = metaDataMapper.getTableColumnInfo(tableId);
         return makeTableColumnDto(list);
     }
-
-//    public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
-//
-//        // ci/cd restart test
-//
-//
-//
-//        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-//
-//        // index : tb_table_meta_info-YYYY-MM-DD
-//        LocalDate now = LocalDate.now();
-//
-//        // fields
-//        List<String> fields = new ArrayList<>();
-//        fields.add("table_id");
-//        fields.add("table_comment");
-//        fields.add("small_clsf_name");
-//
-//        String indexName = "tb_table_meta_info-" + now;
-//        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-//
-//        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-//            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
-//        }
-//
-//        // 검색 결과 -> TableSearchDto로 감싸주는 작업
-//        return searchResult.stream()
-//                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
-//                .collect(Collectors.toList());
-//
-//
-//        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
-//    }
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
 
