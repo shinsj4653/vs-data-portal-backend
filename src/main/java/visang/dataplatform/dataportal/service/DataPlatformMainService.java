@@ -25,9 +25,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 @RequiredArgsConstructor
 public class DataPlatformMainService {
 
-    private final DataPlatformMainMapper dataPlatformMapper;
-
-    public List<DatasetSearchDto> getServiceList(String keyword, Integer pageNo, Integer amountPerPage) {
+    public List<DatasetSearchDto> getServiceList(String keyword, Integer pageNo, Integer amountPerPage){
 
         // 빈 키워드인지 체크
         validateBlankKeyword(keyword);
@@ -62,11 +60,9 @@ public class DataPlatformMainService {
 
         return result;
 
-
-        //return dataPlatformMapper.getServiceList(keyword);
     }
 
-    public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
+    public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
 
         // api 종류가 검색 api에 해당하는 로그만 집계
         String apiType = request.getApiType();

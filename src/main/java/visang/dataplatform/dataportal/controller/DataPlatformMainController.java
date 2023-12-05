@@ -33,10 +33,10 @@ public class DataPlatformMainController {
         return ResponseUtil.SUCCESS("검색 키워드에 맞는 서비스 및 데이터 셋 목록 조회에 성공하였습니다.", result);
     }
 
-    @Operation(summary = "검색어 실시간 순위 집계 API", description = "메타 테이블 데이터 검색 키워드의 실시간 검색 횟수 순위를 반환해주는 API")
+    @Operation(summary = "실시간 검색어 순위 집계 API", description = "메인화면 검색, 그리고 메타 데이터 검색어의 실시간 순위를 반환해주는 API")
     @PostMapping("search/rank")
-    public ResponseDto<List<TableSearchKeywordRankDto>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
-        List<TableSearchKeywordRankDto> result = dataPlatformMainService.getTableSearchRank(request);
+    public ResponseDto<List<TableSearchKeywordRankDto>> getSearchRank(@RequestBody TableSearchRankRequest request) {
+        List<TableSearchKeywordRankDto> result = dataPlatformMainService.getSearchRank(request);
         return ResponseUtil.SUCCESS("특정 시간대의 검색어 순위 집계에 성공했습니다.", result);
     }
 }
