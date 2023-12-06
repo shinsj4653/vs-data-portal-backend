@@ -102,7 +102,10 @@ public class MetaDataService {
             if (table_id.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
                     || table_comment.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
                     || small_clsf_name.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
-                hasKeyword = true;    
+
+                log.info("small_clsf_name.replaceAll() -> ", small_clsf_name.replaceAll(" ", ""));
+                log.info("keyword.replaceAll() -> ", keyword.replaceAll(" ", ""));
+                hasKeyword = true;
             }
         }
         
