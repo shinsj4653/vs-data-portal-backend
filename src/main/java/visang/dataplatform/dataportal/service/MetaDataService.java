@@ -99,7 +99,9 @@ public class MetaDataService {
             
             result.add(new TableSearchDto(table_id, table_comment, small_clsf_name, searchHits.getTotalHits().value));
             
-            if (table_id.contains(keyword) || table_comment.contains(keyword) || small_clsf_name.contains(keyword)) {
+            if (table_id.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || table_comment.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || small_clsf_name.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
                 hasKeyword = true;    
             }
         }
