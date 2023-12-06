@@ -39,6 +39,11 @@ public class MetaDataService {
     }
 
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
+
+        if (mainCategoryName == null || mainCategoryName == "null"){ 
+            return new ArrayList<>();
+        }
+
         List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
         return makeMetaInfoTree(res, pageNo, amountPerPage);
     }
