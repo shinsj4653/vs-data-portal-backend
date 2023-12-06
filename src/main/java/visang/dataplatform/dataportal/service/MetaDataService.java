@@ -35,12 +35,16 @@ public class MetaDataService {
     }
 
     public List<String> getSubDataset(String serviceName, String mainCategoryName, Integer limit) {
+
+        if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null")){
+            return new ArrayList<>();
+        }
+
         return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }
 
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
 
-        log.info("mainCategoryName == ", mainCategoryName);
         if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null")){
             return new ArrayList<>();
         }
