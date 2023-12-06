@@ -99,8 +99,8 @@ public class MetaDataService {
             
             result.add(new TableSearchDto(table_id, table_comment, small_clsf_name, searchHits.getTotalHits().value));
 
-            log.info("small_clsf_name.replaceAll() -> ", small_clsf_name.replaceAll(" ", ""));
-            log.info("keyword.replaceAll() -> ", keyword.replaceAll(" ", ""));
+            log.info("small_clsf_name.replaceAll() -> {}", small_clsf_name.replaceAll(" ", ""));
+            log.info("keyword.replaceAll() -> {}", keyword.replaceAll(" ", ""));
 
             if (table_id.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
                     || table_comment.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
