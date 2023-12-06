@@ -102,9 +102,9 @@ public class MetaDataService {
             log.info("small_clsf_name.replaceAll() -> {}", small_clsf_name.replaceAll(" ", ""));
             log.info("keyword.replaceAll() -> {}", keyword.replaceAll(" ", ""));
 
-            if (table_id.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))
-                    || table_comment.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))
-                    || small_clsf_name.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))) {
+            if (table_id.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || table_comment.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || small_clsf_name.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
 
                 log.info("small_clsf_name.replaceAll() -> ", small_clsf_name.replaceAll(" ", ""));
                 log.info("keyword.replaceAll() -> ", keyword.replaceAll(" ", ""));

@@ -60,9 +60,9 @@ public class DataPlatformMainService {
 
             result.add(new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, searchHits.getTotalHits().value));
 
-            if (serviceName.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))
-                    || mainCategoryName.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))
-                    || subCategoryName.replaceAll(" ", "").toLowerCase().contains(keyword.replaceAll(" ", ""))) {
+            if (serviceName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || mainCategoryName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                    || subCategoryName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
                 hasKeyword = true;
             }
         }
