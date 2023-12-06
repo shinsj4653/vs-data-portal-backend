@@ -39,8 +39,9 @@ public class MetaDataService {
     }
 
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
-
-        if (mainCategoryName == null || mainCategoryName == "null"){ 
+    
+        log.info("mainCategoryName == ", mainCategoryName);
+        if (mainCategoryName == null || mainCategoryName == "null"){
             return new ArrayList<>();
         }
 
