@@ -36,9 +36,9 @@ public class MetaDataService {
 
     public List<String> getSubDataset(String serviceName, String mainCategoryName, Integer limit) {
 
-        if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null")){
-            return new ArrayList<>();
-        }
+//        if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null")){
+//            return new ArrayList<>();
+//        }
 
         return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }

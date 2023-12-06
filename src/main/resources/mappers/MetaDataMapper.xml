@@ -38,6 +38,7 @@
         left join tb_sub_category tsc on ttmi.sub_category_id = tsc.sub_category_id
         where 1=1
             and tsc.sub_category_name is not null
+            and tmc.main_category_name is not null
             and tsi.service_name = trim(#{serviceName})
             and tmc.main_category_name = trim(#{mainCategoryName})
         <choose>
