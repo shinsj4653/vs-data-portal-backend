@@ -84,21 +84,32 @@ public class MetaDataService {
         // ES QueryDSL 검색결과 반환
         SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<TableSearchDto> result = new ArrayList<>();
-
-        // 검색 결과가 있는 경우에만 검색 로그 전송
-        if (searchHits.getTotalHits().value > 0) {
-            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
-        }
+        
+        
+        // 실시간 검색어에 "의미 있는 단어"만 포함되도록
+        // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
+        boolean hasKeyword = false;
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            result.add(new TableSearchDto(String.valueOf(sourceMap.get("table_id")), String.valueOf(sourceMap.get("table_comment")), String.valueOf(sourceMap.get("small_clsf_name")), searchHits.getTotalHits().value));
+            String table_id = String.valueOf(sourceMap.get("table_id"));
+            String table_comment = String.valueOf(sourceMap.get("table_comment"));
+            String small_clsf_name = String.valueOf(sourceMap.get("small_clsf_name"));
+            
+            result.add(new TableSearchDto(table_id, table_comment, small_clsf_name, searchHits.getTotalHits().value));
+            
+            if (table_id.contains(keyword) || table_comment.contains(keyword) || small_clsf_name.contains(keyword)) {
+                hasKeyword = true;    
+            }
+        }
+        
+        // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
+        if (searchHits.getTotalHits().value > 0 && hasKeyword) {
+            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 
         return result;
-
-//        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, keyword, pageNo, amountPerPage);
     }
 
     public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) {
