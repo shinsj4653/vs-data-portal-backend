@@ -12,7 +12,7 @@ public class TableSearchRankRequest {
     private String requestURI;
 
     // 원하는 로그가 전송되는 API 종류
-    private String apiType;
+    private String logType;
 
     // 검색 시간대 시작시간
     private String gte;
