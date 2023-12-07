@@ -14,9 +14,7 @@ import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequ
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
@@ -29,9 +27,6 @@ public class DataPlatformMainService {
 
         // 빈 키워드인지 체크
         validateBlankKeyword(keyword);
-
-        log.info("pageNo : {}", pageNo);
-        log.info("amountPerPage : {}", amountPerPage);
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
@@ -88,10 +83,24 @@ public class DataPlatformMainService {
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
         // index : metadata_search_log-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
+        // 7일 동안의 결과 집게 후, List<> 형태로 return
 
-        String indexName = "search_log-" + now;
+        LocalDate now = LocalDate.now();
+        Map<String, Integer> map = new HashMap<>();
+
+//        for (int i = 0; i <= 6; i++) {
+//            LocalDate daysAgo = now.minusDays(i);
+        String indexName = "search_log";
         return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
+
+//            tableSearchRank.stream()
+//                            .map(item -> map.putIfAbsent(item.getKeyword(), item.getCount()));
+//
+//        }
+
+        // Integer 가 검색 횟수이므로, 이를 정렬
+
+
     }
 
     // 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기
