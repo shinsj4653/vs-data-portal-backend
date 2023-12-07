@@ -73,6 +73,7 @@ public class DataPlatformMainService {
 
     public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
 
+        String indexName = request.getIndex();
         // api 종류가 검색 api에 해당하는 로그만 집계
         String apiType = request.getApiType();
 
@@ -90,7 +91,6 @@ public class DataPlatformMainService {
 
 //        for (int i = 0; i <= 6; i++) {
 //            LocalDate daysAgo = now.minusDays(i);
-        String indexName = "search_log";
         return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
 
 //            tableSearchRank.stream()
