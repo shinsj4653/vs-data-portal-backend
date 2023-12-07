@@ -108,7 +108,7 @@ public class MetaDataService {
         
         // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
         if (searchHits.getTotalHits().value > 0 && hasKeyword) {
-            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
+            log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 
         return result;

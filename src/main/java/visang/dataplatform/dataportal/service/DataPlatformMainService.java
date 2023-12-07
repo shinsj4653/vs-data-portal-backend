@@ -64,7 +64,7 @@ public class DataPlatformMainService {
 
         // 검색 결과가 있는 경우에만 검색 로그 전송
         if (searchHits.getTotalHits().value > 0 && hasKeyword) {
-            log.info("{} {} {}", keyValue("apiType", "search"), keyValue("requestURI", "/dpMain/search/service-dataset"), keyValue("keyword", keyword));
+            log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/dpMain/search/keyword"), keyValue("keyword", keyword));
         }
 
         return result;
@@ -73,7 +73,7 @@ public class DataPlatformMainService {
 
     public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
 
-        String indexName = request.getIndex();
+        String requestURI = request.getRequestURI();
         // api 종류가 검색 api에 해당하는 로그만 집계
         String apiType = request.getApiType();
 
@@ -91,7 +91,7 @@ public class DataPlatformMainService {
 
 //        for (int i = 0; i <= 6; i++) {
 //            LocalDate daysAgo = now.minusDays(i);
-        return client.getTableSearchRank(indexName, apiType, gte, lte, 10000, 10);
+        return client.getTableSearchRank(requestURI, apiType, gte, lte, 10000, 10);
 
 //            tableSearchRank.stream()
 //                            .map(item -> map.putIfAbsent(item.getKeyword(), item.getCount()));

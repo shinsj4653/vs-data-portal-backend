@@ -115,14 +115,15 @@ public class ElasticUtil {
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String index, String apiType, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String requestURI, String apiType, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
-        SearchRequest searchRequest = new SearchRequest(index);
+
+        SearchRequest searchRequest = new SearchRequest("search_logs");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // match -> message : URI
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.filter(QueryBuilders.termQuery("apiType.keyword", apiType));
+        boolQuery.filter(QueryBuilders.termQuery("requestURI.keyword", requestURI));
 
         // range -> gte to lte
         RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
@@ -136,7 +137,7 @@ public class ElasticUtil {
         String[] includes = new String[]{"time", "requestURI", "keyword"};
         searchSourceBuilder.fetchSource(includes, null);
 
-        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("KEYWORD_RANK")
+        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("SEARCH_RANK")
                                                                         .field("keyword.keyword")
                                                                         .size(rankResultSize)
                                                                         .minDocCount(1)

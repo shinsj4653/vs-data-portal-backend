@@ -9,7 +9,7 @@ import lombok.Getter;
 public class TableSearchRankRequest {
 
     // ES Index명
-    private String index;
+    private String requestURI;
 
     // 원하는 로그가 전송되는 API 종류
     private String apiType;
