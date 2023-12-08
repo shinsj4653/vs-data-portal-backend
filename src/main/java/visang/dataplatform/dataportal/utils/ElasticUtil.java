@@ -115,10 +115,10 @@ public class ElasticUtil {
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String requestURI, String logType, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String index, String requestURI, String logType, String gte, String lte, Integer logResultSize, Integer rankResultSize
     ) {
 
-        SearchRequest searchRequest = new SearchRequest("search_logs");
+        SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // match -> message : URI

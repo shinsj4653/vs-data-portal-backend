@@ -83,15 +83,16 @@ public class DataPlatformMainService {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
-        // index : metadata_search_log-YYYY-MM-DD
+        // index :search_logs-YYYY-MM-DD
         // 7일 동안의 결과 집게 후, List<> 형태로 return
 
         LocalDate now = LocalDate.now();
-        Map<String, Integer> map = new HashMap<>();
+        String index = "search_logs-" + now;
+        log.info(index);
 
 //        for (int i = 0; i <= 6; i++) {
 //            LocalDate daysAgo = now.minusDays(i);
-        return client.getTableSearchRank(requestURI, logType, gte, lte, 10000, 10);
+        return client.getTableSearchRank(index, requestURI, logType, gte, lte, 10000, 10);
 
 //            tableSearchRank.stream()
 //                            .map(item -> map.putIfAbsent(item.getKeyword(), item.getCount()));
