@@ -43,7 +43,7 @@ dependencies {
 
 	/* elasticsearch */
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.2'
+	//implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.2'
 	//implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.9.3'
 	implementation 'org.elasticsearch:elasticsearch:7.9.3'
 
@@ -59,6 +59,8 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.4'
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.11.2'
+
+	implementation 'jakarta.json:jakarta.json-api:2.0.1'
 
 	implementation "org.springframework.boot:spring-boot-starter-json"
     testImplementation 'junit:junit:4.13.1'
