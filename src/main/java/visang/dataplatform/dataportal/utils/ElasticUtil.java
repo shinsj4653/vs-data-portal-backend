@@ -147,9 +147,7 @@ public class ElasticUtil {
 
         List<TableSearchKeywordRankDto> list = new ArrayList<>();
 
-        try (RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
-                .setApiCompatibilityMode(true)
-                .build()) {
+        try {
 
             // 오늘부터 7일전까지의 Index의 그룹 Alias 명 => "last-7-days"
             String aliasName = "last-7-days";
@@ -164,9 +162,9 @@ public class ElasticUtil {
             // 오늘의 검색 로그 index는 add, 7일전 날짜의 검색 로그는 delete
 
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
-            if (isTodayIndexExist(client, todayIndex)) {
+            if (isTodayIndexExist(esClient, todayIndex)) {
                 log.info("isTodayIndexExist");
-                addTodayIndex(client, todayIndex);
+                addTodayIndex(esClient, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
@@ -175,11 +173,11 @@ public class ElasticUtil {
             }
 
             // Remove indices older than 7 days from the alias
-            removeOldIndicesFromAlias(client, aliasName);
+            removeOldIndicesFromAlias(esClient, aliasName);
 
             // Get the actual indices associated with the "last-7-days" alias
             GetAliasesRequest getAliasesRequest = new GetAliasesRequest("last-7-days");
-            org.elasticsearch.client.GetAliasesResponse getAliasesResponse = client.indices().getAlias(getAliasesRequest, RequestOptions.DEFAULT);
+            org.elasticsearch.client.GetAliasesResponse getAliasesResponse = esClient.indices().getAlias(getAliasesRequest, RequestOptions.DEFAULT);
 
             String[] indices = getAliasesResponse.getAliases().keySet().toArray(String[]::new);
 
