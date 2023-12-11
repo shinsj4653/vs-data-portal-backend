@@ -1,28 +1,26 @@
 package visang.dataplatform.dataportal.utils;
 
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.DeleteAliasRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.cluster.metadata.AliasMetadata;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -31,9 +29,9 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.action.admin.indices.alias.Alias;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
 import org.springframework.stereotype.Component;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 
 import java.io.IOException;
@@ -43,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.*;
 
@@ -54,14 +51,25 @@ import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 public class ElasticUtil {
 
     private static ElasticUtil self;
+    private ElasticsearchClient esClient;
+    private RestClient httpClient;
     private RestClientBuilder restClientBuilder;
 
-    public ElasticUtil(String hostname, int port) {
-        HttpHost host = new HttpHost(hostname, port);
-        restClientBuilder = RestClient.builder(host);
+    public ElasticUtil(String hostname, Integer port) {
+        httpClient = RestClient.builder(
+                new HttpHost(hostname, port)
+        ).build();
+
+        // Create the Java API Client with the same low level client
+        ElasticsearchTransport transport = new RestClientTransport(
+                httpClient,
+                new JacksonJsonpMapper()
+        );
+
+        esClient = new ElasticsearchClient(transport);
     }
 
-    public static ElasticUtil getInstance(String hostname, int port) {
+    public static ElasticUtil getInstance(String hostname, Integer port) {
         if (self == null)
             self = new ElasticUtil(hostname, port);
         return self;
@@ -85,14 +93,17 @@ public class ElasticUtil {
 
         searchRequest.source(searchSourceBuilder);
 
-        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+        // Create the HLRC
+        try(RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
+                .setApiCompatibilityMode(true)
+                .build()){
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
-
         } catch (IOException e) {}
 
         return null;
+
     }
 
     public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
@@ -118,7 +129,9 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
 
         // Execute the search request and handle the response
-        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+        try (RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
+                .setApiCompatibilityMode(true)
+                .build()) {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
