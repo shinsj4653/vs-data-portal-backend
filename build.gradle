@@ -54,6 +54,11 @@ dependencies {
 	// spring boot log to logstash
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
 
+	// ES Java API Client
+	implementation 'co.elastic.clients:elasticsearch-java:8.11.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+
+
 	implementation "org.springframework.boot:spring-boot-starter-json"
     testImplementation 'junit:junit:4.13.1'
 
