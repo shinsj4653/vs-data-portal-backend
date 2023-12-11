@@ -151,7 +151,9 @@ public class ElasticUtil {
 
         List<TableSearchKeywordRankDto> list = new ArrayList<>();
 
-        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+        try (RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
+                .setApiCompatibilityMode(true)
+                .build()) {
 
             // 오늘부터 7일전까지의 Index의 그룹 Alias 명 => "last-7-days"
             String aliasName = "last-7-days";
