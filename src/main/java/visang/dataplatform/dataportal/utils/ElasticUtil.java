@@ -164,12 +164,12 @@ public class ElasticUtil {
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(esClient, todayIndex)) {
                 log.info("isTodayIndexExist");
-                addTodayIndex(esClient, todayIndex);
+                addIndexToAlias(aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
                 log.info("addIndexToAlias");
-                addIndexToAlias(aliasName, todayIndex);
+                createTodayIndex(esClient, todayIndex);
             }
 
             // Remove indices older than 7 days from the alias
@@ -245,7 +245,7 @@ public class ElasticUtil {
 
     }
 
-    private static void addTodayIndex(RestHighLevelClient client, String index) {
+    private static void createTodayIndex(RestHighLevelClient client, String index) {
 
         try {
             // Create index request
