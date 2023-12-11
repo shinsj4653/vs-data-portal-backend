@@ -153,7 +153,7 @@ public class ElasticUtil {
                 createTodayIndex(client, todayIndex);
             }
 
-            // Remove indices older than 7 days from the alias
+            // 7일 이후의 날짜에 해당하는 Index는 Alias에서 제거
             removeOldIndicesFromAlias(client, aliasName);
 
             // Get the actual indices associated with the "last-7-days" alias
