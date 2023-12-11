@@ -67,7 +67,7 @@ public class ElasticUtil {
         );
 
         esClient = new RestHighLevelClient(
-                RestClient.builder(new HttpHost(hostname, port));
+                RestClient.builder(new HttpHost(hostname, port)));
     }
 
     public static ElasticUtil getInstance(String hostname, Integer port) {
