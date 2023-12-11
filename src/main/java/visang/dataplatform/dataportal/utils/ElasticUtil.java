@@ -142,7 +142,7 @@ public class ElasticUtil {
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
-            String requestURI, String logType, String gte, String lte, Integer logResultSize, Integer rankResultSize
+            String requestURI, String logType, Integer logResultSize, Integer rankResultSize
     ) {
 
         List<TableSearchKeywordRankDto> list = new ArrayList<>();
@@ -190,10 +190,10 @@ public class ElasticUtil {
             boolQuery.filter(QueryBuilders.termQuery("logType.keyword", logType));
 
             // range -> gte to lte
-            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
-                    .gte(gte)
-                    .lte(lte);
-            boolQuery.must(rangeQuery);
+//            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
+//                    .gte(gte)
+//                    .lte(lte);
+//            boolQuery.must(rangeQuery);
 
             searchSourceBuilder.query(boolQuery);
 

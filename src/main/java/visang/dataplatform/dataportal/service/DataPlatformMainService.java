@@ -79,14 +79,14 @@ public class DataPlatformMainService {
         String logType = request.getLogType();
 
         // 검색 시간대
-        String gte = request.getGte();
-        String lte = request.getLte();
+        //String gte = request.getGte();
+        //String lte = request.getLte();
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
         // 현재 날짜부터 7일 동안의 검색 기록필요
         // last-7-days Alias 사용
-        return client.getTableSearchRank(requestURI, logType, gte, lte, 10000, 10);
+        return client.getTableSearchRank(requestURI, logType, 10000, 10);
     }
 
 
