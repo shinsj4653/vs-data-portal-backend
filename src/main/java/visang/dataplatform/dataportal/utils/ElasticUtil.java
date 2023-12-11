@@ -1,6 +1,8 @@
 package visang.dataplatform.dataportal.utils;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.FuzzyQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
@@ -104,7 +106,7 @@ public class ElasticUtil {
                  className);
     }
 
-    public <T> SearchResponse<T> getAutoCompleteSearchWords(String index, String searchCondition, String keyword, Class<T> className) throws IOException {
+    public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
 
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -119,20 +121,18 @@ public class ElasticUtil {
         MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
         boolQueryBuilder.should(matchPhrasePrefixQuery);
 
-        return esClient.search(s -> s.index(index)
-                .query(q -> q
-                        .bool(b -> b
-                                .should(sh -> sh
-                                        .fuzzy(f -> f
-                                                .field(searchCondition + ".keyword")
-                                                .value(keyword)
-                                                .fuzziness(String.valueOf(Fuzziness.ONE)))
-                                )
-                                .should(sh -> sh
-                                        .matchPhrasePrefix(m -> m
-                                                .field(searchCondition)
-                                                .query(keyword))))), className);
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            return response.getHits();
+        } catch (IOException e) {
+            log.error("getAutoCompleteSearchWords error : {}", e.getMessage());
+        }
+        return null;
     }
+
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(

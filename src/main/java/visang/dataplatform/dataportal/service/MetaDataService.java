@@ -135,13 +135,11 @@ public class MetaDataService {
         Set<String> result = new LinkedHashSet<>();
 
         for (String searchCondition : searchConditions) {
-            SearchResponse<String> searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword, String.class);
-            log.info("hit.source : {}", searchHits.hits().hits().get(0).toString());
-            log.debug("hit.source : {}", searchHits.hits().hits().get(0).toString());
+            SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
 
             // 결과 json 리스트에서, 단어 가져오기
-            for (Hit<String> hit : searchHits.hits().hits()) {
-                result.add(hit.source().toString());
+            for (SearchHit hit : searchHits) {
+                result.add(String.valueOf(hit.getSourceAsMap().get(searchCondition)));
             }
         }
         // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
