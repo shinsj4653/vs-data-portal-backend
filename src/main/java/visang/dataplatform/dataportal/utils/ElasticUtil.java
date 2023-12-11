@@ -1,6 +1,7 @@
 package visang.dataplatform.dataportal.utils;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -105,6 +106,8 @@ public class ElasticUtil {
 
     public <T> SearchResponse<T> getAutoCompleteSearchWords(String index, String searchCondition, String keyword, Class<T> className) throws IOException {
 
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // BoolQueryBuilder
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
@@ -116,11 +119,19 @@ public class ElasticUtil {
         MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
         boolQueryBuilder.should(matchPhrasePrefixQuery);
 
-        return esClient.search(s -> s
-                .index(index)
-                        .query(q -> q
-                                .bool((Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>>) boolQueryBuilder))
-                , className);
+        return esClient.search(s -> s.index(index)
+                .query(q -> q
+                        .bool(b -> b
+                                .should(sh -> sh
+                                        .fuzzy(f -> f
+                                                .field(searchCondition + ".keyword")
+                                                .value(keyword)
+                                                .fuzziness(String.valueOf(Fuzziness.ONE)))
+                                )
+                                .should(sh -> sh
+                                        .matchPhrasePrefix(m -> m
+                                                .field(searchCondition)
+                                                .query(keyword))))), className);
     }
 
 

@@ -136,8 +136,8 @@ public class MetaDataService {
 
         for (String searchCondition : searchConditions) {
             SearchResponse<String> searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword, String.class);
-            log.info("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
-            log.debug("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
+            log.info("hit.source : {}", searchHits.hits().hits().get(0).toString());
+            log.debug("hit.source : {}", searchHits.hits().hits().get(0).toString());
 
             // 결과 json 리스트에서, 단어 가져오기
             for (Hit<String> hit : searchHits.hits().hits()) {
