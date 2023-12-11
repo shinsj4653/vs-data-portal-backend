@@ -90,7 +90,7 @@ public class MetaDataService {
         SearchResponse<TableSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, TableSearchDto.class);
         List<TableSearchDto> result = new ArrayList<>();
 
-        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
+        Long totalHitNum = searchHits.hits().total().value();
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
@@ -113,7 +113,7 @@ public class MetaDataService {
         }
         
         // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
-        if (totalHitNum > 0 && hasKeyword) {
+        if (totalHitNum > 0L && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 

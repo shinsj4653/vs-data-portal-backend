@@ -52,7 +52,7 @@ public class DataPlatformMainService {
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
-        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
+        Long totalHitNum = searchHits.hits().total().value();
 
         for (Hit<DatasetSearchDto> hit : searchHits.hits().hits()) {
 
@@ -70,7 +70,7 @@ public class DataPlatformMainService {
         }
 
         // 검색 결과가 있는 경우에만 검색 로그 전송
-        if (totalHitNum > 0 && hasKeyword) {
+        if (totalHitNum > 0L && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/dpmain/search/keyword"), keyValue("keyword", keyword));
         }
 
