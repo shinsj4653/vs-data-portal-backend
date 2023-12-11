@@ -45,20 +45,21 @@ public class DataPlatformMainService {
         fields.add("sub_category_name");
 
         // ES QueryDSL 검색결과 반환
-        SearchResponse<DatasetSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, DatasetSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<DatasetSearchDto> result = new ArrayList<>();
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
-        Long totalHitNum = searchHits.hits().total().value();
+        Long totalHitNum = searchHits.getTotalHits().value;
 
-        for (Hit<DatasetSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            String serviceName = hit.source().getService_name();
-            String mainCategoryName = hit.source().getMain_category_name();
-            String subCategoryName = hit.source().getSub_category_name();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            String serviceName = String.valueOf(sourceMap.get("service_name"));
+            String mainCategoryName = String.valueOf(sourceMap.get("main_category_name"));
+            String subCategoryName = String.valueOf(sourceMap.get("sub_category_name"));
 
             DatasetSearchDto docData = new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, totalHitNum);
 

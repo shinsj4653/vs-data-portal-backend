@@ -87,21 +87,23 @@ public class MetaDataService {
         }
         
         // ES QueryDSL 검색결과 반환
-        SearchResponse<TableSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, TableSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<TableSearchDto> result = new ArrayList<>();
 
-        Long totalHitNum = searchHits.hits().total().value();
+        Long totalHitNum = searchHits.getTotalHits().value;
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        for (Hit<TableSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            String table_id = hit.source().getTable_id();
-            String table_comment = hit.source().getTable_comment();
-            String small_clsf_name = hit.source().getSmall_clsf_name();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+
+            String table_id = String.valueOf(sourceMap.get("table_id"));
+            String table_comment = String.valueOf(sourceMap.get("table_comment"));
+            String small_clsf_name = String.valueOf(sourceMap.get("small_clsf_name"));
 
             TableSearchDto docData = new TableSearchDto(table_id, table_comment, small_clsf_name, totalHitNum);
             

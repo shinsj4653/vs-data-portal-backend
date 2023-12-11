@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.*;
@@ -87,23 +87,45 @@ public class ElasticUtil {
         return self;
     }
 
-    public <T> SearchResponse<T> getTotalTableSearch(
-            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage, Class<T> className
-    ) throws IOException {
+    public SearchHits getTotalTableSearch(
+            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
+    ) {
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         Integer fromNo = (pageNo - 1) * amountPerPage;
         Integer sizeNum = amountPerPage;
 
-        return esClient.search(s -> s
-                        .index(index)
-                        .query(q -> q
-                                .multiMatch(m -> m
-                                        .query(keyword)
-                                        .fields(fields))
-                        )
-                        .from(fromNo)
-                        .size(sizeNum),
-                 className);
+        // multi-match query
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
+
+        // set from -> 결과 시작 지점(0부터 count)
+        searchSourceBuilder.from(fromNo);
+
+        // set size -> 결과 반환 갯수
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            return response.getHits();
+
+        } catch (IOException e) {
+            log.error("getTotalTableSearch error : {}", e.getMessage());
+        }
+
+
+//        return esClient.search(s -> s
+//                        .index(index)
+//                        .query(q -> q
+//                                .multiMatch(m -> m
+//                                        .query(keyword)
+//                                        .fields(fields))
+//                        )
+//                        .from(fromNo)
+//                        .size(sizeNum),
+//                 className);
     }
 
     public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
