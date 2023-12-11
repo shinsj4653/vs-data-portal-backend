@@ -14,6 +14,7 @@ import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequ
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
@@ -83,26 +84,12 @@ public class DataPlatformMainService {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
-        // index :search_logs-YYYY-MM-DD
-        // 7일 동안의 결과 집게 후, List<> 형태로 return
-
-        LocalDate now = LocalDate.now();
-        String index = "search_logs-" + now;
-        log.info(index);
-
-//        for (int i = 0; i <= 6; i++) {
-//            LocalDate daysAgo = now.minusDays(i);
-        return client.getTableSearchRank(index, requestURI, logType, gte, lte, 10000, 10);
-
-//            tableSearchRank.stream()
-//                            .map(item -> map.putIfAbsent(item.getKeyword(), item.getCount()));
-//
-//        }
-
-        // Integer 가 검색 횟수이므로, 이를 정렬
-
-
+        // 현재 날짜부터 7일 동안의 검색 기록필요
+        // last-7-days Alias 사용
+        return client.getTableSearchRank(requestURI, logType, gte, lte, 10000, 10);
     }
+
+
 
     // 데이터 검색 시, 빈 키워드를 입력하는 경우, 로그 전송 하지 않도록 막기
     private void validateBlankKeyword(String keyword) {
