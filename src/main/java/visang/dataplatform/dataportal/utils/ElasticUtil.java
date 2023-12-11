@@ -14,6 +14,7 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.DeleteAliasRequest;
@@ -247,17 +248,28 @@ public class ElasticUtil {
 
     private static void addIndexToAlias(RestHighLevelClient client, String alias, String index) throws IOException {
 
-        IndicesAliasesRequest request = new IndicesAliasesRequest();
-        AliasActions aliasAction =
-                new AliasActions(AliasActions.Type.ADD)
-                        .index(index)
-                        .alias(alias);
-        request.addAliasAction(aliasAction);
+        try {
+            IndicesAliasesRequest request = new IndicesAliasesRequest();
+            AliasActions aliasAction =
+                    new AliasActions(AliasActions.Type.ADD)
+                            .index(index)
+                            .alias(alias);
+            request.addAliasAction(aliasAction);
 
-        // Alias에 Index 추가하는 요청 실행
-        client.indices().updateAliases(request, RequestOptions.DEFAULT);
+            // Alias에 Index 추가하는 요청 실행
+            AcknowledgedResponse acknowledgedResponse = client.indices().updateAliases(request, RequestOptions.DEFAULT);
+            if (acknowledgedResponse.isAcknowledged()) {
+                log.info("Add index to alias successful");
+            } else {
+                log.info("Add index to alias failed");
+            }
 
-        log.info("Add index to alias successful");
+        } catch (IOException e) {
+            log.error("Add index to alies error : {}", e.getMessage());
+        }
+
+
+
     }
 
     private static void removeOldIndicesFromAlias(RestHighLevelClient client, String alias) throws IOException {
