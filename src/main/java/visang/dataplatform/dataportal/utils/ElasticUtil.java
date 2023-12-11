@@ -52,6 +52,7 @@ public class ElasticUtil {
 
     private static ElasticUtil self;
     private RestHighLevelClient esClient;
+    private ElasticsearchClient client;
     private RestClient httpClient;
 
     public ElasticUtil(String hostname, Integer port) {
@@ -59,14 +60,16 @@ public class ElasticUtil {
                 new HttpHost(hostname, port)
         ).build();
 
+        esClient = new RestHighLevelClient(
+                RestClient.builder(new HttpHost(hostname, port)));
+
         // Create the Java API Client with the same low level client
         ElasticsearchTransport transport = new RestClientTransport(
                 httpClient,
                 new JacksonJsonpMapper()
         );
 
-        esClient = new RestHighLevelClient(
-                RestClient.builder(new HttpHost(hostname, port)));
+        client = new ElasticsearchClient(transport);
     }
 
     public static ElasticUtil getInstance(String hostname, Integer port) {
