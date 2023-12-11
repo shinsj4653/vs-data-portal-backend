@@ -53,7 +53,6 @@ public class ElasticUtil {
     private static ElasticUtil self;
     private RestHighLevelClient esClient;
     private RestClient httpClient;
-    private RestClientBuilder restClientBuilder;
 
     public ElasticUtil(String hostname, Integer port) {
         httpClient = RestClient.builder(
@@ -158,7 +157,7 @@ public class ElasticUtil {
             // 오늘 날짜
             String todayIndex = "search_logs-" + getCurrentDate();
 
-            log.info(todayIndex);
+            log.info("todayIndex : {}", todayIndex);
 
             // 검색 하기 전
             // last-7-days aliases 관리
@@ -166,10 +165,12 @@ public class ElasticUtil {
 
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(client, todayIndex)) {
+                log.info("isTodayIndexExist");
                 addTodayIndex(client, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
+                log.info("addIndexToAlias");
                 addIndexToAlias(aliasName, todayIndex);
             }
 
@@ -219,16 +220,20 @@ public class ElasticUtil {
 
             SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
+            log.info("about to enter aggs");
+
             RestStatus status = response.status();
             if (status == RestStatus.OK) {
-                    Aggregations aggregations = response.getAggregations();
-                    Terms keywordAggs = aggregations.get("SEARCH_RANK");
-                    for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
-                        list.add(new TableSearchKeywordRankDto(bucket.getKey().toString(), (int) bucket.getDocCount()));
-                    }
-                }
 
-            } catch (IOException e) {}
+                log.info("status OK");
+                Aggregations aggregations = response.getAggregations();
+                Terms keywordAggs = aggregations.get("SEARCH_RANK");
+                for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
+                    list.add(new TableSearchKeywordRankDto(bucket.getKey().toString(), (int) bucket.getDocCount()));
+                }
+            }
+
+        } catch (IOException e) {}
 
         return list;
     }
@@ -273,6 +278,8 @@ public class ElasticUtil {
                         .index(index)
                         .alias(alias);
         request.addAliasAction(aliasAction);
+
+        log.info("Add index to alias successful");
     }
 
     private static void removeOldIndicesFromAlias(RestHighLevelClient client, String alias) throws IOException {
@@ -291,11 +298,13 @@ public class ElasticUtil {
 
     private static String getCurrentDate() {
         LocalDate today = LocalDate.now();
+        log.info("today : {}", today);
         return today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private static boolean isIndexOlderThan7Days(String index) {
         LocalDate indexDate = LocalDate.parse(index.substring("search_logs-".length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        log.info("indexDate : {}", index);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
         return indexDate.isBefore(sevenDaysAgo);
     }
