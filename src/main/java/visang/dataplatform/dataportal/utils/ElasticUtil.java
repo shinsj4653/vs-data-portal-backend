@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.DeleteAliasRequest;
@@ -31,6 +31,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
+import org.junit.jupiter.api.ClassOrderer;
 import org.springframework.stereotype.Component;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 
@@ -51,8 +52,8 @@ import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 public class ElasticUtil {
 
     private static ElasticUtil self;
-    private RestHighLevelClient esClient;
-    private ElasticsearchClient client;
+    private RestHighLevelClient client;
+    private ElasticsearchClient esClient;
     private RestClient httpClient;
 
     public ElasticUtil(String hostname, Integer port) {
@@ -60,7 +61,7 @@ public class ElasticUtil {
                 new HttpHost(hostname, port)
         ).build();
 
-        esClient = new RestHighLevelClient(
+        client = new RestHighLevelClient(
                 RestClient.builder(new HttpHost(hostname, port)));
 
         // Create the Java API Client with the same low level client
@@ -69,7 +70,7 @@ public class ElasticUtil {
                 new JacksonJsonpMapper()
         );
 
-        client = new ElasticsearchClient(transport);
+        esClient = new ElasticsearchClient(transport);
     }
 
     public static ElasticUtil getInstance(String hostname, Integer port) {
@@ -78,35 +79,23 @@ public class ElasticUtil {
         return self;
     }
 
-    public SearchHits getTotalTableSearch(
-            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
-    ) {
+    public <T> SearchResponse<T> getTotalTableSearch(
+            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage, Class<T> className
+    ) throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest(index);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        Integer fromNo = (pageNo - 1) * amountPerPage;
+        Integer sizeNum = amountPerPage;
 
-        // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
-
-        // set from -> 검색결과 시작 지점(0부터 count)
-        searchSourceBuilder.from((pageNo - 1) * amountPerPage);
-
-        // set size -> 검색결과 반환 갯수
-        searchSourceBuilder.size(amountPerPage);
-
-        searchRequest.source(searchSourceBuilder);
-
-        // Create the HLRC
-        try {
-            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
-            SearchHits searchHits = response.getHits();
-            return searchHits;
-        } catch (IOException e) {
-
-        }
-
-        return null;
-
+         return esClient.search(s -> s
+                        .index(index)
+                        .query(q -> q
+                                .multiMatch(m -> m
+                                        .query(keyword)
+                                        .fields(fields))
+                        )
+                        .from(fromNo)
+                        .size(sizeNum),
+                 className);
     }
 
     public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
@@ -133,7 +122,7 @@ public class ElasticUtil {
 
         // Execute the search request and handle the response
         try {
-            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
 
@@ -165,22 +154,22 @@ public class ElasticUtil {
             // 오늘의 검색 로그 index는 add, 7일전 날짜의 검색 로그는 delete
 
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
-            if (isTodayIndexExist(esClient, todayIndex)) {
+            if (isTodayIndexExist(client, todayIndex)) {
                 log.info("isTodayIndexExist");
                 addIndexToAlias(aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
                 log.info("addIndexToAlias");
-                createTodayIndex(esClient, todayIndex);
+                createTodayIndex(client, todayIndex);
             }
 
             // Remove indices older than 7 days from the alias
-            removeOldIndicesFromAlias(esClient, aliasName);
+            removeOldIndicesFromAlias(client, aliasName);
 
             // Get the actual indices associated with the "last-7-days" alias
             GetAliasesRequest getAliasesRequest = new GetAliasesRequest("last-7-days");
-            org.elasticsearch.client.GetAliasesResponse getAliasesResponse = esClient.indices().getAlias(getAliasesRequest, RequestOptions.DEFAULT);
+            org.elasticsearch.client.GetAliasesResponse getAliasesResponse = client.indices().getAlias(getAliasesRequest, RequestOptions.DEFAULT);
 
             String[] indices = getAliasesResponse.getAliases().keySet().toArray(String[]::new);
 
@@ -219,7 +208,7 @@ public class ElasticUtil {
             searchRequest.source(searchSourceBuilder);
             searchRequest.scroll(TimeValue.timeValueMinutes(1));
 
-            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
             log.info("about to enter aggs");
 

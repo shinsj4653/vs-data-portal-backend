@@ -1,13 +1,16 @@
 package visang.dataplatform.dataportal.service;
 
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
+import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
@@ -18,6 +21,8 @@ import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableCol
 import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequest;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
+import javax.persistence.Table;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,7 +60,7 @@ public class MetaDataService {
         return makeMetaInfoTree(res, pageNo, amountPerPage);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String searchCondition, String keyword, Integer pageNo, Integer amountPerPage) {
+    public List<TableSearchDto> getTableSearchResult(String searchCondition, String keyword, Integer pageNo, Integer amountPerPage) throws IOException {
 
         // 빈 키워드인지 체크
         //validateBlankKeyword(keyword);
@@ -82,36 +87,46 @@ public class MetaDataService {
         }
         
         // ES QueryDSL 검색결과 반환
-        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        SearchResponse<TableSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, TableSearchDto.class);
         List<TableSearchDto> result = new ArrayList<>();
-        
-        
+
+        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
+
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        for (SearchHit hit : searchHits) {
-            Map<String, Object> sourceMap = hit.getSourceAsMap();
-            String table_id = String.valueOf(sourceMap.get("table_id"));
-            String table_comment = String.valueOf(sourceMap.get("table_comment"));
-            String small_clsf_name = String.valueOf(sourceMap.get("small_clsf_name"));
-            
-            result.add(new TableSearchDto(table_id, table_comment, small_clsf_name, searchHits.getTotalHits().value));
+        for (Hit<TableSearchDto> hit : searchHits.hits().hits()) {
 
-            if (table_id.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
-                    || table_comment.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
-                    || small_clsf_name.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
+            String table_id = hit.source().getTable_id();
+            String table_comment = hit.source().getTable_comment();
+            String small_clsf_name = hit.source().getSmall_clsf_name();
+
+            TableSearchDto docData = new TableSearchDto(table_id, table_comment, small_clsf_name, totalHitNum);
+            
+            result.add(docData);
+
+            if (isResultContainsKeyword(docData, keyword)) {
                 hasKeyword = true;
             }
         }
         
         // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
-        if (searchHits.getTotalHits().value > 0 && hasKeyword) {
+        if (totalHitNum > 0 && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 
         return result;
+    }
+
+    private static boolean isResultContainsKeyword(TableSearchDto doc, String keyword) {
+        if (doc.getTable_id().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getTable_comment().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getSmall_clsf_name().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))){
+            return true;
+        }
+        return false;
     }
 
     public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) {

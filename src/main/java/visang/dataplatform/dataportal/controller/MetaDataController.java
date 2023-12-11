@@ -17,6 +17,7 @@ import visang.dataplatform.dataportal.service.MetaDataService;
 
 import javax.persistence.Table;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class MetaDataController {
 
     @Operation(summary = "검색 조건 별 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 전체, 테이블ID, 테이블 코멘트, 하위주제 중 하나로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
     @PostMapping("search/keyword")
-    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@Valid @RequestBody TableSearchRequest req) {
+    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@Valid @RequestBody TableSearchRequest req) throws IOException {
         List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getSearch_condition(), req.getKeyword(), req.getPage_no(), req.getAmount_per_page());
         return ResponseUtil.SUCCESS("전체, 테이블ID, 테이블 코멘트, 하위주제 중 하나로 검색한 결과를 조회 성공했습니다.", result);
     }

@@ -1,5 +1,8 @@
 package visang.dataplatform.dataportal.service;
 
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.search.SearchHit;
@@ -13,6 +16,7 @@ import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankD
 import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequest;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -24,7 +28,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 @RequiredArgsConstructor
 public class DataPlatformMainService {
 
-    public List<DatasetSearchDto> getServiceList(String keyword, Integer pageNo, Integer amountPerPage){
+    public List<DatasetSearchDto> getServiceList(String keyword, Integer pageNo, Integer amountPerPage) throws IOException {
 
         // 빈 키워드인지 체크
         validateBlankKeyword(keyword);
@@ -41,35 +45,46 @@ public class DataPlatformMainService {
         fields.add("sub_category_name");
 
         // ES QueryDSL 검색결과 반환
-        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        SearchResponse<DatasetSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, DatasetSearchDto.class);
         List<DatasetSearchDto> result = new ArrayList<>();
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
-        for (SearchHit hit : searchHits) {
-            Map<String, Object> sourceMap = hit.getSourceAsMap();
-            String serviceName = String.valueOf(sourceMap.get("service_name"));
-            String mainCategoryName = String.valueOf(sourceMap.get("main_category_name"));
-            String subCategoryName = String.valueOf(sourceMap.get("sub_category_name"));
+        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
 
-            result.add(new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, searchHits.getTotalHits().value));
+        for (Hit<DatasetSearchDto> hit : searchHits.hits().hits()) {
 
-            if (serviceName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
-                    || mainCategoryName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
-                    || subCategoryName.replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))) {
+            String serviceName = hit.source().getService_name();
+            String mainCategoryName = hit.source().getMain_category_name();
+            String subCategoryName = hit.source().getSub_category_name();
+
+            DatasetSearchDto docData = new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, totalHitNum);
+
+            result.add(docData);
+
+            if (isResultContainsKeyword(docData, keyword)) {
                 hasKeyword = true;
             }
         }
 
         // 검색 결과가 있는 경우에만 검색 로그 전송
-        if (searchHits.getTotalHits().value > 0 && hasKeyword) {
+        if (totalHitNum > 0 && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/dpmain/search/keyword"), keyValue("keyword", keyword));
         }
 
         return result;
 
+    }
+
+    private static boolean isResultContainsKeyword(DatasetSearchDto doc, String keyword) {
+        if (doc.getService_name().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getMain_category_name().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getSub_category_name().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))){
+            return true;
+        }
+        return false;
     }
 
     public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
