@@ -5,6 +5,7 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import co.elastic.clients.util.ObjectBuilder;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -248,27 +249,34 @@ public class ElasticUtil {
 
     private static void addIndexToAlias(RestHighLevelClient client, String alias, String index) throws IOException {
 
-        try {
-            IndicesAliasesRequest request = new IndicesAliasesRequest();
-            AliasActions aliasAction =
-                    new AliasActions(AliasActions.Type.ADD)
-                            .index(index)
-                            .alias(alias);
-            request.addAliasAction(aliasAction);
+        IndicesAliasesRequest request = new IndicesAliasesRequest();
+        AliasActions aliasAction =
+                new AliasActions(AliasActions.Type.ADD)
+                        .index(index)
+                        .alias(alias);
+        request.addAliasAction(aliasAction);
 
-            // Alias에 Index 추가하는 요청 실행
-            AcknowledgedResponse acknowledgedResponse = client.indices().updateAliases(request, RequestOptions.DEFAULT);
-            if (acknowledgedResponse.isAcknowledged()) {
-                log.info("Add index to alias successful");
-            } else {
-                log.info("Add index to alias failed");
-            }
+        ActionListener<AcknowledgedResponse> listener =
+                new ActionListener<AcknowledgedResponse>() {
+                    @Override
+                    public void onResponse(AcknowledgedResponse indicesAliasesResponse) {
+                        log.info("Add index to alias successful");
+                    }
 
-        } catch (IOException e) {
-            log.error("Add index to alies error : {}", e.getMessage());
-        }
+                    @Override
+                    public void onFailure(Exception e) {
+                        log.error("Add index to alias failed");
+                        log.error("error message : {}", e.getMessage());
+                    }
+                };
 
-
+        // Alias에 Index 추가하는 요청 실행
+        client.indices().updateAliasesAsync(request, RequestOptions.DEFAULT, listener);
+//            if (acknowledgedResponse.isAcknowledged()) {
+//                log.info("Add index to alias successful");
+//            } else {
+//                log.info("Add index to alias failed");
+//            }
 
     }
 
