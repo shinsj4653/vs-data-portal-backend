@@ -233,7 +233,9 @@ public class ElasticUtil {
                 }
             }
 
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            log.error("getTableSearchRank error : {}", e.getMessage());
+        }
 
         return list;
     }
