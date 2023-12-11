@@ -141,7 +141,7 @@ public class MetaDataService {
 
             // 결과 json 리스트에서, 단어 가져오기
             for (Hit<String> hit : searchHits.hits().hits()) {
-                result.add(hit.source());
+                result.add(hit.source().toString());
             }
         }
         // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
@@ -153,8 +153,6 @@ public class MetaDataService {
         List<QueryResponseTableColumnInfo> list = metaDataMapper.getTableColumnInfo(tableId);
         return makeTableColumnDto(list);
     }
-
-
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result, Integer pageNo, Integer amountPerPage) {

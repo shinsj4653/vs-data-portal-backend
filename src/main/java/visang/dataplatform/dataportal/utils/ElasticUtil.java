@@ -103,9 +103,6 @@ public class ElasticUtil {
 
     public <T> SearchResponse<T> getAutoCompleteSearchWords(String index, String searchCondition, String keyword, Class<T> className) throws IOException {
 
-        //SearchRequest searchRequest = new SearchRequest(index);
-        //SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
         // BoolQueryBuilder
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
@@ -117,18 +114,6 @@ public class ElasticUtil {
         MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
         boolQueryBuilder.should(matchPhrasePrefixQuery);
 
-        // Add the bool query to the search source builder
-        //searchSourceBuilder.query(boolQueryBuilder);
-
-        // Set the search source builder to the search request
-        //searchRequest.source(searchSourceBuilder);
-
-        // Execute the search request and handle the response
-//        try {
-//            return esClient.search
-//
-//        } catch (IOException e) {}
-//
         return esClient.search(s -> s
                 .index(index)
                         .query(q -> q
@@ -160,7 +145,7 @@ public class ElasticUtil {
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(client, todayIndex)) {
                 log.info("isTodayIndexExist");
-                addIndexToAlias(aliasName, todayIndex);
+                addIndexToAlias(client, aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
@@ -184,12 +169,6 @@ public class ElasticUtil {
             BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
             boolQuery.filter(QueryBuilders.termQuery("requestURI.keyword", requestURI));
             boolQuery.filter(QueryBuilders.termQuery("logType.keyword", logType));
-
-            // range -> gte to lte
-//            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
-//                    .gte(gte)
-//                    .lte(lte);
-//            boolQuery.must(rangeQuery);
 
             searchSourceBuilder.query(boolQuery);
 
@@ -266,7 +245,7 @@ public class ElasticUtil {
 
     }
 
-    private static void addIndexToAlias(String alias, String index) throws IOException {
+    private static void addIndexToAlias(RestHighLevelClient client, String alias, String index) throws IOException {
 
         IndicesAliasesRequest request = new IndicesAliasesRequest();
         AliasActions aliasAction =
@@ -274,6 +253,9 @@ public class ElasticUtil {
                         .index(index)
                         .alias(alias);
         request.addAliasAction(aliasAction);
+
+        // Alias에 Index 추가하는 요청 실행
+        client.indices().updateAliases(request, RequestOptions.DEFAULT);
 
         log.info("Add index to alias successful");
     }
