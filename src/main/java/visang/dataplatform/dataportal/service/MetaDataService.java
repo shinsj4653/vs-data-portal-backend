@@ -129,18 +129,19 @@ public class MetaDataService {
         return false;
     }
 
-    public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) {
+    public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         // 중복 제거 위한 Set
         Set<String> result = new LinkedHashSet<>();
 
         for (String searchCondition : searchConditions) {
-            SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
+            SearchResponse<String> searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword, String.class);
+            log.info("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
+            log.debug("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
 
             // 결과 json 리스트에서, 단어 가져오기
-            for (SearchHit hit : searchHits) {
-                Map<String, Object> sourceMap = hit.getSourceAsMap();
-                result.add(String.valueOf(sourceMap.get(searchCondition)));
+            for (Hit<String> hit : searchHits.hits().hits()) {
+                result.add(hit.source());
             }
         }
         // 중복 제거 완료된 set을 리스트 형태로 변환하여 return

@@ -1,8 +1,10 @@
 package visang.dataplatform.dataportal.utils;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import co.elastic.clients.util.ObjectBuilder;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.*;
 
@@ -86,7 +89,7 @@ public class ElasticUtil {
         Integer fromNo = (pageNo - 1) * amountPerPage;
         Integer sizeNum = amountPerPage;
 
-         return esClient.search(s -> s
+        return esClient.search(s -> s
                         .index(index)
                         .query(q -> q
                                 .multiMatch(m -> m
@@ -98,10 +101,10 @@ public class ElasticUtil {
                  className);
     }
 
-    public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
+    public <T> SearchResponse<T> getAutoCompleteSearchWords(String index, String searchCondition, String keyword, Class<T> className) throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest(index);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //SearchRequest searchRequest = new SearchRequest(index);
+        //SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // BoolQueryBuilder
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -115,21 +118,22 @@ public class ElasticUtil {
         boolQueryBuilder.should(matchPhrasePrefixQuery);
 
         // Add the bool query to the search source builder
-        searchSourceBuilder.query(boolQueryBuilder);
+        //searchSourceBuilder.query(boolQueryBuilder);
 
         // Set the search source builder to the search request
-        searchRequest.source(searchSourceBuilder);
+        //searchRequest.source(searchSourceBuilder);
 
         // Execute the search request and handle the response
-        try {
-            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-            SearchHits searchHits = response.getHits();
-            return searchHits;
-
-        } catch (IOException e) {}
-
-        return null;
-
+//        try {
+//            return esClient.search
+//
+//        } catch (IOException e) {}
+//
+        return esClient.search(s -> s
+                .index(index)
+                        .query(q -> q
+                                .bool((Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>>) boolQueryBuilder))
+                , className);
     }
 
 
