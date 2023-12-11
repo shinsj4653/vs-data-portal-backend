@@ -29,7 +29,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.action.admin.indices.alias.Alias;
-import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
 import org.springframework.stereotype.Component;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
@@ -52,16 +52,13 @@ public class ElasticUtil {
 
     private static ElasticUtil self;
     private ElasticsearchClient esClient;
+    private RestClient httpClient;
+    private RestClientBuilder restClientBuilder;
 
     public ElasticUtil(String hostname, Integer port) {
-        RestClient httpClient = RestClient.builder(
+        httpClient = RestClient.builder(
                 new HttpHost(hostname, port)
         ).build();
-
-        // Create the HLRC
-        RestHighLevelClient hlrc = new RestHighLevelClientBuilder(httpClient)
-                .setApiCompatibilityMode(true)
-                .build();
 
         // Create the Java API Client with the same low level client
         ElasticsearchTransport transport = new RestClientTransport(
@@ -96,14 +93,17 @@ public class ElasticUtil {
 
         searchRequest.source(searchSourceBuilder);
 
-        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+        // Create the HLRC
+        try(RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
+                .setApiCompatibilityMode(true)
+                .build()){
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
-
         } catch (IOException e) {}
 
         return null;
+
     }
 
     public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
@@ -129,7 +129,9 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
 
         // Execute the search request and handle the response
-        try (RestHighLevelClient client = new RestHighLevelClient(restClientBuilder)) {
+        try (RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
+                .setApiCompatibilityMode(true)
+                .build()) {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
