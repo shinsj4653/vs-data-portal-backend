@@ -18,7 +18,7 @@ import org.elasticsearch.client.indices.DeleteAliasRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.cluster.metadata.AliasMetadata;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHits;
@@ -51,7 +51,7 @@ import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 public class ElasticUtil {
 
     private static ElasticUtil self;
-    private ElasticsearchClient esClient;
+    private RestHighLevelClient esClient;
     private RestClient httpClient;
     private RestClientBuilder restClientBuilder;
 
@@ -66,7 +66,8 @@ public class ElasticUtil {
                 new JacksonJsonpMapper()
         );
 
-        esClient = new ElasticsearchClient(transport);
+        esClient = new RestHighLevelClient(
+                RestClient.builder(new HttpHost(hostname, port));
     }
 
     public static ElasticUtil getInstance(String hostname, Integer port) {
@@ -94,13 +95,13 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
 
         // Create the HLRC
-        try(RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
-                .setApiCompatibilityMode(true)
-                .build()){
-            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+        try {
+            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
-        } catch (IOException e) {}
+        } catch (IOException e) {
+
+        }
 
         return null;
 
@@ -129,10 +130,8 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
 
         // Execute the search request and handle the response
-        try (RestHighLevelClient client = new RestHighLevelClientBuilder(httpClient)
-                .setApiCompatibilityMode(true)
-                .build()) {
-            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+        try {
+            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits searchHits = response.getHits();
             return searchHits;
 
@@ -141,8 +140,6 @@ public class ElasticUtil {
         return null;
 
     }
-
-
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
@@ -220,10 +217,10 @@ public class ElasticUtil {
             searchRequest.source(searchSourceBuilder);
             searchRequest.scroll(TimeValue.timeValueMinutes(1));
 
-                SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
-                RestStatus status = response.status();
-                if (status == RestStatus.OK) {
+            RestStatus status = response.status();
+            if (status == RestStatus.OK) {
                     Aggregations aggregations = response.getAggregations();
                     Terms keywordAggs = aggregations.get("SEARCH_RANK");
                     for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
