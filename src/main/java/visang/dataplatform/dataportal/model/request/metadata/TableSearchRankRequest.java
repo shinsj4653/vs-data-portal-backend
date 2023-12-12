@@ -9,8 +9,8 @@ import lombok.Getter;
 public class TableSearchRankRequest {
 
     // 검색 API의 URI명
-    private String requestURI;
+    private String request_uri;
 
     // 원하는 로그가 전송되는 API 종류
-    private String logType;
+    private String log_type;
 }

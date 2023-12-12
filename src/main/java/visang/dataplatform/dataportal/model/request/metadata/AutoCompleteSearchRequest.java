@@ -14,7 +14,7 @@ public class AutoCompleteSearchRequest {
     private String index;
 
     @Schema(description = "검색 기준 리스트")
-    private List<String> searchConditions;
+    private List<String> search_conditions;
 
     @Schema(description = "검색 키워드")
     private String keyword;

@@ -92,9 +92,9 @@ public class DataPlatformMainService {
 
     public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
 
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getRequest_uri();
         // api 종류가 검색 api에 해당하는 로그만 집계
-        String logType = request.getLogType();
+        String logType = request.getLog_type();
 
         // 검색 시간대
         //String gte = request.getGte();
