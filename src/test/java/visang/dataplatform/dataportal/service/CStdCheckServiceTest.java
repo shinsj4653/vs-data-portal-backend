@@ -11,32 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class CStdCheckServiceTest {
 
-    public class WordCombinationsGenerator {
-        Set<String> generateWordCombinations(String inputStr) {
-            Set<String> result = new HashSet<>();
-            generateCombinations(inputStr, "", result);
-            return result;
-        }
-
-        void generateCombinations(String remaining, String current, Set<String> result) {
-            int length = remaining.length();
-
-            if (length == 0) {
-                result.add(current);
-                return;
-            }
-
-            for (int i = 0; i < length; i++) {
-                String prefix = remaining.substring(0, i + 1);
-                String suffix = remaining.substring(i + 1);
-
-                if (!current.isEmpty()) {
-                    generateCombinations(suffix, current + "_" + prefix, result);
-                } else {
-                    generateCombinations(suffix, prefix, result);
-                }
-            }
-        }
+    @Test
+    @DisplayName("표준단어조합 생성 테스트: SMS수신내용")
+    void createStdWordCombTest4() {
+        String input = "SMS수신내용";
+        List<String> results = service.generateStdWordCombinations(input);
+        assertThat(results).containsOnly("SMS_[수신]_CTNT");
     }
 
     CStdCheckService service = new CStdCheckService();
@@ -66,32 +46,19 @@ public class CStdCheckServiceTest {
     }
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: SMS수신내용")
-    void createStdWordCombTest4() {
-        String input = "SMS수신내용";
-        List<String> results = service.generateStdWordCombinations(input);
-//        Assertions.assertThat(result).isEqualTo("SMS_[수신]_CTNT");
-    }
-
-    @Test
     @DisplayName("표준단어조합 생성 테스트: SMS차단목록")
     void createStdWordCombTest5() {
         String input = "SMS차단목록";
-//        List<String> results = service.createStdWordCombs(input);
-//        Assertions.assertThat(result).isEqualTo("SMS_[차단목록]");
+        List<String> results = service.generateStdWordCombinations(input);
+        assertThat(results).containsOnly("SMS_[차단목록]");
     }
 
     @Test
-    void ChatGPT_단어조합생성_테스트() {
-        String inputStr = "학생전화번호";
-        WordCombinationsGenerator generator = new WordCombinationsGenerator();
-        // 단어 조합 생성
-        Set<String> wordCombinations = generator.generateWordCombinations(inputStr);
+    void join_메소드_예외처리_테스트() {
+        String[] words = {"학생"};
+        String result = String.join("_", words);
 
-        // 결과 출력
-        for (String word : wordCombinations) {
-            System.out.println(word);
-        }
+        assertThat(result).isEqualTo("학생");
     }
 
     @Test
@@ -158,15 +125,7 @@ public class CStdCheckServiceTest {
         );
     }
 
-    @Test
-    void join_메소드_예외처리_테스트() {
-        String[] words = {"학생"};
-        String result = String.join("_", words);
-        assertThat(result).isEqualTo("학생");
-    }
-
     class CStdCheckService {
-        // 표준사전
         Map<String, String> dict = Map.of("휴대전화", "SMPHN",
                 "전화", "PHN",
                 "번호", "NM",
@@ -205,40 +164,68 @@ public class CStdCheckServiceTest {
         }
 
         // 표준단어조합 생성
-        List<String> generateStdWordCombinations(String input) {
-            Map<Integer, List<String>> classifiedResults = new HashMap<>();
+        public List<String> generateStdWordCombinations(String input) {
+            List<WordCombination> candidates = new ArrayList<>();
 
             Set<String> wordCombinations = generateWordCombinations(input);
             for (String combination : wordCombinations) {
                 String[] words = combination.split("_");
-                int count = 0; // 표준단어로 변환할 수 없는 단어 개수
+                int correctCount = 0; // 표준단어로 변환할 수 있는 단어 개수
+                int wrongCount = 0; // 표준단어로 변환할 수 없는 단어 개수
                 for (int i = 0; i < words.length; i++) {
                     if (dict.containsKey(words[i])) {
+                        correctCount++;
                         words[i] = dict.get(words[i]);
                     } else {
-                        count++;
+                        wrongCount++;
                         words[i] = "[" + words[i] + "]";
                     }
                 }
 
                 String converted = String.join("_", words);
-                classifiedResults.putIfAbsent(count, new ArrayList<>());
-                classifiedResults.get(count).add(converted);
+                candidates.add(new WordCombination(correctCount, wrongCount, converted));
             }
 
-            final Integer resultKey = classifiedResults.keySet()
-                    .stream()
-                    .sorted()
-                    .collect(Collectors.toList())
-                    .get(0);
+            Collections.sort(candidates);
+            final WordCombination first = candidates.get(0);
 
+            return candidates.stream()
+                    .filter(c -> c.getWrongCount() == first.getWrongCount() && c.getCorrectCount() == first.getCorrectCount())
+                    .map(WordCombination::getWordCombination)
+                    .collect(Collectors.toList());
+        }
 
-            System.out.println("========== 표준단어조합 생성결과 ==========");
-            for (String result : classifiedResults.get(resultKey)) {
-                System.out.println(result);
+        class WordCombination implements Comparable<WordCombination> {
+            int correctCount;
+            int wrongCount;
+            String wordCombination;
+
+            public WordCombination(int correctCount, int wrongCount, String wordCombination) {
+                this.correctCount = correctCount;
+                this.wrongCount = wrongCount;
+                this.wordCombination = wordCombination;
             }
 
-            return classifiedResults.get(resultKey);
+            @Override
+            public int compareTo(WordCombination o) {
+                if (this.wrongCount == o.wrongCount) {
+                    return o.correctCount - this.correctCount;
+                }
+                return this.wrongCount - o.wrongCount;
+            }
+
+            public int getCorrectCount() {
+                return correctCount;
+            }
+
+            public int getWrongCount() {
+                return wrongCount;
+            }
+
+            public String getWordCombination() {
+                return wordCombination;
+            }
         }
     }
+
 }
