@@ -126,6 +126,7 @@ public class ElasticUtil {
 //                        .from(fromNo)
 //                        .size(sizeNum),
 //                 className);
+        return null;
     }
 
     public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
