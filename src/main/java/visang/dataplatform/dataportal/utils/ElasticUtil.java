@@ -60,7 +60,7 @@ import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 public class ElasticUtil {
 
     private static ElasticUtil self;
-    private RestHighLevelClient client;
+    private static RestHighLevelClient client;
     private ElasticsearchClient esClient;
     private RestClient httpClient;
 
@@ -141,8 +141,17 @@ public class ElasticUtil {
         boolQueryBuilder.should(fuzzyQuery);
 
         // Add match phrase prefix query
-        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
-        boolQueryBuilder.should(matchPhrasePrefixQuery);
+
+
+//        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
+
+        String[] fieldNames = makeFieldNames(searchCondition);
+
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames)
+                .type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX);
+
+
+        boolQueryBuilder.should(multiMatchQuery);
 
         searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
@@ -154,6 +163,17 @@ public class ElasticUtil {
             log.error("getAutoCompleteSearchWords error : {}", e.getMessage());
         }
         return null;
+    }
+
+    private static String[] makeFieldNames(String searchCondition) {
+        String[] fieldNames = new String[5];
+        fieldNames[0] = searchCondition;
+        fieldNames[1] = searchCondition + "_hantoeng";
+        fieldNames[2] = searchCondition + "_engtohan";
+        fieldNames[3] = searchCondition + "_chosung";
+        fieldNames[4] = searchCondition + "_ngram";
+
+        return fieldNames;
     }
 
 
