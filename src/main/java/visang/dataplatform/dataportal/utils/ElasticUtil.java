@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.*;
+import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.*;
 
 @Slf4j
 @Component
@@ -98,7 +99,8 @@ public class ElasticUtil {
         Integer sizeNum = amountPerPage;
 
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()]))
+                .type(PHRASE_PREFIX));
 
         // set from -> 결과 시작 지점(0부터 count)
         searchSourceBuilder.from(fromNo);
@@ -142,13 +144,12 @@ public class ElasticUtil {
 
         // Add match phrase prefix query
 
-
 //        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
 
-        String[] fieldNames = makeFieldNames(searchCondition);
+        List<String> fieldNames = makeFieldNames(searchCondition);
 
-        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames)
-                .type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX);
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames.toArray(new String[fieldNames.size()]))
+                .type(PHRASE_PREFIX);
 
 
         boolQueryBuilder.should(multiMatchQuery);
@@ -157,7 +158,7 @@ public class ElasticUtil {
         searchRequest.source(searchSourceBuilder);
 
         try {
-            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             return response.getHits();
         } catch (IOException e) {
             log.error("getAutoCompleteSearchWords error : {}", e.getMessage());
@@ -165,13 +166,13 @@ public class ElasticUtil {
         return null;
     }
 
-    private static String[] makeFieldNames(String searchCondition) {
-        String[] fieldNames = new String[5];
-        fieldNames[0] = searchCondition;
-        fieldNames[1] = searchCondition + "_hantoeng";
-        fieldNames[2] = searchCondition + "_engtohan";
-        fieldNames[3] = searchCondition + "_chosung";
-        fieldNames[4] = searchCondition + "_ngram";
+    private static List<String> makeFieldNames(String searchCondition) {
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add(searchCondition);
+        fieldNames.add(searchCondition + "_hantoeng");
+        fieldNames.add(searchCondition + "_engtohan");
+        fieldNames.add(searchCondition + "_chosung");
+        fieldNames.add(searchCondition + "_ngram");
 
         return fieldNames;
     }
@@ -247,7 +248,7 @@ public class ElasticUtil {
             searchRequest.source(searchSourceBuilder);
             searchRequest.scroll(TimeValue.timeValueMinutes(1));
 
-            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
             log.info("about to enter aggs");
 
