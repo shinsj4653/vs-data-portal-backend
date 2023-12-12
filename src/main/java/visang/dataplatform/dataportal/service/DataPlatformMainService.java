@@ -69,6 +69,8 @@ public class DataPlatformMainService {
                 hasKeyword = true;
             }
         }
+        log.info("totalHitNum : {}", totalHitNum);
+        log.info("hasKeyword : {}", hasKeyword);
 
         // 검색 결과가 있는 경우에만 검색 로그 전송
         if (totalHitNum > 0L && hasKeyword) {
