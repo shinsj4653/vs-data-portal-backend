@@ -1,12 +1,43 @@
 package visang.dataplatform.dataportal.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class CStdCheckServiceTest {
+
+    public class WordCombinationsGenerator {
+        Set<String> generateWordCombinations(String inputStr) {
+            Set<String> result = new HashSet<>();
+            generateCombinations(inputStr, "", result);
+            return result;
+        }
+
+        void generateCombinations(String remaining, String current, Set<String> result) {
+            int length = remaining.length();
+
+            if (length == 0) {
+                result.add(current);
+                return;
+            }
+
+            for (int i = 0; i < length; i++) {
+                String prefix = remaining.substring(0, i + 1);
+                String suffix = remaining.substring(i + 1);
+
+                if (!current.isEmpty()) {
+                    generateCombinations(suffix, current + "_" + prefix, result);
+                } else {
+                    generateCombinations(suffix, prefix, result);
+                }
+            }
+        }
+    }
 
     CStdCheckService service = new CStdCheckService();
 
@@ -14,32 +45,31 @@ public class CStdCheckServiceTest {
     @DisplayName("표준단어조합 생성 테스트: 휴대전화번호")
     void createStdWordCombTest1() {
         String input = "휴대전화번호";
-        List<String> results = service.createStdWordCombs(input);
-//        Assertions.assertThat(results.size()).isEqualTo(1);
-        Assertions.assertThat(results).containsOnly("SMPHN_NM");
+        List<String> results = service.generateStdWordCombinations(input);
+        assertThat(results).containsOnly("SMPHN_NM");
     }
 
     @Test
     @DisplayName("표준단어조합 생성 테스트: 학생휴대전화번호")
     void createStdWordCombTest2() {
         String input = "학생휴대전화번호";
-        List<String> results = service.createStdWordCombs(input);
-//        Assertions.assertThat(result).isEqualTo("STDT_SMPHN_NM");
+        List<String> results = service.generateStdWordCombinations(input);
+        assertThat(results).containsOnly("STDT_SMPHN_NM");
     }
 
     @Test
     @DisplayName("표준단어조합 생성 테스트: 학교선생님휴대전화번호")
     void createStdWordCombTest3() {
         String input = "학교선생님휴대전화번호";
-        List<String> results = service.createStdWordCombs(input);
-//        Assertions.assertThat(result).isEqualTo("SCHL_TCHR_SMPHN_NM");
+        List<String> results = service.generateStdWordCombinations(input);
+        assertThat(results).containsOnly("SCHL_TCHR_SMPHN_NM");
     }
 
     @Test
     @DisplayName("표준단어조합 생성 테스트: SMS수신내용")
     void createStdWordCombTest4() {
         String input = "SMS수신내용";
-        List<String> results = service.createStdWordCombs(input);
+        List<String> results = service.generateStdWordCombinations(input);
 //        Assertions.assertThat(result).isEqualTo("SMS_[수신]_CTNT");
     }
 
@@ -47,7 +77,7 @@ public class CStdCheckServiceTest {
     @DisplayName("표준단어조합 생성 테스트: SMS차단목록")
     void createStdWordCombTest5() {
         String input = "SMS차단목록";
-        List<String> results = service.createStdWordCombs(input);
+//        List<String> results = service.createStdWordCombs(input);
 //        Assertions.assertThat(result).isEqualTo("SMS_[차단목록]");
     }
 
@@ -117,14 +147,37 @@ public class CStdCheckServiceTest {
         }
     }
 
-    public class WordCombinationsGenerator {
-        Set<String> generateWordCombinations(String inputStr) {
-            Set<String> result = new HashSet<>();
-            generateCombinations(inputStr, "", result);
-            return result;
-        }
+    @Test
+    void split_메소드_예외처리_테스트() {
+        final String 학생전화번호 = "학생전화번호";
+        String[] words = 학생전화번호.split("_");
 
-        void generateCombinations(String remaining, String current, Set<String> result) {
+        assertAll(
+                () -> assertThat(words.length).isEqualTo(1),
+                () -> assertThat(words[0]).isEqualTo(학생전화번호)
+        );
+    }
+
+    @Test
+    void join_메소드_예외처리_테스트() {
+        String[] words = {"학생"};
+        String result = String.join("_", words);
+        assertThat(result).isEqualTo("학생");
+    }
+
+    class CStdCheckService {
+        // 표준사전
+        Map<String, String> dict = Map.of("휴대전화", "SMPHN",
+                "전화", "PHN",
+                "번호", "NM",
+                "전화번호", "PHN_NM",
+                "학생", "STDT",
+                "학교", "SCHL",
+                "선생님", "TCHR",
+                "SMS", "SMS",
+                "내용", "CTNT");
+
+        private void generateCombinations(String remaining, String current, Set<String> result) {
             int length = remaining.length();
 
             if (length == 0) {
@@ -143,136 +196,49 @@ public class CStdCheckServiceTest {
                 }
             }
         }
-    }
 
-    class CStdCheckService {
-        // 표준사전
-        Map<String, String> dict = Map.of("휴대전화", "SMPHN",
-                "전화", "PHN",
-                "번호", "NM",
-                "전화번호", "PHN_NM",
-                "학생", "STDT",
-                "학교", "SCHL",
-                "선생님", "TCHR",
-                "SMS", "SMS",
-                "내용", "CTNT");
+        // 가능한 모든 단어조합 생성
+        private Set<String> generateWordCombinations(String input) {
+            Set<String> result = new HashSet<>();
+            generateCombinations(input, "", result);
+            return result;
+        }
 
         // 표준단어조합 생성
-        private void printResults(List<List<String>> candidates) {
-            for (int i = 2; i >= 0; i--) {
-                if (candidates.get(i).size() > 0) {
-                    System.out.println("========== score: " + i + " ==========");
-                    for (String result : candidates.get(i)) {
-                        System.out.println(result);
+        List<String> generateStdWordCombinations(String input) {
+            Map<Integer, List<String>> classifiedResults = new HashMap<>();
+
+            Set<String> wordCombinations = generateWordCombinations(input);
+            for (String combination : wordCombinations) {
+                String[] words = combination.split("_");
+                int count = 0; // 표준단어로 변환할 수 없는 단어 개수
+                for (int i = 0; i < words.length; i++) {
+                    if (dict.containsKey(words[i])) {
+                        words[i] = dict.get(words[i]);
+                    } else {
+                        count++;
+                        words[i] = "[" + words[i] + "]";
                     }
                 }
+
+                String converted = String.join("_", words);
+                classifiedResults.putIfAbsent(count, new ArrayList<>());
+                classifiedResults.get(count).add(converted);
             }
+
+            final Integer resultKey = classifiedResults.keySet()
+                    .stream()
+                    .sorted()
+                    .collect(Collectors.toList())
+                    .get(0);
+
+
+            System.out.println("========== 표준단어조합 생성결과 ==========");
+            for (String result : classifiedResults.get(resultKey)) {
+                System.out.println(result);
+            }
+
+            return classifiedResults.get(resultKey);
         }
-
-        List<String> createStdWordCombs(String input) {
-
-            List<List<String>> candidates = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
-                candidates.add(new ArrayList<>());
-            }
-
-            // input가 표준용어, 표준단어인지 확인
-            if (dict.containsKey(input)) {
-                return List.of(dict.get(input));
-            }
-
-            for (int i = 1; i <= input.length() - 1; i++) {
-                // left, right로 쪼갬
-                String left = input.substring(0, i);
-                String right = input.substring(i);
-
-                // left right가 사전에 있으면 사전에서 가져와서 변환
-                // 없으면 []로 감싸기
-                int score = 0;
-                if (dict.containsKey(left)) {
-                    score++;
-                    left = dict.get(left);
-                } else {
-                    left = "[" + left + "]";
-                }
-
-                if (dict.containsKey(right)) {
-                    score++;
-                    right = dict.get(right);
-                } else {
-                    right = "[" + right + "]";
-                }
-
-                // score 측정 0, 1, 2
-                // 반환후보리스트에 추가
-                candidates.get(score).add(left + "_" + right);
-            }
-
-            // 표준단어조합 생성 결과확인
-            printResults(candidates);
-
-            // 최고 score 측정
-            // 반환후보리스트에서 최고 score를 가진 것들을 반환
-            for (int i = 2; i > 0; i--) {
-                if (candidates.get(i).size() > 0) {
-                    return candidates.get(i);
-                }
-            }
-
-            return List.of("[" + input + "]");
-        }
-        // 나머지 단어를 재귀처리하기 위한 메소드
-
-        List<String> createBestStdWordCombs(String input) {
-
-            List<List<String>> candidates = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
-                candidates.add(new ArrayList<>());
-            }
-
-            // input가 표준용어, 표준단어인지 확인
-            if (dict.containsKey(input)) {
-                return List.of(dict.get(input));
-            }
-
-            for (int i = 1; i <= input.length() - 1; i++) {
-                // left, right로 쪼갬
-                String left = input.substring(0, i);
-                String right = input.substring(i);
-
-                // left right가 사전에 있으면 사전에서 가져와서 변환
-                // 없으면 []로 감싸기
-                int score = 0;
-                if (dict.containsKey(left)) {
-                    score++;
-                    left = dict.get(left);
-                } else {
-                    left = "[" + left + "]";
-                }
-
-                if (dict.containsKey(right)) {
-                    score++;
-                    right = dict.get(right);
-                } else {
-                    right = "[" + right + "]";
-                }
-
-                // score 측정 0, 1, 2
-                // 반환후보리스트에 추가
-                candidates.get(score).add(left + "_" + right);
-            }
-
-            // 최고 score 측정
-            // 반환후보리스트에서 최고 score를 가진 것들을 반환
-            for (int i = 2; i > 0; i--) {
-                if (candidates.get(i).size() > 0) {
-                    return candidates.get(i);
-                }
-            }
-
-            return List.of("[" + input + "]");
-        }
-
-
     }
 }
