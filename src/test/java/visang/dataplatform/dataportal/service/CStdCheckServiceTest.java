@@ -1,6 +1,5 @@
 package visang.dataplatform.dataportal.service;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -12,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class CStdCheckServiceTest {
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: SMS수신내용")
-    void createStdWordCombTest4() {
+    void SMS수신내용_표준단어조합_생성_테스트() {
         String input = "SMS수신내용";
         List<String> results = service.generateStdWordCombinations(input);
         assertThat(results).containsOnly("SMS_[수신]_CTNT");
@@ -22,32 +20,28 @@ public class CStdCheckServiceTest {
     CStdCheckService service = new CStdCheckService();
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: 휴대전화번호")
-    void createStdWordCombTest1() {
+    void 휴대전화번호_표준단어조합_생성_테스트() {
         String input = "휴대전화번호";
         List<String> results = service.generateStdWordCombinations(input);
         assertThat(results).containsOnly("SMPHN_NM");
     }
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: 학생휴대전화번호")
-    void createStdWordCombTest2() {
+    void 학생휴대전화번호_표준단어조합_생성_테스트() {
         String input = "학생휴대전화번호";
         List<String> results = service.generateStdWordCombinations(input);
         assertThat(results).containsOnly("STDT_SMPHN_NM");
     }
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: 학교선생님휴대전화번호")
-    void createStdWordCombTest3() {
+    void 학교선생님휴대전화번호_표준단어조합_생성_테스트() {
         String input = "학교선생님휴대전화번호";
         List<String> results = service.generateStdWordCombinations(input);
         assertThat(results).containsOnly("SCHL_TCHR_SMPHN_NM");
     }
 
     @Test
-    @DisplayName("표준단어조합 생성 테스트: SMS차단목록")
-    void createStdWordCombTest5() {
+    void SMS차단목록_표준단어조합_생성_테스트() {
         String input = "SMS차단목록";
         List<String> results = service.generateStdWordCombinations(input);
         assertThat(results).containsOnly("SMS_[차단목록]");
@@ -126,7 +120,8 @@ public class CStdCheckServiceTest {
     }
 
     class CStdCheckService {
-        Map<String, String> dict = Map.of("휴대전화", "SMPHN",
+        Map<String, String> dict = Map.of(
+                "휴대전화", "SMPHN",
                 "전화", "PHN",
                 "번호", "NM",
                 "전화번호", "PHN_NM",
@@ -134,7 +129,8 @@ public class CStdCheckServiceTest {
                 "학교", "SCHL",
                 "선생님", "TCHR",
                 "SMS", "SMS",
-                "내용", "CTNT");
+                "내용", "CTNT"
+        );
 
         private void generateCombinations(String remaining, String current, Set<String> result) {
             int length = remaining.length();
@@ -172,6 +168,7 @@ public class CStdCheckServiceTest {
                 String[] words = combination.split("_");
                 int correctCount = 0; // 표준단어로 변환할 수 있는 단어 개수
                 int wrongCount = 0; // 표준단어로 변환할 수 없는 단어 개수
+
                 for (int i = 0; i < words.length; i++) {
                     if (dict.containsKey(words[i])) {
                         correctCount++;
@@ -182,13 +179,15 @@ public class CStdCheckServiceTest {
                     }
                 }
 
-                String converted = String.join("_", words);
+                String converted = String.join("_", words); // 표준단어조합 생성
                 candidates.add(new WordCombination(correctCount, wrongCount, converted));
             }
 
-            Collections.sort(candidates);
-            final WordCombination first = candidates.get(0);
+            // 표준단어변환 실패 횟수 오름차순, 표준단어변환 성공 횟수 내림차순
+            Collections.sort(candidates);  // 단어조합 정렬
+            final WordCombination first = candidates.get(0); // 우선순위가 가장 놓은 단어조합 추출
 
+            // 동일한 조건의 단어조합이 여러개 존재하는 경우 고려
             return candidates.stream()
                     .filter(c -> c.getWrongCount() == first.getWrongCount() && c.getCorrectCount() == first.getCorrectCount())
                     .map(WordCombination::getWordCombination)
@@ -196,9 +195,9 @@ public class CStdCheckServiceTest {
         }
 
         class WordCombination implements Comparable<WordCombination> {
-            int correctCount;
-            int wrongCount;
-            String wordCombination;
+            int correctCount; // 표준단어로 변환할 수 있는 단어 개수
+            int wrongCount; // 표준단어로 변환할 수 없는 단어 개수
+            String wordCombination; // 표준단어조합
 
             public WordCombination(int correctCount, int wrongCount, String wordCombination) {
                 this.correctCount = correctCount;
@@ -208,6 +207,10 @@ public class CStdCheckServiceTest {
 
             @Override
             public int compareTo(WordCombination o) {
+                // 표준단어변환 실패 횟수 오름차순
+                // 표준단어변환 성공 횟수 내림차순
+                // 표준단어변환에 가장 적게 실패하면서 가장 많이 성공한 단어조합이 우선순위가 높음
+
                 if (this.wrongCount == o.wrongCount) {
                     return o.correctCount - this.correctCount;
                 }
