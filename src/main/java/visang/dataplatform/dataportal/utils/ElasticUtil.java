@@ -148,8 +148,7 @@ public class ElasticUtil {
 
         List<String> fieldNames = makeFieldNames(searchCondition);
 
-        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames.toArray(new String[fieldNames.size()]))
-                .type(PHRASE_PREFIX);
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames.toArray(new String[fieldNames.size()]));
 
 
         boolQueryBuilder.should(multiMatchQuery);
