@@ -114,7 +114,7 @@ public class ElasticUtil {
             return response.getHits();
 
         } catch (IOException e) {
-            log.error("getTotalTableSearch error : {}", e.getMessage());
+            log.debug("getTotalTableSearch error : {}", e.getMessage());
         }
 
 
@@ -160,7 +160,7 @@ public class ElasticUtil {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             return response.getHits();
         } catch (IOException e) {
-            log.error("getAutoCompleteSearchWords error : {}", e.getMessage());
+            log.debug("getAutoCompleteSearchWords error : {}", e.getMessage());
         }
         return null;
     }
@@ -192,7 +192,7 @@ public class ElasticUtil {
             // 오늘 날짜
             String todayIndex = "search_logs-" + getCurrentDate();
 
-            log.info("todayIndex : {}", todayIndex);
+            log.debug("todayIndex : {}", todayIndex);
 
             // 검색 하기 전
             // last-7-days aliases 관리
@@ -200,12 +200,12 @@ public class ElasticUtil {
 
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(client, todayIndex)) {
-                log.info("isTodayIndexExist");
+                log.debug("isTodayIndexExist");
                 addIndexToAlias(client, aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
-                log.info("addIndexToAlias");
+                log.debug("addIndexToAlias");
                 createTodayIndex(client, todayIndex);
             }
 
@@ -249,12 +249,12 @@ public class ElasticUtil {
 
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            log.info("about to enter aggs");
+            log.debug("about to enter aggs");
 
             RestStatus status = response.status();
             if (status == RestStatus.OK) {
 
-                log.info("status OK");
+                log.debug("status OK");
                 Aggregations aggregations = response.getAggregations();
                 Terms keywordAggs = aggregations.get("SEARCH_RANK");
                 for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
@@ -263,7 +263,7 @@ public class ElasticUtil {
             }
 
         } catch (IOException e) {
-            log.error("getTableSearchRank error : {}", e.getMessage());
+            log.debug("getTableSearchRank error : {}", e.getMessage());
         }
 
         return list;
@@ -290,13 +290,13 @@ public class ElasticUtil {
 
             // Check if the index was created successfully
             if (createIndexResponse.isAcknowledged()) {
-                log.info("Index created successfully: " + index);
+                log.debug("Index created successfully: " + index);
             } else {
-                log.info("Failed to create index: " + index);
+                log.debug("Failed to create index: " + index);
             }
         } catch (IOException e) {
             // Handle IO exception
-            log.error(e.getMessage());
+            log.debug(e.getMessage());
         }
 
     }
@@ -314,13 +314,13 @@ public class ElasticUtil {
                 new ActionListener<AcknowledgedResponse>() {
                     @Override
                     public void onResponse(AcknowledgedResponse indicesAliasesResponse) {
-                        log.info("Add index to alias successful");
+                        log.debug("Add index to alias successful");
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        log.error("Add index to alias failed");
-                        log.error("error message : {}", e.getMessage());
+                        log.debug("Add index to alias failed");
+                        log.debug("error message : {}", e.getMessage());
                     }
                 };
 
@@ -343,20 +343,20 @@ public class ElasticUtil {
             // Check if the index is older than 7 days
             if (isIndexOlderThan7Days(index)) {
                 client.indices().deleteAlias(new DeleteAliasRequest(index, alias), RequestOptions.DEFAULT);
-                log.info("Removed index {} from alias {}", index, alias);
+                log.debug("Removed index {} from alias {}", index, alias);
             }
         }
     }
 
     private static String getCurrentDate() {
         LocalDate today = LocalDate.now();
-        log.info("today : {}", today);
+        log.debug("today : {}", today);
         return today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private static boolean isIndexOlderThan7Days(String index) {
         LocalDate indexDate = LocalDate.parse(index.substring("search_logs-".length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.info("indexDate : {}", index);
+        log.debug("indexDate : {}", index);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
         return indexDate.isBefore(sevenDaysAgo);
     }

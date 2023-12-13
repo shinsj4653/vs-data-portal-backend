@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-<!--     Logstash -->
+    <!-- Logstash -->
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>localhost:4560</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -19,8 +19,11 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
+    </root>
+
+    <root level="INFO">
         <appender-ref ref="LOGSTASH" />
     </root>
 

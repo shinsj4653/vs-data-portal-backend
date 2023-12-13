@@ -52,7 +52,7 @@ public class MetaDataService {
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
 
         if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null") || mainCategoryName.equals(NULL)){
-            log.info("mainCategoryName is NULL");
+            log.debug("mainCategoryName is NULL");
             return new ArrayList<>();
         }
 
@@ -65,8 +65,8 @@ public class MetaDataService {
         // 빈 키워드인지 체크
         //validateBlankKeyword(keyword);
 
-        log.info("pageNo : {}", pageNo);
-        log.info("amountPerPage : {}", amountPerPage);
+        log.debug("pageNo : {}", pageNo);
+        log.debug("amountPerPage : {}", amountPerPage);
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
