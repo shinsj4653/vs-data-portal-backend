@@ -99,8 +99,7 @@ public class ElasticUtil {
         Integer sizeNum = amountPerPage;
 
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()]))
-                .type(PHRASE_PREFIX));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
 
         // set from -> 결과 시작 지점(0부터 count)
         searchSourceBuilder.from(fromNo);

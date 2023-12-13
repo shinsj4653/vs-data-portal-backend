@@ -77,13 +77,16 @@ public class MetaDataService {
         List<String> fields = new ArrayList<>();
 
         if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
-            fields.add("table_id");
+            fields.add("table_id_english");
+            fields.add("table_id_korean");
         }
         if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
-            fields.add("table_comment");
+            fields.add("table_comment_english");
+            fields.add("table_comment_korean");
         }
         if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
-            fields.add("small_clsf_name");
+            fields.add("small_clsf_name_english");
+            fields.add("small_clsf_name_korean");
         }
         
         // ES QueryDSL 검색결과 반환
