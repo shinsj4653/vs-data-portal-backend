@@ -200,12 +200,12 @@ public class ElasticUtil {
 
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(client, todayIndex)) {
-                log.debug("isTodayIndexExist");
+                log.info("isTodayIndexExist");
                 addIndexToAlias(client, aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
-                log.debug("addIndexToAlias");
+                log.info("addIndexToAlias");
                 createTodayIndex(client, todayIndex);
             }
 
@@ -314,13 +314,13 @@ public class ElasticUtil {
                 new ActionListener<AcknowledgedResponse>() {
                     @Override
                     public void onResponse(AcknowledgedResponse indicesAliasesResponse) {
-                        log.debug("Add index to alias successful");
+                        log.info("Add index to alias successful");
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        log.debug("Add index to alias failed");
-                        log.debug("error message : {}", e.getMessage());
+                        log.info("Add index to alias failed");
+                        log.info("error message : {}", e.getMessage());
                     }
                 };
 
@@ -343,20 +343,20 @@ public class ElasticUtil {
             // Check if the index is older than 7 days
             if (isIndexOlderThan7Days(index)) {
                 client.indices().deleteAlias(new DeleteAliasRequest(index, alias), RequestOptions.DEFAULT);
-                log.debug("Removed index {} from alias {}", index, alias);
+                log.info("Removed index {} from alias {}", index, alias);
             }
         }
     }
 
     private static String getCurrentDate() {
         LocalDate today = LocalDate.now();
-        log.debug("today : {}", today);
+        log.info("today : {}", today);
         return today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private static boolean isIndexOlderThan7Days(String index) {
         LocalDate indexDate = LocalDate.parse(index.substring("search_logs-".length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.debug("indexDate : {}", index);
+        log.info("indexDate : {}", index);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
         return indexDate.isBefore(sevenDaysAgo);
     }
