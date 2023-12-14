@@ -19,11 +19,8 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
-        <appender-ref ref="CONSOLE" />
-    </root>
-
     <root level="INFO">
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="LOGSTASH" />
     </root>
 
