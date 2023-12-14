@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
 import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.dto.metadata.*;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
@@ -134,22 +131,32 @@ public class MetaDataService {
         return false;
     }
 
-    public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
+    public List<AutoCompleteWordDto> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         // 중복 제거 위한 Set
-        Set<String> result = new LinkedHashSet<>();
+        Set<String> words = new HashSet<>();
+
+        // 최종 추천 검색어 결과
+        List<AutoCompleteWordDto> result = new ArrayList<>();
 
         for (String searchCondition : searchConditions) {
             SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
 
             // 결과 json 리스트에서, 단어 가져오기
             for (SearchHit hit : searchHits) {
-                result.add(String.valueOf(hit.getSourceAsMap().get(searchCondition)));
+
+                String wordResult = String.valueOf(hit.getSourceAsMap().get(searchCondition));
+                float score = hit.getScore();
+
+                if (!words.contains(wordResult)){
+                    result.add(new AutoCompleteWordDto(wordResult, score));
+                }
             }
         }
-        // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
-        return new ArrayList<>(result);
 
+        // 검색 정확도 기준으로 정렬
+        Collections.sort(result, Comparator.comparing(AutoCompleteWordDto::getScore).reversed());
+        return result;
     }
 
     public List<TableColumnDto> getTableColumnInfo(String tableId) {

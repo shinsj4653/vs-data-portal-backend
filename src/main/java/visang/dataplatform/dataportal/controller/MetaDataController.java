@@ -5,14 +5,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.dto.metadata.*;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
 import visang.dataplatform.dataportal.model.request.metadata.*;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
 import javax.persistence.Table;
@@ -65,8 +62,8 @@ public class MetaDataController {
     }
     @Operation(summary = "자동완성 된 검색어 결과 조회 API", description = "메타 데이터 검색 페이지에서 검색어 입력 시, 자동완성 결과 반환해주는 API")
     @PostMapping("search/autocomplete")
-    public ResponseDto<List<String>> getAutoCompleteSearchWords(@RequestBody AutoCompleteSearchRequest req) throws IOException {
-        List<String> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearch_conditions(), req.getKeyword());
+    public ResponseDto<List<AutoCompleteWordDto>> getAutoCompleteSearchWords(@RequestBody AutoCompleteSearchRequest req) throws IOException {
+        List<AutoCompleteWordDto> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearch_conditions(), req.getKeyword());
         return ResponseUtil.SUCCESS("메타 데이터 검색어 자동완성 결과 조회 성공했습니다.", result);
     }
 }

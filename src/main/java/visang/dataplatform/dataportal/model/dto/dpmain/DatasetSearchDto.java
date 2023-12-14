@@ -19,7 +19,4 @@ public class DatasetSearchDto {
     @Schema(description = "검색 결과 총 갯수")
     private Long total_num;
 
-    @Schema(description = "검색 정확도")
-    private float score;
-
 }
