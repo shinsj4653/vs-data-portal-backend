@@ -64,7 +64,9 @@ public class DataPlatformMainService {
             String mainCategoryName = String.valueOf(sourceMap.get("main_category_name"));
             String subCategoryName = String.valueOf(sourceMap.get("sub_category_name"));
 
-            DatasetSearchDto docData = new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, totalHitNum);
+            float score = hit.getScore();
+
+            DatasetSearchDto docData = new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, totalHitNum, score);
 
             result.add(docData);
 
@@ -72,6 +74,10 @@ public class DataPlatformMainService {
                 hasKeyword = true;
             }
         }
+
+        // 검색 정확도(score) 기준으로 result 정렬
+        Collections.sort(result, (dto1, dto2) -> Float.compare(dto2.getScore(), dto1.getScore()));
+
         log.debug("totalHitNum : {}", totalHitNum);
         log.debug("hasKeyword : {}", hasKeyword);
 
