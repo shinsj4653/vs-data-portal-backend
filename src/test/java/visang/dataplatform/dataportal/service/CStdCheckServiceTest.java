@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+// TODO: "전화", "번호", "전화번호"가 모두 표준사전에 존재하는 경우
+// "학생_전화_번호" "학생_전화번호"중 후자가 답이 되어야 함
+// 이 부분을 고려하여 로직을 수정
+
 public class CStdCheckServiceTest {
 
     @Test
