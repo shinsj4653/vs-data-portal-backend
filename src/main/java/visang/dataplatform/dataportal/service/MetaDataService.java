@@ -149,6 +149,7 @@ public class MetaDataService {
                 float score = hit.getScore();
 
                 if (!words.contains(wordResult)){
+                    words.add(wordResult);
                     result.add(new AutoCompleteWordDto(wordResult, score));
                 }
             }
