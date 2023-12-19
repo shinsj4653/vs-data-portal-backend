@@ -62,7 +62,7 @@ public class ElasticUtil {
 
     private static ElasticUtil self;
     private static RestHighLevelClient client;
-    private ElasticsearchClient esClient;
+    private static ElasticsearchClient esClient;
     private RestClient httpClient;
 
     public ElasticUtil(String hostname, Integer port) {
@@ -99,7 +99,7 @@ public class ElasticUtil {
         Integer sizeNum = amountPerPage;
 
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])).minimumShouldMatch("100%"));
 
         // set from -> 결과 시작 지점(0부터 count)
         searchSourceBuilder.from(fromNo);

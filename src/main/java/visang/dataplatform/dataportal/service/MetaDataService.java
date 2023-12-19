@@ -75,14 +75,11 @@ public class MetaDataService {
 
         if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
             fields.add("table_id_english");
-            fields.add("table_id_korean");
         }
         if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
-            fields.add("table_comment_english");
             fields.add("table_comment_korean");
         }
         if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
-            fields.add("small_clsf_name_english");
             fields.add("small_clsf_name_korean");
         }
         
