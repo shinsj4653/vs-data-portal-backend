@@ -73,16 +73,19 @@ public class MetaDataService {
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
 
-        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
-            fields.add("table_id_english");
-        }
-        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
-            fields.add("table_comment_korean");
-        }
-        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
-            fields.add("small_clsf_name_korean");
-        }
-        
+
+//        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
+//            fields.add("table_id_english");
+//        }
+//        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
+//            fields.add("table_comment_korean");
+//        }
+//        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
+//            fields.add("small_clsf_name_korean");
+//        }
+        fields.add("metaDataText");
+        fields.add("metaDataKeyword");
+
         // ES QueryDSL 검색결과 반환
         SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<TableSearchDto> result = new ArrayList<>();

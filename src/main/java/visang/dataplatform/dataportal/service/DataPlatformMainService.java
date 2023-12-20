@@ -40,9 +40,12 @@ public class DataPlatformMainService {
 
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
-        fields.add("service_name_korean");
-        fields.add("main_category_name_korean");
-        fields.add("sub_category_name_korean");
+//        fields.add("service_name_korean");
+//        fields.add("main_category_name_korean");
+//        fields.add("sub_category_name_korean");
+
+        fields.add("dataSetText");
+        fields.add("dataSetKeyword");
 
         // ES QueryDSL 검색결과 반환
         SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);

@@ -98,13 +98,29 @@ public class ElasticUtil {
         Integer fromNo = (pageNo - 1) * amountPerPage;
         Integer sizeNum = amountPerPage;
 
+        // BoolQueryBuilder
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        // Match Query - Text 타입
+        MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(fields.get(0), keyword)
+                                                    .minimumShouldMatch("100%");
+        boolQueryBuilder.should(matchQuery);
+
+        // Term Query - Keyword 타입
+        TermQueryBuilder termQuery = QueryBuilders.termQuery(fields.get(1), keyword);
+        boolQueryBuilder.should(termQuery);
+
         // multi-match query
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])).minimumShouldMatch("100%"));
+        //searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])).minimumShouldMatch("100%"));
 
         // set from -> 결과 시작 지점(0부터 count)
         searchSourceBuilder.from(fromNo);
 
         // set size -> 결과 반환 갯수
+        searchSourceBuilder.size(sizeNum);
+
+        searchSourceBuilder.query(boolQueryBuilder);
+
         searchRequest.source(searchSourceBuilder);
 
         try {
