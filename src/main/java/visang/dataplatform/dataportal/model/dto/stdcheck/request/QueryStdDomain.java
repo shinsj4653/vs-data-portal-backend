@@ -1,10 +1,9 @@
-package visang.dataplatform.dataportal.model.query.stdcheck;
+package visang.dataplatform.dataportal.model.dto.stdcheck.request;
 
 import lombok.Getter;
 
 @Getter
-public class StdDomain {
-    private Long domain_idx;
+public class QueryStdDomain {
     private String domain_group_nm;
     private String domain_category_nm;
     private String domain_nm;

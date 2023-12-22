@@ -1,10 +1,9 @@
-package visang.dataplatform.dataportal.model.query.stdcheck;
+package visang.dataplatform.dataportal.model.dto.stdcheck.request;
 
 import lombok.Getter;
 
 @Getter
-public class StdTerm {
-    private Long term_idx;
+public class QueryStdTerm {
     private String term_logical_nm;
     private String term_logical_desc;
     private String term_physical_nm;

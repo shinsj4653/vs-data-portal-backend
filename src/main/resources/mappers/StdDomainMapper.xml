@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="visang.dataplatform.dataportal.mapper.StdTermMapper">
+
+    <select id="getStdDomains"
+            resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdDomainDto">
+        SELECT tsd.domain_idx,
+               tdg.domain_group_nm,
+               tdc.domain_category_nm,
+               tsd.domain_nm,
+               tsd.data_type,
+               tsd.data_length,
+        FROM tb_domain_group tdg
+                 JOIN tb_domain_category tdc ON tdg.domain_group_idx = tdc.domain_group_idx
+                 JOIN tb_std_domain tsd ON tdc.domain_category_idx = tsd.domain_category_idx
+        WHERE domain_idx > #{(pageNum - 1) * 20}
+        ORDER BY domain_idx ASC LIMIT 20;
+    </select>
+
+    <select id="getStdDomain" parameterType="long"
+            resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainDetailDto">
+        SELECT tsd.domain_idx,
+               tdg.domain_group_nm,
+               tdc.domain_category_nm,
+               tsd.domain_nm,
+               tsd.domain_desc,
+               tsd.data_type,
+               tsd.data_length,
+               tsd.decimal_point_length,
+               tsd.allowed_values tsd.store_format, tsd.represent_format,
+        FROM tb_domain_group tdg
+                 JOIN tb_domain_category tdc ON tdg.domain_group_idx = tdc.domain_group_idx
+                 JOIN tb_std_domain tsd ON tdc.domain_category_idx = tsd.domain_category_idx
+        WHERE domain_idx = #{domain_idx}
+    </select>
+
+    <insert id="createDomainGroup"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateDomainGroupDto">
+        INSERT INTO tb_domain_group (domain_group_nm)
+        VALUES (#{domain_group_nm})
+    </insert>
+
+    <insert id="createDomainCategory"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateDomainCategoryDto">
+        insert into tb_domain_category (domain_group_idx, domain_category_nm)
+        values (#{domain_group_idx}, #{domain_category_nm});
+    </insert>
+
+    <insert id="createStdDomain"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdTermDto">
+        insert into tb_std_domain (domain_category_idx, domain_nm, domain_desc, data_type, data_length,
+                                   decimal_point_length,
+                                   store_format, represent_format, allowed_values)
+        values (1, '테스트도메인', '테스트도메인설명', 'VARCHAR', 10, 0, 'VARCHAR', 'VARCHAR', '테스트허용값');
+    </insert>
+
+    <update id="updateStdDomain"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdTermDto">
+        UPDATE tb_std_term
+        SET term_logical_nm    = #{term_logical_nm},
+            term_logical_desc  = #{term_logical_desc},
+            term_physical_nm   = #{term_physical_nm},
+            term_physical_desc = #{term_physical_desc},
+            domain_idx         = #{domain_idx}
+        WHERE domain_idx = #{domain_idx}
+    </update>
+
+    <delete id="deleteStdDomain" parameterType="long">
+        DELETE
+        FROM tb_std_domain
+        WHERE domain_idx = #{domain_idx}
+    </delete>
+
+</mapper>

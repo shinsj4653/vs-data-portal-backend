@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 // "학생_전화_번호" "학생_전화번호"중 후자가 답이 되어야 함
 // 이 부분을 고려하여 로직을 수정
 
+// 길이가 긴 단어순으로 변환
+// 모두 변환 성공한 경우 (변환 실패 count == 0) -> 변환 성공 count 오름차순 
+
 public class CStdCheckServiceTest {
 
     @Test
