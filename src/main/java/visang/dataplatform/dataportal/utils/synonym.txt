@@ -1,4 +1,5 @@
 1회섭취참고량, RAFOS
+사과, APPLE
 GIS, GIS
 HTML, HTML
 IP, IP
@@ -773,5 +774,3 @@ URL, URL
 휴대, MBL
 휴업, TCBIZ
 휴일, HLDY
-
-
