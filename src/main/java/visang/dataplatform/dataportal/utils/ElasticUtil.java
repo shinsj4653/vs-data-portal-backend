@@ -182,8 +182,6 @@ public class ElasticUtil {
 
     private static List<String> makeFieldNames(String searchCondition) {
         List<String> fieldNames = new ArrayList<>();
-        fieldNames.add(searchCondition + "_english");
-        fieldNames.add(searchCondition + "_korean");
         fieldNames.add(searchCondition + "_hantoeng");
         fieldNames.add(searchCondition + "_engtohan");
         fieldNames.add(searchCondition + "_chosung");
