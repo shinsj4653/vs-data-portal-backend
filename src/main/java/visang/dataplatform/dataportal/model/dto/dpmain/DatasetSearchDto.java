@@ -17,5 +17,6 @@ public class DatasetSearchDto {
     private String sub_category_name;
 
     @Schema(description = "검색 결과 총 갯수")
-    private long total_num;
+    private Long total_num;
+
 }

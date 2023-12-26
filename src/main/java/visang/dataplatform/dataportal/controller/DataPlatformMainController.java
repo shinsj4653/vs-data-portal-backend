@@ -28,7 +28,7 @@ public class DataPlatformMainController {
     private final DataPlatformMainService dataPlatformMainService;
 
     @Operation(summary = "메인 화면에서 서비스 명 또는 데이터셋 명으로 검색 후 해당 결과 조회 API", description = "메인 화면에서 서비스 명 또는 데이터 셋 명으로 검색 시, 해당 검색 키워드에 맞는 서비스와 데이터 셋들을 반환해주는 API")
-    @PostMapping("search/service-dataset")
+    @PostMapping("search/keyword")
     public ResponseDto<List<DatasetSearchDto>> getServiceList(@Valid @RequestBody DatasetSearchRequest req) throws IOException {
         List<DatasetSearchDto> result = dataPlatformMainService.getServiceList(req.getKeyword(), req.getPage_no(), req.getAmount_per_page());
         return ResponseUtil.SUCCESS("검색 키워드에 맞는 서비스 및 데이터 셋 목록 조회에 성공하였습니다.", result);

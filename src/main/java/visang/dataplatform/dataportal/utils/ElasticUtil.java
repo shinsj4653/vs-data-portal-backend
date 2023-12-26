@@ -1,10 +1,14 @@
 package visang.dataplatform.dataportal.utils;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.FuzzyQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import co.elastic.clients.util.ObjectBuilder;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -13,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.DeleteAliasRequest;
@@ -47,6 +52,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.*;
+import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.*;
 
 @Slf4j
 @Component
@@ -55,8 +61,8 @@ import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 public class ElasticUtil {
 
     private static ElasticUtil self;
-    private RestHighLevelClient client;
-    private ElasticsearchClient esClient;
+    private static RestHighLevelClient client;
+    private static ElasticsearchClient esClient;
     private RestClient httpClient;
 
     public ElasticUtil(String hostname, Integer port) {
@@ -82,30 +88,68 @@ public class ElasticUtil {
         return self;
     }
 
-    public <T> SearchResponse<T> getTotalTableSearch(
-            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage, Class<T> className
-    ) throws IOException {
+    public SearchHits getTotalTableSearch(
+            String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
+    ) {
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         Integer fromNo = (pageNo - 1) * amountPerPage;
         Integer sizeNum = amountPerPage;
 
-        return esClient.search(s -> s
-                        .index(index)
-                        .query(q -> q
-                                .multiMatch(m -> m
-                                        .query(keyword)
-                                        .fields(fields))
-                        )
-                        .from(fromNo)
-                        .size(sizeNum),
-                 className);
+        // BoolQueryBuilder
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        // Match Query - Text 타입
+        MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(fields.get(0), keyword)
+                                                    .minimumShouldMatch("100%");
+        boolQueryBuilder.should(matchQuery);
+
+        // Term Query - Keyword 타입
+        TermQueryBuilder termQuery = QueryBuilders.termQuery(fields.get(1), keyword);
+        boolQueryBuilder.should(termQuery);
+
+        // multi-match query
+        //searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, fields.toArray(new String[fields.size()])).minimumShouldMatch("100%"));
+
+        // set from -> 결과 시작 지점(0부터 count)
+        searchSourceBuilder.from(fromNo);
+
+        // set size -> 결과 반환 갯수
+        searchSourceBuilder.size(sizeNum);
+
+        searchSourceBuilder.query(boolQueryBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            return response.getHits();
+
+        } catch (IOException e) {
+            log.debug("getTotalTableSearch error : {}", e.getMessage());
+        }
+
+
+//        return esClient.search(s -> s
+//                        .index(index)
+//                        .query(q -> q
+//                                .multiMatch(m -> m
+//                                        .query(keyword)
+//                                        .fields(fields))
+//                        )
+//                        .from(fromNo)
+//                        .size(sizeNum),
+//                 className);
+        return null;
     }
 
-    public <T> SearchResponse<T> getAutoCompleteSearchWords(String index, String searchCondition, String keyword, Class<T> className) throws IOException {
+    public SearchHits getAutoCompleteSearchWords(String index, String searchCondition, String keyword) {
 
-        //SearchRequest searchRequest = new SearchRequest(index);
-        //SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // BoolQueryBuilder
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
@@ -114,27 +158,38 @@ public class ElasticUtil {
         boolQueryBuilder.should(fuzzyQuery);
 
         // Add match phrase prefix query
-        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
-        boolQueryBuilder.should(matchPhrasePrefixQuery);
 
-        // Add the bool query to the search source builder
-        //searchSourceBuilder.query(boolQueryBuilder);
+//        MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(searchCondition, keyword);
 
-        // Set the search source builder to the search request
-        //searchRequest.source(searchSourceBuilder);
+        List<String> fieldNames = makeFieldNames(searchCondition);
 
-        // Execute the search request and handle the response
-//        try {
-//            return esClient.search
-//
-//        } catch (IOException e) {}
-//
-        return esClient.search(s -> s
-                .index(index)
-                        .query(q -> q
-                                .bool((Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>>) boolQueryBuilder))
-                , className);
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, fieldNames.toArray(new String[fieldNames.size()]));
+
+
+        boolQueryBuilder.should(multiMatchQuery);
+
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            return response.getHits();
+        } catch (IOException e) {
+            log.debug("getAutoCompleteSearchWords error : {}", e.getMessage());
+        }
+        return null;
     }
+
+    private static List<String> makeFieldNames(String searchCondition) {
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add(searchCondition + "_hantoeng");
+        fieldNames.add(searchCondition + "_engtohan");
+        fieldNames.add(searchCondition + "_chosung");
+        fieldNames.add(searchCondition + "_ngram");
+
+        return fieldNames;
+    }
+
 
 
     public List<TableSearchKeywordRankDto> getTableSearchRank(
@@ -151,7 +206,7 @@ public class ElasticUtil {
             // 오늘 날짜
             String todayIndex = "search_logs-" + getCurrentDate();
 
-            log.info("todayIndex : {}", todayIndex);
+            log.debug("todayIndex : {}", todayIndex);
 
             // 검색 하기 전
             // last-7-days aliases 관리
@@ -160,7 +215,7 @@ public class ElasticUtil {
             // 만약 현 날짜에 해당하는 검색 로그 Index 없을 시, 새로 생성
             if (isTodayIndexExist(client, todayIndex)) {
                 log.info("isTodayIndexExist");
-                addIndexToAlias(aliasName, todayIndex);
+                addIndexToAlias(client, aliasName, todayIndex);
             }
             else {
                 // 존재한다면, "last-7-days" Alias에 추가
@@ -168,7 +223,7 @@ public class ElasticUtil {
                 createTodayIndex(client, todayIndex);
             }
 
-            // Remove indices older than 7 days from the alias
+            // 7일 이후의 날짜에 해당하는 Index는 Alias에서 제거
             removeOldIndicesFromAlias(client, aliasName);
 
             // Get the actual indices associated with the "last-7-days" alias
@@ -184,12 +239,6 @@ public class ElasticUtil {
             BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
             boolQuery.filter(QueryBuilders.termQuery("requestURI.keyword", requestURI));
             boolQuery.filter(QueryBuilders.termQuery("logType.keyword", logType));
-
-            // range -> gte to lte
-//            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("time")
-//                    .gte(gte)
-//                    .lte(lte);
-//            boolQuery.must(rangeQuery);
 
             searchSourceBuilder.query(boolQuery);
 
@@ -212,14 +261,14 @@ public class ElasticUtil {
             searchRequest.source(searchSourceBuilder);
             searchRequest.scroll(TimeValue.timeValueMinutes(1));
 
-            org.elasticsearch.action.search.SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            log.info("about to enter aggs");
+            log.debug("about to enter aggs");
 
             RestStatus status = response.status();
             if (status == RestStatus.OK) {
 
-                log.info("status OK");
+                log.debug("status OK");
                 Aggregations aggregations = response.getAggregations();
                 Terms keywordAggs = aggregations.get("SEARCH_RANK");
                 for (Terms.Bucket bucket : keywordAggs.getBuckets()) {
@@ -228,7 +277,7 @@ public class ElasticUtil {
             }
 
         } catch (IOException e) {
-            log.error("getTableSearchRank error : {}", e.getMessage());
+            log.debug("getTableSearchRank error : {}", e.getMessage());
         }
 
         return list;
@@ -255,18 +304,18 @@ public class ElasticUtil {
 
             // Check if the index was created successfully
             if (createIndexResponse.isAcknowledged()) {
-                log.info("Index created successfully: " + index);
+                log.debug("Index created successfully: " + index);
             } else {
-                log.info("Failed to create index: " + index);
+                log.debug("Failed to create index: " + index);
             }
         } catch (IOException e) {
             // Handle IO exception
-            log.error(e.getMessage());
+            log.debug(e.getMessage());
         }
 
     }
 
-    private static void addIndexToAlias(String alias, String index) throws IOException {
+    private static void addIndexToAlias(RestHighLevelClient client, String alias, String index) throws IOException {
 
         IndicesAliasesRequest request = new IndicesAliasesRequest();
         AliasActions aliasAction =
@@ -275,7 +324,28 @@ public class ElasticUtil {
                         .alias(alias);
         request.addAliasAction(aliasAction);
 
-        log.info("Add index to alias successful");
+        ActionListener<AcknowledgedResponse> listener =
+                new ActionListener<AcknowledgedResponse>() {
+                    @Override
+                    public void onResponse(AcknowledgedResponse indicesAliasesResponse) {
+                        log.info("Add index to alias successful");
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        log.info("Add index to alias failed");
+                        log.info("error message : {}", e.getMessage());
+                    }
+                };
+
+        // Alias에 Index 추가하는 요청 실행
+        client.indices().updateAliasesAsync(request, RequestOptions.DEFAULT, listener);
+//            if (acknowledgedResponse.isAcknowledged()) {
+//                log.info("Add index to alias successful");
+//            } else {
+//                log.info("Add index to alias failed");
+//            }
+
     }
 
     private static void removeOldIndicesFromAlias(RestHighLevelClient client, String alias) throws IOException {

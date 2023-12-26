@@ -40,25 +40,29 @@ public class DataPlatformMainService {
 
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
-        fields.add("service_name");
-        fields.add("main_category_name");
-        fields.add("sub_category_name");
+//        fields.add("service_name_korean");
+//        fields.add("main_category_name_korean");
+//        fields.add("sub_category_name_korean");
+
+        fields.add("dataSetText");
+        fields.add("dataSetKeyword");
 
         // ES QueryDSL 검색결과 반환
-        SearchResponse<DatasetSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, DatasetSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<DatasetSearchDto> result = new ArrayList<>();
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
-        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
+        Long totalHitNum = searchHits.getTotalHits().value;
 
-        for (Hit<DatasetSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            String serviceName = hit.source().getService_name();
-            String mainCategoryName = hit.source().getMain_category_name();
-            String subCategoryName = hit.source().getSub_category_name();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            String serviceName = String.valueOf(sourceMap.get("service_name"));
+            String mainCategoryName = String.valueOf(sourceMap.get("main_category_name"));
+            String subCategoryName = String.valueOf(sourceMap.get("sub_category_name"));
 
             DatasetSearchDto docData = new DatasetSearchDto(serviceName, mainCategoryName, subCategoryName, totalHitNum);
 
@@ -69,8 +73,11 @@ public class DataPlatformMainService {
             }
         }
 
+        log.debug("totalHitNum : {}", totalHitNum);
+        log.debug("hasKeyword : {}", hasKeyword);
+
         // 검색 결과가 있는 경우에만 검색 로그 전송
-        if (totalHitNum > 0 && hasKeyword) {
+        if (totalHitNum > 0L && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/dpmain/search/keyword"), keyValue("keyword", keyword));
         }
 
@@ -89,9 +96,9 @@ public class DataPlatformMainService {
 
     public List<TableSearchKeywordRankDto> getSearchRank(TableSearchRankRequest request) {
 
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getRequest_uri();
         // api 종류가 검색 api에 해당하는 로그만 집계
-        String logType = request.getLogType();
+        String logType = request.getLog_type();
 
         // 검색 시간대
         //String gte = request.getGte();

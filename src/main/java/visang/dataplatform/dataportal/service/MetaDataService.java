@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
 import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.dto.metadata.*;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
@@ -52,7 +49,7 @@ public class MetaDataService {
     public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
 
         if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null") || mainCategoryName.equals(NULL)){
-            log.info("mainCategoryName is NULL");
+            log.debug("mainCategoryName is NULL");
             return new ArrayList<>();
         }
 
@@ -65,8 +62,8 @@ public class MetaDataService {
         // 빈 키워드인지 체크
         //validateBlankKeyword(keyword);
 
-        log.info("pageNo : {}", pageNo);
-        log.info("amountPerPage : {}", amountPerPage);
+        log.debug("pageNo : {}", pageNo);
+        log.debug("amountPerPage : {}", amountPerPage);
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
 
@@ -76,32 +73,37 @@ public class MetaDataService {
         // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
         List<String> fields = new ArrayList<>();
 
-        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
-            fields.add("table_id");
-        }
-        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
-            fields.add("table_comment");
-        }
-        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
-            fields.add("small_clsf_name");
-        }
-        
+
+//        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
+//            fields.add("table_id_english");
+//        }
+//        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
+//            fields.add("table_comment_korean");
+//        }
+//        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
+//            fields.add("small_clsf_name_korean");
+//        }
+        fields.add("metaDataText");
+        fields.add("metaDataKeyword");
+
         // ES QueryDSL 검색결과 반환
-        SearchResponse<TableSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage, TableSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
         List<TableSearchDto> result = new ArrayList<>();
 
-        Integer totalHitNum = Math.toIntExact(searchHits.hits().total().value());
+        Long totalHitNum = searchHits.getTotalHits().value;
 
         // 실시간 검색어에 "의미 있는 단어"만 포함되도록
         // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
         boolean hasKeyword = false;
 
         // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        for (Hit<TableSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            String table_id = hit.source().getTable_id();
-            String table_comment = hit.source().getTable_comment();
-            String small_clsf_name = hit.source().getSmall_clsf_name();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+
+            String table_id = String.valueOf(sourceMap.get("table_id"));
+            String table_comment = String.valueOf(sourceMap.get("table_comment"));
+            String small_clsf_name = String.valueOf(sourceMap.get("small_clsf_name"));
 
             TableSearchDto docData = new TableSearchDto(table_id, table_comment, small_clsf_name, totalHitNum);
             
@@ -113,7 +115,7 @@ public class MetaDataService {
         }
         
         // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
-        if (totalHitNum > 0 && hasKeyword) {
+        if (totalHitNum > 0L && hasKeyword) {
             log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
         }
 
@@ -129,32 +131,39 @@ public class MetaDataService {
         return false;
     }
 
-    public List<String> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
+    public List<AutoCompleteWordDto> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         // 중복 제거 위한 Set
-        Set<String> result = new LinkedHashSet<>();
+        Set<String> words = new HashSet<>();
+
+        // 최종 추천 검색어 결과
+        List<AutoCompleteWordDto> result = new ArrayList<>();
 
         for (String searchCondition : searchConditions) {
-            SearchResponse<String> searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword, String.class);
-            log.info("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
-            log.debug("hit.soruce : {}", searchHits.hits().hits().get(0).toString());
+            SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
 
             // 결과 json 리스트에서, 단어 가져오기
-            for (Hit<String> hit : searchHits.hits().hits()) {
-                result.add(hit.source());
+            for (SearchHit hit : searchHits) {
+
+                String wordResult = String.valueOf(hit.getSourceAsMap().get(searchCondition));
+                float score = hit.getScore();
+
+                if (!words.contains(wordResult)){
+                    words.add(wordResult);
+                    result.add(new AutoCompleteWordDto(wordResult, score));
+                }
             }
         }
-        // 중복 제거 완료된 set을 리스트 형태로 변환하여 return
-        return new ArrayList<>(result);
 
+        // 검색 정확도 기준으로 정렬
+        Collections.sort(result, Comparator.comparing(AutoCompleteWordDto::getScore).reversed());
+        return result;
     }
 
     public List<TableColumnDto> getTableColumnInfo(String tableId) {
         List<QueryResponseTableColumnInfo> list = metaDataMapper.getTableColumnInfo(tableId);
         return makeTableColumnDto(list);
     }
-
-
 
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
     private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result, Integer pageNo, Integer amountPerPage) {
