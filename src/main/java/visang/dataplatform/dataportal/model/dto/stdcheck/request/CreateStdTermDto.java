@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class CreateStdTermDto {
+    private Long term_idx;
     private String term_logical_nm;
     private String term_logical_desc;
     private String term_physical_nm;

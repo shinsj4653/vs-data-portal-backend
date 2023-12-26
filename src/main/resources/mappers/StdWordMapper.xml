@@ -4,14 +4,14 @@
 
 <mapper namespace="visang.dataplatform.dataportal.mapper.StdWordMapper">
 
-    <select id="getStdWords" parameterType="long"
+    <select id="getStdWords" parameterType="integer"
             resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdWordDto">
         SELECT word_idx,
                word_logical_nm,
-               word_physical_nm,
+               word_physical_nm
         FROM tb_std_word
-        WHERE word_idx > #{(pageNum - 1) * 20}
-        ORDER BY word_idx ASC LIMIT 20;
+        WHERE word_idx > (#{page_num} - 1) * 10
+        ORDER BY word_idx ASC LIMIT 10;
     </select>
 
     <select id="getStdWord" parameterType="long"
@@ -26,7 +26,7 @@
         WHERE word_idx = #{word_idx}
     </select>
 
-    <insert id="createStdWordDto"
+    <insert id="createStdWord" useGeneratedKeys="true" keyProperty="word_idx"
             parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdWordDto">
         INSERT INTO tb_std_word(word_logical_nm, word_physical_nm, word_logical_desc,
                                 word_physical_desc, synonym_list)
@@ -34,7 +34,7 @@
                 #{word_physical_desc}, #{synonym_list})
     </insert>
 
-    <update id="updateStdWordDto"
+    <update id="updateStdWord"
             parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdWordDto">
         UPDATE tb_std_word
         SET word_logical_nm    = #{word_logical_nm},

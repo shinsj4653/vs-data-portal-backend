@@ -1,8 +1,10 @@
 package visang.dataplatform.dataportal.model.dto.stdcheck.request;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class UpdateStdWordDto {
     private Long word_idx;
     private String word_logical_nm;

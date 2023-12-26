@@ -2,21 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="visang.dataplatform.dataportal.mapper.StdTermMapper">
+<mapper namespace="visang.dataplatform.dataportal.mapper.StdDomainMapper">
 
-    <select id="getStdDomains"
+    <select id="getStdDomains" parameterType="integer"
             resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdDomainDto">
         SELECT tsd.domain_idx,
                tdg.domain_group_nm,
                tdc.domain_category_nm,
                tsd.domain_nm,
                tsd.data_type,
-               tsd.data_length,
+               tsd.data_length
         FROM tb_domain_group tdg
                  JOIN tb_domain_category tdc ON tdg.domain_group_idx = tdc.domain_group_idx
                  JOIN tb_std_domain tsd ON tdc.domain_category_idx = tsd.domain_category_idx
-        WHERE domain_idx > #{(pageNum - 1) * 20}
-        ORDER BY domain_idx ASC LIMIT 20;
+        WHERE domain_idx > (#{page_num} - 1) * 10
+        ORDER BY domain_idx ASC LIMIT 10;
     </select>
 
     <select id="getStdDomain" parameterType="long"
@@ -29,41 +29,34 @@
                tsd.data_type,
                tsd.data_length,
                tsd.decimal_point_length,
-               tsd.allowed_values tsd.store_format, tsd.represent_format,
+               tsd.allowed_values,
+               tsd.store_format,
+               tsd.represent_format
         FROM tb_domain_group tdg
                  JOIN tb_domain_category tdc ON tdg.domain_group_idx = tdc.domain_group_idx
                  JOIN tb_std_domain tsd ON tdc.domain_category_idx = tsd.domain_category_idx
         WHERE domain_idx = #{domain_idx}
     </select>
 
-    <insert id="createDomainGroup"
-            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateDomainGroupDto">
-        INSERT INTO tb_domain_group (domain_group_nm)
-        VALUES (#{domain_group_nm})
-    </insert>
-
-    <insert id="createDomainCategory"
-            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateDomainCategoryDto">
-        insert into tb_domain_category (domain_group_idx, domain_category_nm)
-        values (#{domain_group_idx}, #{domain_category_nm});
-    </insert>
-
-    <insert id="createStdDomain"
-            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdTermDto">
+    <insert id="createStdDomain" useGeneratedKeys="true" keyProperty="domain_idx"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdDomainDto">
         insert into tb_std_domain (domain_category_idx, domain_nm, domain_desc, data_type, data_length,
-                                   decimal_point_length,
-                                   store_format, represent_format, allowed_values)
-        values (1, '테스트도메인', '테스트도메인설명', 'VARCHAR', 10, 0, 'VARCHAR', 'VARCHAR', '테스트허용값');
+                                   decimal_point_length, store_format, represent_format, allowed_values)
+        values (#{domain_category_idx}, #{domain_nm}, #{domain_desc}, #{data_type}, #{data_length},
+                #{decimal_point_length}, #{store_format}, #{represent_format}, #{allowed_values});
     </insert>
 
     <update id="updateStdDomain"
-            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdTermDto">
-        UPDATE tb_std_term
-        SET term_logical_nm    = #{term_logical_nm},
-            term_logical_desc  = #{term_logical_desc},
-            term_physical_nm   = #{term_physical_nm},
-            term_physical_desc = #{term_physical_desc},
-            domain_idx         = #{domain_idx}
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdDomainDto">
+        UPDATE tb_std_domain
+        SET domain_nm            = #{domain_nm},
+            domain_desc          = #{domain_desc},
+            data_type            = #{data_type},
+            data_length          = #{data_length},
+            decimal_point_length = #{decimal_point_length},
+            store_format         = #{store_format},
+            represent_format     = #{represent_format},
+            allowed_values       = #{allowed_values}
         WHERE domain_idx = #{domain_idx}
     </update>
 

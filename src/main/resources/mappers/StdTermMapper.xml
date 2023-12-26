@@ -4,17 +4,18 @@
 
 <mapper namespace="visang.dataplatform.dataportal.mapper.StdTermMapper">
 
-    <select id="getStdTerms" resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdTermDto">
+    <select id="getStdTerms" parameterType="integer"
+            resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdTermDto">
         SELECT tst.term_idx,
                tst.term_logical_nm,
                tst.term_physical_nm,
                tsd.domain_nm,
                tsd.data_type,
-               tsd.data_length,
+               tsd.data_length
         FROM tb_std_term tst
                  JOIN tb_std_domain tsd ON tst.domain_idx = tsd.domain_idx
-        WHERE term_idx > #{(pageNum - 1) * 20}
-        ORDER BY term_idx ASC LIMIT 20;
+        WHERE term_idx > (#{page_num} - 1) * 10
+        ORDER BY term_idx ASC LIMIT 10;
     </select>
 
     <select id="getStdTerm" parameterType="long"
@@ -35,7 +36,7 @@
         WHERE term_idx = #{term_idx}
     </select>
 
-    <insert id="createStdTerm"
+    <insert id="createStdTerm" useGeneratedKeys="true" keyProperty="term_idx"
             parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdTermDto">
         INSERT INTO tb_std_term(term_logical_nm, term_logical_desc, term_physical_nm,
                                 term_physical_desc, domain_idx)

@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface StdWordMapper {
 
-    List<SimpleStdWordDto> getStdWords(@Param("pageNum") int pageNum);
+    List<SimpleStdWordDto> getStdWords(@Param("page_num") int pageNum);
 
     StdWordDetailDto getStdWord(@Param("word_idx") long id);
 
