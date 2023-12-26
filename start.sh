@@ -3,7 +3,10 @@
 PROJECT_ROOT="/home/ubuntu/deploy/data_portal_backend"
 JAR_FILE="$PROJECT_ROOT/spring-webapp.jar"
 
+SYNONYM_FILE="$PROJECT_ROOT/src/main/java/visang/dataplatform/dataportal/utils/synonym.txt"
+USER_DICTIONARY_FILE="$PROJECT_ROOT/src/main/java/visang/dataplatform/dataportal/utils/user_dictionary.txt"
 ES_CONFIG_ROOT="/etc/elasticsearch/config/analysis"
+
 
 APP_LOG="$PROJECT_ROOT/application.log"
 ERROR_LOG="$PROJECT_ROOT/error.log"
@@ -23,4 +26,5 @@ CURRENT_PID=$(pgrep -f $JAR_FILE)
 echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
 
 # ES 동의어 사전, 사용자 사전 파일 복사
-#cp $PROJECT_ROOT/
+cp $SYNONYM_FILE $ES_CONFIG_ROOT
+cp $USER_DICTIONARY_FILE $ES_CONFIG_ROOT
