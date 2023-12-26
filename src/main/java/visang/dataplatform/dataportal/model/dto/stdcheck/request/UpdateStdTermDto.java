@@ -1,0 +1,15 @@
+package visang.dataplatform.dataportal.model.dto.stdcheck.request;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class UpdateStdTermDto {
+    private Long term_idx;
+    private String term_logical_nm;
+    private String term_logical_desc;
+    private String term_physical_nm;
+    private String term_physical_desc;
+    private Long domain_idx;
+}
