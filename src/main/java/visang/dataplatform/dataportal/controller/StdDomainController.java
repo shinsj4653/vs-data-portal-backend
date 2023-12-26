@@ -6,10 +6,12 @@ import visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdDomain
 import visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdDomainDto;
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdDomainDto;
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainDetailDto;
+import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainSearchDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.StdDomainService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,10 +27,16 @@ public class StdDomainController {
         return ResponseUtil.SUCCESS("표준도메인목록 조회 성공", stdDomains);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     ResponseDto<StdDomainDetailDto> getStdDomain(@PathVariable("id") Long id) {
         final StdDomainDetailDto stdDomain = stdDomainService.getStdDomain(id);
         return ResponseUtil.SUCCESS("표준도메인 세부조회 성공", stdDomain);
+    }
+
+    @GetMapping("search")
+    ResponseDto<List<StdDomainSearchDto>> searchStdDomain(@RequestParam("page") int pageNum, @RequestParam("keyword") String keyword) throws IOException {
+        final List<StdDomainSearchDto> stdDomains = stdDomainService.searchStdDomain(pageNum, keyword);
+        return ResponseUtil.SUCCESS("표준도메인검색 성공", stdDomains);
     }
 
     @PostMapping

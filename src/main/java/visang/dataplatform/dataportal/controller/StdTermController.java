@@ -6,10 +6,12 @@ import visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdTermDt
 import visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdTermDto;
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdTermDto;
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermDetailDto;
+import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermSearchDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.StdTermService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,6 +31,12 @@ public class StdTermController {
     ResponseDto<StdTermDetailDto> getStdTerm(@PathVariable("id") Long id) {
         final StdTermDetailDto stdTerm = stdTermService.getStdTerm(id);
         return ResponseUtil.SUCCESS("표준용어 세부조회 성공", stdTerm);
+    }
+
+    @GetMapping("search")
+    ResponseDto<List<StdTermSearchDto>> searchStdTerm(@RequestParam("page") int pageNum, @RequestParam("keyword") String keyword) throws IOException {
+        final List<StdTermSearchDto> stdTerms = stdTermService.searchStdTerm(pageNum, keyword);
+        return ResponseUtil.SUCCESS("표준용어검색 성공", stdTerms);
     }
 
     @PostMapping
