@@ -382,9 +382,11 @@ public class ElasticUtil {
         for (String index : aliases.keySet()) {
             // Check if the index is older than 7 days
             if (isIndexOlderThan7Days(index)) {
-                forceMergeIndex(client, index);
                 client.indices().deleteAlias(new DeleteAliasRequest(index, alias), RequestOptions.DEFAULT);
                 log.info("Removed index {} from alias {}", index, alias);
+            } else if (!index.equals(getCurrentDate())) {
+                // 오늘 일자를 제외한 7일 이내 Index -> read-only index 이므로 force-merge 시행
+                forceMergeIndex(client, index);
             }
         }
     }
@@ -407,7 +409,7 @@ public class ElasticUtil {
         // force merge read only indices
         ForceMergeRequest request = new ForceMergeRequest(index);
         client.indices().forcemerge(request, RequestOptions.DEFAULT);
-        log.info("force merged read only indices");
+        log.info("force merged read only indices, {}", index);
 
     }
 
