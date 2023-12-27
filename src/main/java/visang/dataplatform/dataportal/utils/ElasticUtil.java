@@ -404,13 +404,19 @@ public class ElasticUtil {
         return indexDate.isBefore(sevenDaysAgo);
     }
 
-    private static void forceMergeIndex(RestHighLevelClient client, String index) throws IOException {
+    private static void forceMergeIndex(RestHighLevelClient client, String index) {
 
         // force merge read only indices
-        ForceMergeRequest request = new ForceMergeRequest(index);
-        client.indices().forcemerge(request, RequestOptions.DEFAULT);
-        log.info("force merged read only indices, {}", index);
+        ForceMergeRequest request = new ForceMergeRequest(index)
+                .maxNumSegments(1);
 
+        try {
+            // Perform the force merge request
+            client.indices().forcemerge(request, RequestOptions.DEFAULT);
+            log.info("Force merge request sent successfully : {}", index);
+        } catch (Exception e) {
+            log.error("Error executing force merge request: " + e.getMessage());
+        }
     }
 
 }
