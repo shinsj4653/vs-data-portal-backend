@@ -1,8 +1,8 @@
 package visang.dataplatform.dataportal.service;
 
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import visang.dataplatform.dataportal.mapper.StdWordMapper;
@@ -16,6 +16,7 @@ import visang.dataplatform.dataportal.utils.ElasticUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,18 +56,19 @@ public class StdWordService {
         List<String> fields = List.of("word_logical_nm", "word_physical_nm", "synonym_list");
 
         // QueryDSL 검색결과 반환
-        SearchResponse<StdWordSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10, StdWordSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10);
         List<StdWordSearchDto> result = new ArrayList<>();
 
         // 검색결과를 TableSearchDto로 wrapping
-        for (Hit<StdWordSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            Long word_idx = hit.source().getWord_idx();
-            String word_logical_nm = hit.source().getWord_logical_nm();
-            String word_logical_desc = hit.source().getWord_logical_desc();
-            String word_physical_nm = hit.source().getWord_physical_nm();
-            String word_physical_desc = hit.source().getWord_physical_desc();
-            String synonym_list = hit.source().getSynonym_list();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            Long word_idx = (Long) sourceMap.get("word_idx");
+            String word_logical_nm = (String) sourceMap.get("word_logical_nm");
+            String word_logical_desc = (String) sourceMap.get("word_logical_desc");
+            String word_physical_nm = (String) sourceMap.get("word_physical_nm");
+            String word_physical_desc = (String) sourceMap.get("word_physical_desc");
+            String synonym_list = (String) sourceMap.get("synonym_list");
 
             StdWordSearchDto docData = new StdWordSearchDto(word_idx, word_logical_nm, word_logical_desc,
                     word_physical_nm, word_physical_desc, synonym_list);

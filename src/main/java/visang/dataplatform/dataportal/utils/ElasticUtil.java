@@ -1,26 +1,27 @@
 package visang.dataplatform.dataportal.utils;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.FuzzyQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import co.elastic.clients.util.ObjectBuilder;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.indices.alias.Alias;
+import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.GetAliasesResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.DeleteAliasRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.cluster.metadata.AliasMetadata;
@@ -35,10 +36,6 @@ import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.action.admin.indices.alias.Alias;
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-
-import org.junit.jupiter.api.ClassOrderer;
 import org.springframework.stereotype.Component;
 import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
 
@@ -49,10 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
-import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.*;
-import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.*;
+import static org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
 
 @Slf4j
 @Component
@@ -103,7 +98,7 @@ public class ElasticUtil {
 
         // Match Query - Text 타입
         MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(fields.get(0), keyword)
-                                                    .minimumShouldMatch("100%");
+                .minimumShouldMatch("100%");
         boolQueryBuilder.should(matchQuery);
 
         // Term Query - Keyword 타입
@@ -191,7 +186,6 @@ public class ElasticUtil {
     }
 
 
-
     public List<TableSearchKeywordRankDto> getTableSearchRank(
             String requestURI, String logType, Integer logResultSize, Integer rankResultSize
     ) {
@@ -216,8 +210,7 @@ public class ElasticUtil {
             if (isTodayIndexExist(client, todayIndex)) {
                 log.info("isTodayIndexExist");
                 addIndexToAlias(client, aliasName, todayIndex);
-            }
-            else {
+            } else {
                 // 존재한다면, "last-7-days" Alias에 추가
                 log.info("addIndexToAlias");
                 createTodayIndex(client, todayIndex);
@@ -247,10 +240,10 @@ public class ElasticUtil {
             searchSourceBuilder.fetchSource(includes, null);
 
             TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms("SEARCH_RANK")
-                                                                            .field("keyword.keyword")
-                                                                            .size(rankResultSize)
-                                                                            .minDocCount(1)
-                                                                            .order(BucketOrder.aggregation("_count", false));
+                    .field("keyword.keyword")
+                    .size(rankResultSize)
+                    .minDocCount(1)
+                    .order(BucketOrder.aggregation("_count", false));
             searchSourceBuilder.aggregation(aggregationBuilder);
 
             // set size

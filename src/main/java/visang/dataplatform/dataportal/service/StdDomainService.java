@@ -1,8 +1,8 @@
 package visang.dataplatform.dataportal.service;
 
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import visang.dataplatform.dataportal.mapper.StdDomainMapper;
@@ -16,6 +16,7 @@ import visang.dataplatform.dataportal.utils.ElasticUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,19 +56,20 @@ public class StdDomainService {
         List<String> fields = List.of("domain_group_nm", "domain_category_nm", "domain_nm");
 
         // QueryDSL 검색결과 반환
-        SearchResponse<StdDomainSearchDto> searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10, StdDomainSearchDto.class);
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10);
         List<StdDomainSearchDto> result = new ArrayList<>();
 
         // 검색결과를 TableSearchDto로 wrapping
-        for (Hit<StdDomainSearchDto> hit : searchHits.hits().hits()) {
+        for (SearchHit hit : searchHits) {
 
-            Long domain_idx = hit.source().getDomain_idx();
-            String domain_group_nm = hit.source().getDomain_group_nm();
-            String domain_category_nm = hit.source().getDomain_category_nm();
-            String domain_nm = hit.source().getDomain_nm();
-            String domain_desc = hit.source().getDomain_desc();
-            String data_type = hit.source().getData_type();
-            Integer data_length = hit.source().getData_length();
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            Long domain_idx = (Long) sourceMap.get("domain_idx");
+            String domain_group_nm = (String) sourceMap.get("domain_group_nm");
+            String domain_category_nm = (String) sourceMap.get("domain_category_nm");
+            String domain_nm = (String) sourceMap.get("domain_nm");
+            String domain_desc = (String) sourceMap.get("domain_desc");
+            String data_type = (String) sourceMap.get("data_type");
+            Integer data_length = (Integer) sourceMap.get("data_length");
 
             StdDomainSearchDto docData = new StdDomainSearchDto(domain_idx, domain_group_nm, domain_category_nm,
                     domain_nm, domain_desc, data_type, data_length);
