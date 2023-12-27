@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StdTermSearchDto {
-    private Long term_idx;
+    private Integer term_idx;
     private String term_logical_nm;
     private String term_logical_desc;
     private String term_physical_nm;

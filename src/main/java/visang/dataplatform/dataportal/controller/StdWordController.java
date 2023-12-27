@@ -11,7 +11,6 @@ import visang.dataplatform.dataportal.model.response.common.ResponseDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
 import visang.dataplatform.dataportal.service.StdWordService;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -28,13 +27,13 @@ public class StdWordController {
     }
 
     @GetMapping("{id}")
-    ResponseDto<StdWordDetailDto> getStdWord(@PathVariable("id") Long id) {
+    ResponseDto<StdWordDetailDto> getStdWord(@PathVariable("id") Integer id) {
         final StdWordDetailDto stdWord = stdWordService.getStdWord(id);
         return ResponseUtil.SUCCESS("표준단어 세부조회 성공", stdWord);
     }
 
     @GetMapping("search")
-    ResponseDto<List<StdWordSearchDto>> searchStdWord(@RequestParam("page") int pageNum, @RequestParam("keyword") String keyword) throws IOException {
+    ResponseDto<List<StdWordSearchDto>> searchStdWord(@RequestParam("page") int pageNum, @RequestParam("keyword") String keyword) {
         final List<StdWordSearchDto> stdWords = stdWordService.searchStdWord(pageNum, keyword);
         return ResponseUtil.SUCCESS("표준단어검색 성공", stdWords);
     }
@@ -47,7 +46,7 @@ public class StdWordController {
     }
 
     @PutMapping("{id}")
-    ResponseDto<StdWordDetailDto> updateStdWord(@PathVariable("id") Long id, @RequestBody UpdateStdWordDto updateStdWordDto) {
+    ResponseDto<StdWordDetailDto> updateStdWord(@PathVariable("id") Integer id, @RequestBody UpdateStdWordDto updateStdWordDto) {
         updateStdWordDto.setWord_idx(id);
         stdWordService.updateStdWord(updateStdWordDto);
         final StdWordDetailDto stdWord = stdWordService.getStdWord(id);
@@ -55,7 +54,7 @@ public class StdWordController {
     }
 
     @DeleteMapping("{id}")
-    ResponseDto<StdWordDetailDto> deleteStdWord(@PathVariable("id") Long id) {
+    ResponseDto<StdWordDetailDto> deleteStdWord(@PathVariable("id") Integer id) {
         stdWordService.deleteStdWord(id);
         return ResponseUtil.SUCCESS("표준단어 삭제 성공", null);
     }

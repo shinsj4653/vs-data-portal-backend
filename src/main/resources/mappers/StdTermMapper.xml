@@ -18,7 +18,7 @@
         ORDER BY term_idx ASC LIMIT 10;
     </select>
 
-    <select id="getStdTerm" parameterType="long"
+    <select id="getStdTerm" parameterType="integer"
             resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermDetailDto">
         SELECT tst.term_idx,
                tst.term_logical_nm,
@@ -55,7 +55,7 @@
         WHERE term_idx = #{term_idx}
     </update>
 
-    <delete id="deleteStdTerm" parameterType="long">
+    <delete id="deleteStdTerm" parameterType="integer">
         DELETE
         FROM tb_std_term
         WHERE term_idx = #{term_idx}

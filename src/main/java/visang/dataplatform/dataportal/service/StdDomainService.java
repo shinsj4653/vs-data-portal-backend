@@ -13,7 +13,6 @@ import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainDetai
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainSearchDto;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class StdDomainService {
     }
 
     @Transactional(readOnly = true)
-    public StdDomainDetailDto getStdDomain(Long domain_idx) {
+    public StdDomainDetailDto getStdDomain(int domain_idx) {
         return stdDomainMapper.getStdDomain(domain_idx);
     }
 
@@ -45,11 +44,11 @@ public class StdDomainService {
     }
 
     @Transactional
-    public void deleteStdDomain(Long domain_idx) {
+    public void deleteStdDomain(int domain_idx) {
         stdDomainMapper.deleteStdDomain(domain_idx);
     }
 
-    public List<StdDomainSearchDto> searchStdDomain(int pageNum, String keyword) throws IOException {
+    public List<StdDomainSearchDto> searchStdDomain(int pageNum, String keyword) {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         String indexName = "tb_std_domain";
@@ -63,7 +62,7 @@ public class StdDomainService {
         for (SearchHit hit : searchHits) {
 
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            Long domain_idx = (Long) sourceMap.get("domain_idx");
+            Integer domain_idx = (Integer) sourceMap.get("domain_idx");
             String domain_group_nm = (String) sourceMap.get("domain_group_nm");
             String domain_category_nm = (String) sourceMap.get("domain_category_nm");
             String domain_nm = (String) sourceMap.get("domain_nm");

@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class CreateStdDomainDto {
-    private Long domain_idx;
-    private Long domain_category_idx;
+    private Integer domain_idx;
+    private Integer domain_category_idx;
     private String domain_nm;
     private String domain_desc;
     private String data_type;

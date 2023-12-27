@@ -14,12 +14,12 @@ public interface StdWordMapper {
 
     List<SimpleStdWordDto> getStdWords(@Param("page_num") int pageNum);
 
-    StdWordDetailDto getStdWord(@Param("word_idx") long id);
+    StdWordDetailDto getStdWord(@Param("word_idx") int id);
 
     void createStdWord(CreateStdWordDto createStdWordDto);
 
     void updateStdWord(UpdateStdWordDto updateStdWordDto);
 
-    void deleteStdWord(@Param("word_idx") long id);
+    void deleteStdWord(@Param("word_idx") int id);
 
 }

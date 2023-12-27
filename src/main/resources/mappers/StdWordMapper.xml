@@ -14,7 +14,7 @@
         ORDER BY word_idx ASC LIMIT 10;
     </select>
 
-    <select id="getStdWord" parameterType="long"
+    <select id="getStdWord" parameterType="integer"
             resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.StdWordDetailDto">
         SELECT word_idx,
                word_logical_nm,
@@ -45,7 +45,7 @@
         WHERE word_idx = #{word_idx}
     </update>
 
-    <delete id="deleteStdWord" parameterType="long">
+    <delete id="deleteStdWord" parameterType="integer">
         DELETE
         FROM tb_std_word
         WHERE word_idx = #{word_idx}

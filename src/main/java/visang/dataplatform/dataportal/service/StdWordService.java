@@ -13,7 +13,6 @@ import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdWordDetailD
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdWordSearchDto;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class StdWordService {
     }
 
     @Transactional(readOnly = true)
-    public StdWordDetailDto getStdWord(Long word_idx) {
+    public StdWordDetailDto getStdWord(int word_idx) {
         return stdWordMapper.getStdWord(word_idx);
     }
 
@@ -45,11 +44,11 @@ public class StdWordService {
     }
 
     @Transactional
-    public void deleteStdWord(Long word_idx) {
+    public void deleteStdWord(int word_idx) {
         stdWordMapper.deleteStdWord(word_idx);
     }
 
-    public List<StdWordSearchDto> searchStdWord(int pageNum, String keyword) throws IOException {
+    public List<StdWordSearchDto> searchStdWord(int pageNum, String keyword) {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         String indexName = "tb_std_word";
@@ -63,7 +62,7 @@ public class StdWordService {
         for (SearchHit hit : searchHits) {
 
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            Long word_idx = (Long) sourceMap.get("word_idx");
+            Integer word_idx = (Integer) sourceMap.get("word_idx");
             String word_logical_nm = (String) sourceMap.get("word_logical_nm");
             String word_logical_desc = (String) sourceMap.get("word_logical_desc");
             String word_physical_nm = (String) sourceMap.get("word_physical_nm");

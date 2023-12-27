@@ -30,7 +30,7 @@ public class StdTermService {
     }
 
     @Transactional(readOnly = true)
-    public StdTermDetailDto getStdTerm(Long word_idx) {
+    public StdTermDetailDto getStdTerm(int word_idx) {
         return stdTermMapper.getStdTerm(word_idx);
     }
 
@@ -45,7 +45,7 @@ public class StdTermService {
     }
 
     @Transactional
-    public void deleteStdTerm(Long term_idx) {
+    public void deleteStdTerm(int term_idx) {
         stdTermMapper.deleteStdTerm(term_idx);
     }
 
@@ -63,7 +63,7 @@ public class StdTermService {
         for (SearchHit hit : searchHits) {
 
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            Long term_idx = (Long) sourceMap.get("term_idx");
+            Integer term_idx = (Integer) sourceMap.get("term_idx");
             String term_logical_nm = (String) sourceMap.get("term_logical_nm");
             String term_logical_desc = (String) sourceMap.get("term_logical_desc");
             String term_physical_nm = (String) sourceMap.get("term_physical_nm");
