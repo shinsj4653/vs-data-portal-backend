@@ -384,7 +384,7 @@ public class ElasticUtil {
             if (isIndexOlderThan7Days(index)) {
                 client.indices().deleteAlias(new DeleteAliasRequest(index, alias), RequestOptions.DEFAULT);
                 log.info("Removed index {} from alias {}", index, alias);
-            } else if (!index.equals(getCurrentDate())) {
+            } else if (!index.equals("search_logs-" + getCurrentDate())) {
                 // 오늘 일자를 제외한 7일 이내 Index -> read-only index 이므로 force-merge 시행
                 forceMergeIndex(client, index);
             }
