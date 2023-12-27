@@ -15,6 +15,8 @@ import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
@@ -380,6 +382,7 @@ public class ElasticUtil {
         for (String index : aliases.keySet()) {
             // Check if the index is older than 7 days
             if (isIndexOlderThan7Days(index)) {
+                forceMergeIndex(client, index);
                 client.indices().deleteAlias(new DeleteAliasRequest(index, alias), RequestOptions.DEFAULT);
                 log.info("Removed index {} from alias {}", index, alias);
             }
@@ -397,6 +400,15 @@ public class ElasticUtil {
         log.info("indexDate : {}", index);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
         return indexDate.isBefore(sevenDaysAgo);
+    }
+
+    private static void forceMergeIndex(RestHighLevelClient client, String index) throws IOException {
+
+        // force merge read only indices
+        ForceMergeRequest request = new ForceMergeRequest(index);
+        client.indices().forcemerge(request, RequestOptions.DEFAULT);
+        log.info("force merged read only indices");
+
     }
 
 }
