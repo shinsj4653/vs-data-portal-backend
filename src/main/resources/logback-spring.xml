@@ -9,7 +9,7 @@
 
     <!-- Logstash -->
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5000</destination>
+        <destination>localhost:4560</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <timeZone>GMT+9</timeZone>
             <timestampPattern>yyyy-MM-dd'T'HH:mm:ss</timestampPattern>
