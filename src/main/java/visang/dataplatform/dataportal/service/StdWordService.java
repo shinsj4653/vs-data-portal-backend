@@ -55,7 +55,7 @@ public class StdWordService {
         List<String> fields = List.of("word_logical_nm", "word_physical_nm", "synonym_list");
 
         // QueryDSL 검색결과 반환
-        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10);
+        SearchHits searchHits = client.searchStdTable(indexName, keyword, fields, pageNum, 10);
         List<StdWordSearchDto> result = new ArrayList<>();
 
         // 검색결과를 TableSearchDto로 wrapping
