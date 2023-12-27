@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StdWordSearchDto {
-    private Long word_idx;
+    private Integer word_idx;
     private String word_logical_nm;
     private String word_physical_nm;
     private String word_logical_desc;

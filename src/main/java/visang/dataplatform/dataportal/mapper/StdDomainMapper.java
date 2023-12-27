@@ -14,12 +14,12 @@ public interface StdDomainMapper {
 
     List<SimpleStdDomainDto> getStdDomains(@Param("page_num") int pageNum);
 
-    StdDomainDetailDto getStdDomain(@Param("domain_idx") long id);
+    StdDomainDetailDto getStdDomain(@Param("domain_idx") int id);
 
     void createStdDomain(CreateStdDomainDto createStdDomainDto);
 
     void updateStdDomain(UpdateStdDomainDto updateStdDomainDto);
 
-    void deleteStdDomain(@Param("domain_idx") long id);
+    void deleteStdDomain(@Param("domain_idx") int id);
 
 }

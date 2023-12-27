@@ -28,7 +28,7 @@ public class StdTermController {
     }
 
     @GetMapping("{id}")
-    ResponseDto<StdTermDetailDto> getStdTerm(@PathVariable("id") Long id) {
+    ResponseDto<StdTermDetailDto> getStdTerm(@PathVariable("id") Integer id) {
         final StdTermDetailDto stdTerm = stdTermService.getStdTerm(id);
         return ResponseUtil.SUCCESS("표준용어 세부조회 성공", stdTerm);
     }
@@ -47,7 +47,7 @@ public class StdTermController {
     }
 
     @PutMapping("{id}")
-    ResponseDto<StdTermDetailDto> updateStdTerm(@PathVariable("id") Long id, @RequestBody UpdateStdTermDto updateStdTermDto) {
+    ResponseDto<StdTermDetailDto> updateStdTerm(@PathVariable("id") Integer id, @RequestBody UpdateStdTermDto updateStdTermDto) {
         updateStdTermDto.setTerm_idx(id);
         stdTermService.updateStdTerm(updateStdTermDto);
         final StdTermDetailDto stdTerm = stdTermService.getStdTerm(id);
@@ -55,7 +55,7 @@ public class StdTermController {
     }
 
     @DeleteMapping("{id}")
-    ResponseDto<StdTermDetailDto> deleteStdTerm(@PathVariable("id") Long id) {
+    ResponseDto<StdTermDetailDto> deleteStdTerm(@PathVariable("id") Integer id) {
         stdTermService.deleteStdTerm(id);
         return ResponseUtil.SUCCESS("표준용어 삭제 성공", null);
     }

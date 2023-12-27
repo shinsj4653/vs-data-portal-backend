@@ -14,12 +14,12 @@ public interface StdTermMapper {
 
     List<SimpleStdTermDto> getStdTerms(@Param("page_num") int pageNum);
 
-    StdTermDetailDto getStdTerm(@Param("term_idx") long id);
+    StdTermDetailDto getStdTerm(@Param("term_idx") int id);
 
     void createStdTerm(CreateStdTermDto createStdTermDto);
 
     void updateStdTerm(UpdateStdTermDto updateStdTermDto);
 
-    void deleteStdTerm(@Param("term_idx") long id);
+    void deleteStdTerm(@Param("term_idx") int id);
 
 }

@@ -19,7 +19,7 @@
         ORDER BY domain_idx ASC LIMIT 10;
     </select>
 
-    <select id="getStdDomain" parameterType="long"
+    <select id="getStdDomain" parameterType="integer"
             resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.StdDomainDetailDto">
         SELECT tsd.domain_idx,
                tdg.domain_group_nm,
@@ -60,7 +60,7 @@
         WHERE domain_idx = #{domain_idx}
     </update>
 
-    <delete id="deleteStdDomain" parameterType="long">
+    <delete id="deleteStdDomain" parameterType="integer">
         DELETE
         FROM tb_std_domain
         WHERE domain_idx = #{domain_idx}

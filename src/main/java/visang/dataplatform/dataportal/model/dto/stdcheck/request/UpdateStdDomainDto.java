@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateStdDomainDto {
-    private Long domain_idx;
+    private Integer domain_idx;
     private String domain_nm;
     private String domain_desc;
     private String data_type;

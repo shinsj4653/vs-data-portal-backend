@@ -28,7 +28,7 @@ public class StdDomainController {
     }
 
     @GetMapping("{id}")
-    ResponseDto<StdDomainDetailDto> getStdDomain(@PathVariable("id") Long id) {
+    ResponseDto<StdDomainDetailDto> getStdDomain(@PathVariable("id") Integer id) {
         final StdDomainDetailDto stdDomain = stdDomainService.getStdDomain(id);
         return ResponseUtil.SUCCESS("표준도메인 세부조회 성공", stdDomain);
     }
@@ -47,7 +47,7 @@ public class StdDomainController {
     }
 
     @PutMapping("{id}")
-    ResponseDto<StdDomainDetailDto> updateStdDomain(@PathVariable("id") Long id, @RequestBody UpdateStdDomainDto updateStdDomainDto) {
+    ResponseDto<StdDomainDetailDto> updateStdDomain(@PathVariable("id") Integer id, @RequestBody UpdateStdDomainDto updateStdDomainDto) {
         updateStdDomainDto.setDomain_idx(id);
         stdDomainService.updateStdDomain(updateStdDomainDto);
         final StdDomainDetailDto stdDomain = stdDomainService.getStdDomain(id);
@@ -55,7 +55,7 @@ public class StdDomainController {
     }
 
     @DeleteMapping("{id}")
-    ResponseDto<StdDomainDetailDto> deleteStdDomain(@PathVariable("id") Long id) {
+    ResponseDto<StdDomainDetailDto> deleteStdDomain(@PathVariable("id") Integer id) {
         stdDomainService.deleteStdDomain(id);
         return ResponseUtil.SUCCESS("표준도메인 삭제 성공", null);
     }
