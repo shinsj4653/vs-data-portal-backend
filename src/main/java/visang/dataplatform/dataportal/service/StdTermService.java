@@ -13,7 +13,6 @@ import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermDetailD
 import visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermSearchDto;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,14 +48,14 @@ public class StdTermService {
         stdTermMapper.deleteStdTerm(term_idx);
     }
 
-    public List<StdTermSearchDto> searchStdTerm(int pageNum, String keyword) throws IOException {
+    public List<StdTermSearchDto> searchStdTerm(int pageNum, String keyword) {
 
         ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
         String indexName = "tb_std_term";
         List<String> fields = List.of("term_logical_nm", "term_physical_nm");
 
         // QueryDSL 검색결과 반환
-        final SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10);
+        final SearchHits searchHits = client.searchStdTable(indexName, keyword, fields, pageNum, 10);
         List<StdTermSearchDto> result = new ArrayList<>();
 
         // 검색결과를 TableSearchDto로 wrapping

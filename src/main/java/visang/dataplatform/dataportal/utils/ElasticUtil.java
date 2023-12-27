@@ -83,6 +83,37 @@ public class ElasticUtil {
         return self;
     }
 
+    public SearchHits searchStdTable(String index, String keyword, List<String> fields,
+                                     Integer pageNo, Integer amountPerPage) {
+
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        Integer fromNo = (pageNo - 1) * amountPerPage;
+        Integer sizeNum = amountPerPage;
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(
+                keyword, fields.toArray(new String[fields.size()])).minimumShouldMatch("100%");
+        boolQueryBuilder.must(multiMatchQuery);
+
+        searchSourceBuilder.from(fromNo);
+        searchSourceBuilder.size(sizeNum);
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse response = null;
+
+        try {
+            response = client.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.debug("getTotalTableSearch error : {}", e.getMessage());
+        }
+
+        return response.getHits();
+    }
+
     public SearchHits getTotalTableSearch(
             String index, String keyword, List<String> fields, Integer pageNo, Integer amountPerPage
     ) {

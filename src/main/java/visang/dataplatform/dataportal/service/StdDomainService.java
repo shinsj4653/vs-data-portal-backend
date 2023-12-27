@@ -55,7 +55,7 @@ public class StdDomainService {
         List<String> fields = List.of("domain_group_nm", "domain_category_nm", "domain_nm");
 
         // QueryDSL 검색결과 반환
-        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNum, 10);
+        SearchHits searchHits = client.searchStdTable(indexName, keyword, fields, pageNum, 10);
         List<StdDomainSearchDto> result = new ArrayList<>();
 
         // 검색결과를 TableSearchDto로 wrapping
