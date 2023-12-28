@@ -38,7 +38,8 @@
 
 ## 포털의 기능
 
-![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/9c8cc649-a91c-4e33-976e-ab602aff014a)
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/d9590b21-c055-461e-9784-32aa6e4ccdd9)
+
 
 이 중에서 `메타 데이터 검색` 기능을 담당함
 
@@ -57,11 +58,38 @@
 ![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/cb38098c-ac34-40f5-9c1f-11ce7010658e)
 
 ## Architecture
-![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/9184b4c1-bdce-4950-b91a-e037c20346b4)
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/6a089527-b97e-4ae4-9a34-6d067895a20d)
+
 
 
 ## 주요 구현 기능
 ### 1. 추천 검색어 조회
+> 목표 : 검색어 입력 시, 다음과 같이 추천 검색어 보여주기  
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/3ea332ee-d4c6-4f8b-99b3-9158310c5e0a)
+
+- 메타 데이터 -> 테이블ID, 코멘트, 카테고리로 분류
+- 검색 대상은 `카테고리(하위 주제)` 로 설정
+
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/f0d6ba20-cad9-4e7c-9846-ecc682c8f9e6)  
+
+
+카테고리 값을 다음 기준으로 토큰화 함으로써, 검색어에 일치하는 토큰이 있을 경우 해당 카테고리 값을 반환해줬다.  
+토큰이 많아질수록 ES 메모리를 더 많이 쓴다는 단점이 있지만, 더욱 세밀한 범위까지 검색이 가능해져 검색 정확도를 높일 수 있다.
+- 한글 형태소
+- 오타 교정
+- 초성 검색
+- 영 -> 한, 한 -> 영
+- 자동완성
+
+그리고, 각각의 결과는 다음과 같다.  
+|기준|결과|상세설명|  
+|:---:|:---:|:---:|
+|한글 형태소|![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/1c2bdcea-0e0b-4cea-96e4-eb73ba02fd21)|`월별매출 및 조정내역`을 Nori Tokenizer를 이용하여 `월별`, `매출`, `및`, `조정`, `내역`으로 토큰화하였으므로, `월별`로 검색하였을 때 해당 결과를 얻기 가능|
+|오타 교정|![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/0906c8b6-f290-4df2-b558-b773e654eef8)|`교자` 검색 시, Fuzzy Query를 통해 `교재`라는 교정된 검색어를 추천|
+|초성 검색|![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/be7a792a-ef56-489f-a3af-5289eee1be57)|hanhinsam 초성 플러그인을 통해, `ㄱㅈ`으로 토큰화되는 카테고리를 모두 추천|
+|영한 변환|![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/6f7869b3-ca5d-4de5-9082-5f6a8c60045d)|hanhinsam 영한 변환 플러그인을 통해, `CMS`의 한글 결과인 `츤`이 토큰으로 저장됨|
+|자동완성|![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/7eb1376a-88f0-4e74-bd73-e32ae5ef6cff)|`교재` |
+
 
 
 ### 2. 인기 검색어 조회
