@@ -23,4 +23,5 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="LOGSTASH" />
     </root>
+
 </configuration>

@@ -1,25 +1,30 @@
 package visang.dataplatform.dataportal.service;
 
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import visang.dataplatform.dataportal.exception.badrequest.metadata.BlankSearchKeywordException;
-import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.dto.dpmain.DatasetSearchDto;
+import visang.dataplatform.dataportal.model.dto.metadata.*;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseMeta;
 import visang.dataplatform.dataportal.mapper.MetaDataMapper;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
 import visang.dataplatform.dataportal.model.request.metadata.TableSearchRankRequest;
 import visang.dataplatform.dataportal.utils.ElasticUtil;
 
+import javax.persistence.Table;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.sql.JDBCType.NULL;
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 @Slf4j
@@ -28,22 +33,131 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 public class MetaDataService {
 
     private final MetaDataMapper metaDataMapper;
-
     public List<String> getMainDataset(String serviceName, Integer limit) {
         return metaDataMapper.getMainDataset(serviceName, limit);
     }
 
     public List<String> getSubDataset(String serviceName, String mainCategoryName, Integer limit) {
+
+//        if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null")){
+//            return new ArrayList<>();
+//        }
+
         return metaDataMapper.getSubDataset(serviceName, mainCategoryName, limit);
     }
 
-    public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName) {
+    public List<TableMetaInfoDto> getMetaDataWithSubCategory(String serviceName, String mainCategoryName, String subCategoryName, Integer pageNo, Integer amountPerPage) {
+
+        if (mainCategoryName.equals("") || mainCategoryName.equals("undefined") || mainCategoryName.equals(null) || mainCategoryName == null || mainCategoryName.equals("null") || mainCategoryName.equals(NULL)){
+            log.debug("mainCategoryName is NULL");
+            return new ArrayList<>();
+        }
+
         List<QueryResponseMeta> res = metaDataMapper.getMetaDataWithSubCategory(serviceName, mainCategoryName, subCategoryName);
-        return makeMetaInfoTree(res);
+        return makeMetaInfoTree(res, pageNo, amountPerPage);
     }
 
-    public List<TableSearchDto> getTableSearchResult(String serviceName, String searchCondition, String tableKeyword, Integer pageNo, Integer amountPerPage) {
-        return metaDataMapper.getTableSearchResult(serviceName, searchCondition, tableKeyword, pageNo, amountPerPage);
+    public List<TableSearchDto> getTableSearchResult(String searchCondition, String keyword, Integer pageNo, Integer amountPerPage) throws IOException {
+
+        // 빈 키워드인지 체크
+        //validateBlankKeyword(keyword);
+
+        log.debug("pageNo : {}", pageNo);
+        log.debug("amountPerPage : {}", amountPerPage);
+
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+
+        // index : tb_table_meta_info
+        String indexName = "tb_table_meta_info";
+
+        // fields : 선택한 검색 기준에 따라 필요한 fields 배열이 다름
+        List<String> fields = new ArrayList<>();
+
+
+//        if (searchCondition.equals("table_id") || searchCondition.equals("total")) {
+//            fields.add("table_id_english");
+//        }
+//        if (searchCondition.equals("table_comment") || searchCondition.equals("total")) {
+//            fields.add("table_comment_korean");
+//        }
+//        if (searchCondition.equals("small_clsf_name") || searchCondition.equals("total")) {
+//            fields.add("small_clsf_name_korean");
+//        }
+        fields.add("metaDataText");
+        fields.add("metaDataKeyword");
+
+        // ES QueryDSL 검색결과 반환
+        SearchHits searchHits = client.getTotalTableSearch(indexName, keyword, fields, pageNo, amountPerPage);
+        List<TableSearchDto> result = new ArrayList<>();
+
+        Long totalHitNum = searchHits.getTotalHits().value;
+
+        // 실시간 검색어에 "의미 있는 단어"만 포함되도록
+        // -> table_id, table_comment, small_clsf_name 결과들 중에서, keyword를 포함하고 있을 때만 로그 전송
+        boolean hasKeyword = false;
+
+        // 검색 결과 -> TableSearchDto로 감싸주는 작업
+        for (SearchHit hit : searchHits) {
+
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+
+            String table_id = String.valueOf(sourceMap.get("table_id"));
+            String table_comment = String.valueOf(sourceMap.get("table_comment"));
+            String small_clsf_name = String.valueOf(sourceMap.get("small_clsf_name"));
+
+            TableSearchDto docData = new TableSearchDto(table_id, table_comment, small_clsf_name, totalHitNum);
+            
+            result.add(docData);
+
+            if (isResultContainsKeyword(docData, keyword)) {
+                hasKeyword = true;
+            }
+        }
+        
+        // 검색 결과가 존재하면서, 의미 있는 단어만 로그 전송
+        if (totalHitNum > 0L && hasKeyword) {
+            log.info("{} {} {}", keyValue("logType", "search"), keyValue("requestURI", "/metadata/search/keyword"), keyValue("keyword", keyword));
+        }
+
+        return result;
+    }
+
+    private static boolean isResultContainsKeyword(TableSearchDto doc, String keyword) {
+        if (doc.getTable_id().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getTable_comment().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))
+                || doc.getSmall_clsf_name().replaceAll(" ", "").contains(keyword.replaceAll(" ", ""))){
+            return true;
+        }
+        return false;
+    }
+
+    public List<AutoCompleteWordDto> getAutoCompleteSearchWords(String index, List<String> searchConditions, String keyword) throws IOException {
+        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
+        // 중복 제거 위한 Set
+        Set<String> words = new HashSet<>();
+
+        // 최종 추천 검색어 결과
+        List<AutoCompleteWordDto> result = new ArrayList<>();
+
+        for (String searchCondition : searchConditions) {
+            SearchHits searchHits = client.getAutoCompleteSearchWords(index, searchCondition, keyword);
+
+            // 결과 json 리스트에서, 단어 가져오기
+            for (SearchHit hit : searchHits) {
+
+                String wordResult = String.valueOf(hit.getSourceAsMap().get(searchCondition));
+                float score = hit.getScore();
+
+                if (!words.contains(wordResult)){
+                    words.add(wordResult);
+                    result.add(new AutoCompleteWordDto(wordResult, score));
+                }
+            }
+        }
+
+        // 검색 정확도 기준으로 정렬
+        Collections.sort(result, Comparator.comparing(AutoCompleteWordDto::getScore).reversed());
+        return result;
     }
 
     public List<TableColumnDto> getTableColumnInfo(String tableId) {
@@ -51,64 +165,21 @@ public class MetaDataService {
         return makeTableColumnDto(list);
     }
 
-    public List<TableSearchDto> getTotalTableSearchResult(String keyword) {
-
-        // ci/cd restart test
-
-        // 빈 키워드인지 체크
-        validateBlankKeyword(keyword);
-
-        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-
-        // index : tb_table_meta_info-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-
-        // fields
-        List<String> fields = new ArrayList<>();
-        fields.add("table_id");
-        fields.add("table_comment");
-        fields.add("small_clsf_name");
-
-        String indexName = "tb_table_meta_info-" + now;
-        List<Map<String, Object>> searchResult = client.getTotalTableSearch(indexName, keyword, fields, 10000);
-
-        if (!(keyword.equals("") || keyword.equals("undefined") || keyword.equals(null) || keyword == null || keyword.equals("null"))) {
-            log.info("{} {}", keyValue("requestURI", "/metadata/search/total"), keyValue("keyword", keyword));
-        }
-
-        // 검색 결과 -> TableSearchDto로 감싸주는 작업
-        return searchResult.stream()
-                .map(mapData -> new TableSearchDto(String.valueOf(mapData.get("table_id")), String.valueOf(mapData.get("table_comment")), String.valueOf(mapData.get("small_clsf_name")), searchResult.size()))
-                .collect(Collectors.toList());
-
-        //return metaDataMapper.getTableTotalSearchFullScan(keyword);
-    }
-
-    public List<TableSearchKeywordRankDto> getTableSearchRank(TableSearchRankRequest request) {
-
-        // message 안에 uri 가 포함된 로그만 필터링
-        String uri = request.getUri();
-
-        // 검색 시간대
-        String gte = request.getGte();
-        String lte = request.getLte();
-
-        ElasticUtil client = ElasticUtil.getInstance("localhost", 9200);
-
-        // index : logstash-searchlog-YYYY-MM-DD
-        LocalDate now = LocalDate.now();
-
-        String indexName = "logstash-searchlog-" + now;
-        return client.getTableSearchRank(indexName, uri, gte, lte, 10000, 10);
-    }
-
     // QueryResponseMeta에서 TableMetaInfoDto에 필요한 정보만 추출하여 리스트 형태로 반환해주는 함수
-    private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result) {
+    private List<TableMetaInfoDto> makeMetaInfoTree(List<QueryResponseMeta> result, Integer pageNo, Integer amountPerPage) {
 
         List<TableMetaInfoDto> list = new ArrayList<>();
+        int startIdx = (pageNo - 1) * amountPerPage;
+        int endIdx = startIdx + amountPerPage;
+        
+        // 만약 마지막 인덱스가 result 크기 넘어갈 경우, size() 값으로 마지막 인덱스 세팅
+        if (startIdx + amountPerPage > result.size()) {
+            endIdx = result.size();
+        }
 
-        for (QueryResponseMeta q : result) {
-            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name());
+        for (int idx = startIdx; idx < endIdx; idx++) {
+            QueryResponseMeta q = result.get(idx);
+            TableMetaInfoDto metaData = new TableMetaInfoDto(q.getTable_meta_info_id(), q.getTable_id(), q.getTable_comment(), q.getSmall_clsf_name(), result.size());
             list.add(metaData);
         }
         return list;

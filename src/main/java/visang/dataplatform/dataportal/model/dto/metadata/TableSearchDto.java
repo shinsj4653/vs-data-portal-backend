@@ -19,5 +19,5 @@ public class TableSearchDto {
     private String small_clsf_name;
 
     @Schema(description = "검색 결과 총 갯수")
-    private Integer total_num;
+    private long total_num;
 }

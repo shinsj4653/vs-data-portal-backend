@@ -5,23 +5,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import visang.dataplatform.dataportal.model.dto.metadata.TableColumnDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchDto;
-import visang.dataplatform.dataportal.model.dto.metadata.TableSearchKeywordRankDto;
+import visang.dataplatform.dataportal.model.dto.metadata.*;
 import visang.dataplatform.dataportal.model.query.metadata.QueryResponseTableColumnInfo;
 import visang.dataplatform.dataportal.model.request.metadata.*;
 import visang.dataplatform.dataportal.model.response.common.ResponseDto;
 import visang.dataplatform.dataportal.model.response.common.ResponseUtil;
-import visang.dataplatform.dataportal.model.dto.metadata.TableMetaInfoDto;
 import visang.dataplatform.dataportal.service.MetaDataService;
 
 import javax.persistence.Table;
+import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("metadata")
+@RequestMapping("apis/metadata")
 @Api(tags = {"MetaDataInfo API"}, description = "메타데이터 정보 API")
 public class MetaDataController {
 
@@ -43,16 +42,16 @@ public class MetaDataController {
 
     @Operation(summary = "테이블 메타 데이터 정보 조회 API", description = "데이터 맵에서 대분류 혹은 중분류 데이터셋을 클릭하거나 메타 데이터 메뉴에서 대분류와 중분류 데이터 셋을 선택하면, 해당되는 테이블 메타 데이터 정보들을 모두 가져오는 API")
     @PostMapping("tableinfo")
-    public ResponseDto<List<TableMetaInfoDto>> getMetaDataWithSubCategory(@RequestBody MetaDataRequest metaDataSub) {
-        List<TableMetaInfoDto> result = metaDataService.getMetaDataWithSubCategory(metaDataSub.getService_name(), metaDataSub.getMain_category_name(), metaDataSub.getSub_category_name());
+    public ResponseDto<List<TableMetaInfoDto>> getMetaDataWithSubCategory(@Valid @RequestBody MetaDataRequest req) {
+        List<TableMetaInfoDto> result = metaDataService.getMetaDataWithSubCategory(req.getService_name(), req.getMain_category_name(), req.getSub_category_name(), req.getPage_no(), req.getAmount_per_page());
         return ResponseUtil.SUCCESS("메타 데이터 정보 중, 서비스의 대분류와 소분류에 해당하는 메타 데이터 정보들을 가져오는데 성공했습니다.", result);
     }
 
-    @Operation(summary = "검색 조건 별 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
-    @PostMapping("search/tableinfo")
-    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@RequestBody TableSearchRequest req) {
-        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getService_name(), req.getSearch_condition(), req.getTable_keyword(), req.getPage_no(), req.getAmount_per_page());
-        return ResponseUtil.SUCCESS("테이블ID 혹은 테이블명으로 검색한 결과를 조회 성공했습니다.", result);
+    @Operation(summary = "검색 조건 별 검색 결과 조회 API", description = "메타 데이터 정보 페이지 내에서 전체, 테이블ID, 테이블 코멘트, 하위주제 중 하나로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
+    @PostMapping("search/keyword")
+    public ResponseDto<List<TableSearchDto>> getTableSearchResult(@Valid @RequestBody TableSearchRequest req) throws IOException {
+        List<TableSearchDto> result = metaDataService.getTableSearchResult(req.getSearch_condition(), req.getKeyword(), req.getPage_no(), req.getAmount_per_page());
+        return ResponseUtil.SUCCESS("전체, 테이블ID, 테이블 코멘트, 하위주제 중 하나로 검색한 결과를 조회 성공했습니다.", result);
     }
 
     @Operation(summary = "메타 테이블의 컬럼 정보 조회 API", description = "메타 데이터 정보 페이지 내에서 테이블ID 혹은 테이블명으로 검색 시 해당 키워드에 맞는 메타 데이터 정보들을 반환해주는 API")
@@ -61,18 +60,10 @@ public class MetaDataController {
         List<TableColumnDto> result = metaDataService.getTableColumnInfo(req.getTable_id());
         return ResponseUtil.SUCCESS("메타 데이터 테이블 컬럼명을 조회 성공했습니다.", result);
     }
-
-    @Operation(summary = "비상교육 전체 메타 데이터 검색 API", description = "메타 테이블 데이터 검색 기준인 table_id, table_comment, 그리고 small_clsf_name 중 하나라도 검색 키워드를 포함하고 있을 시, 해당 결과 반환해주는 API")
-    @GetMapping("search/total")
-    public ResponseDto<List<TableSearchDto>> getTotalTableSearchResult(@RequestParam(value = "keyword") String keyword) {
-        List<TableSearchDto> result = metaDataService.getTotalTableSearchResult(keyword);
-        return ResponseUtil.SUCCESS("메타 테이블 전체 검색 결과 조회 성공했습니다.", result);
-    }
-
-    @Operation(summary = "메타 테이블 검색어 실시간 순위 집계 API", description = "메타 테이블 데이터 검색 키워드의 실시간 검색 횟수 순위를 반환해주는 API")
-    @PostMapping("search/rank")
-    public ResponseDto<List<TableSearchKeywordRankDto>> getTableSearchRank(@RequestBody TableSearchRankRequest request) {
-        List<TableSearchKeywordRankDto> result = metaDataService.getTableSearchRank(request);
-        return ResponseUtil.SUCCESS("특정 시간대의 검색어 순위 집계에 성공했습니다.", result);
+    @Operation(summary = "자동완성 된 검색어 결과 조회 API", description = "메타 데이터 검색 페이지에서 검색어 입력 시, 자동완성 결과 반환해주는 API")
+    @PostMapping("search/autocomplete")
+    public ResponseDto<List<AutoCompleteWordDto>> getAutoCompleteSearchWords(@RequestBody AutoCompleteSearchRequest req) throws IOException {
+        List<AutoCompleteWordDto> result = metaDataService.getAutoCompleteSearchWords(req.getIndex(), req.getSearch_conditions(), req.getKeyword());
+        return ResponseUtil.SUCCESS("메타 데이터 검색어 자동완성 결과 조회 성공했습니다.", result);
     }
 }

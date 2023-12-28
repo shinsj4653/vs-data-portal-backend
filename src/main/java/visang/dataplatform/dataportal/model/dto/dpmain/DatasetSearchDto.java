@@ -15,4 +15,8 @@ public class DatasetSearchDto {
 
     @Schema(description = "중분류 주제영역")
     private String sub_category_name;
+
+    @Schema(description = "검색 결과 총 갯수")
+    private Long total_num;
+
 }

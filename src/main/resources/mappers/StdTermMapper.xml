@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="visang.dataplatform.dataportal.mapper.StdTermMapper">
+
+    <select id="getStdTerms" parameterType="integer"
+            resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.SimpleStdTermDto">
+        SELECT tst.term_idx,
+               tst.term_logical_nm,
+               tst.term_physical_nm,
+               tsd.domain_nm,
+               tsd.data_type,
+               tsd.data_length
+        FROM tb_std_term tst
+                 JOIN tb_std_domain tsd ON tst.domain_idx = tsd.domain_idx
+        WHERE term_idx > (#{page_num} - 1) * 10
+        ORDER BY term_idx ASC LIMIT 10;
+    </select>
+
+    <select id="getStdTerm" parameterType="integer"
+            resultType="visang.dataplatform.dataportal.model.dto.stdcheck.response.StdTermDetailDto">
+        SELECT tst.term_idx,
+               tst.term_logical_nm,
+               tst.term_logical_desc,
+               tst.term_physical_nm,
+               tst.term_physical_desc,
+               tsd.domain_nm,
+               tsd.data_type,
+               tsd.data_length,
+               tsd.allowed_values,
+               tsd.store_format,
+               tsd.represent_format
+        FROM tb_std_term tst
+                 JOIN tb_std_domain tsd ON tst.domain_idx = tsd.domain_idx
+        WHERE term_idx = #{term_idx}
+    </select>
+
+    <insert id="createStdTerm" useGeneratedKeys="true" keyProperty="term_idx"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.CreateStdTermDto">
+        INSERT INTO tb_std_term(term_logical_nm, term_logical_desc, term_physical_nm,
+                                term_physical_desc, domain_idx)
+        VALUES (#{term_logical_nm}, #{term_logical_desc}, #{term_physical_nm},
+                #{term_physical_desc}, #{domain_idx})
+    </insert>
+
+    <update id="updateStdTerm"
+            parameterType="visang.dataplatform.dataportal.model.dto.stdcheck.request.UpdateStdTermDto">
+        UPDATE tb_std_term
+        SET term_logical_nm    = #{term_logical_nm},
+            term_logical_desc  = #{term_logical_desc},
+            term_physical_nm   = #{term_physical_nm},
+            term_physical_desc = #{term_physical_desc},
+            domain_idx         = #{domain_idx}
+        WHERE term_idx = #{term_idx}
+    </update>
+
+    <delete id="deleteStdTerm" parameterType="integer">
+        DELETE
+        FROM tb_std_term
+        WHERE term_idx = #{term_idx}
+    </delete>
+
+</mapper>

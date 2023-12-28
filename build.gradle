@@ -43,9 +43,9 @@ dependencies {
 
 	/* elasticsearch */
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.1'
-	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.9.3'
-	implementation 'org.elasticsearch:elasticsearch:7.9.3'
+	//implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.2'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.17.15'
+	implementation 'org.elasticsearch:elasticsearch:7.17.15'
 
 	// spring boot log to elastic search
 	implementation 'com.internetitem:logback-elasticsearch-appender:1.6'
@@ -53,6 +53,13 @@ dependencies {
 
 	// spring boot log to logstash
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
+
+	// ES Java API Client
+	implementation 'co.elastic.clients:elasticsearch-java:8.11.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.15'
+	//implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.11.2'
+	implementation 'jakarta.json:jakarta.json-api:2.0.1'
 
 	implementation "org.springframework.boot:spring-boot-starter-json"
     testImplementation 'junit:junit:4.13.1'

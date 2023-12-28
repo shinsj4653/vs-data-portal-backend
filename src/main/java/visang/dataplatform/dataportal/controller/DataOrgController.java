@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("dataorg")
+@RequestMapping("apis/dataorg")
 @Api(tags = { "DataOrganization API" }, description = "데이터 기반 조직도 API")
 public class DataOrgController {
 
