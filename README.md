@@ -140,9 +140,9 @@ Alias : Index의 또 다른 이름
 기본적으로 filter영역 내 synonyms 항목에서 직접 동의어를 입력하는 방법과 `동의어 사전 파일을 만들어 synonyms_path로 지정하는 방법`이 있다. 동의어 사전의 양과 잦은 수정을 고려하여 두 번째 방법을 택하기로 하였다.  
 
 
-메타 데이터의 테이블 id는 tab_tt_test 와 같이 영어 단어들이 underscore로 구분된 형태이다. 이미 underscore를 기준으로 테이블 id 값을 토큰화하였기 때문에, 분리된 영어단어들에 해당하는 동의어들을 정의해주면 검색 품질을 더욱 개선할 수 있을거라 생각하였다.  
+메타 데이터의 테이블 ID는 `TAB_TT_TEST` 와 같이 영어 단어들이 underscore로 구분된 형태이다. 이미 underscore를 기준으로 테이블 id 값을 토큰화하였기 때문에, 분리된 영어단어들에 해당하는 동의어들을 정의해주면 검색 품질을 더욱 개선할 수 있을거라 생각하였다.  
 
-“시험”과 “TEST”가 동의어로 인식되기 위해 다음 형식으로 파일 내용을 구성하였다.  
+`시험`과 `TEST`가 동의어로 인식되기 위해 다음 형식으로 파일 내용을 구성하였다.  
 ```text
 시험, TEST
 ```  
@@ -156,11 +156,18 @@ synonym 필터 사용 시, 다음과 같은 오류가 발생하였다.
 "term: 가맹점 analyzed to a token (가맹) with position increment != 1 (got: 0)"
 ```
 즉, 이미 nori tokenizer가 `가맹점`을 `가맹`과 `점`으로 토큰화 하였지만, 동의어 사전에는 여전히 `가맹점`이 존재하기 때문에 생기는 오류였다.  
-이를 해결하기 위해 nori tokenizer의 `user_dictionary` 옵션을 사용하여, 토큰화 되지 않을 단어들을 정의해줬다.  
+이를 해결하기 위해 nori tokenizer의 `user_dictionary(사용자 사전)` 옵션을 사용하여, 토큰화 되지 않을 단어들을 정의해줬다.  
 표준단어정의서의 공통표준단어명(한글)들을 모두 등록해줌으로써 해당 오류를 해결할 수 있었다.  
 
 > 최종결과
 
+
+![es-without-synonym](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/575156da-36ba-47a4-9ce4-9de8a7e6f068)
+*동의어 사전 적용 전 `시험` 검색 결과*
+
+
+![es-with-synonym](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/9e48e7fe-3a8b-4444-8115-6f4a0cd410c9)  
+*동의어 사전 적용 후 `시험` 검색 결과*
 
 2. 메타 데이터 검색 쿼리 개선
 
