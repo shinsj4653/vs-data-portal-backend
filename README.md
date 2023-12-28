@@ -433,8 +433,11 @@ force-merge 시행 전과 후의 7일간 인기 검색어 조회 시, 2023년 12
 ## 추가 구현 기능
 
 ### 1. ALB를 통한 포트 기반 라우팅
-> 목표 : 다른 
+> 목표 : 포트에 따라 다른 대상 그룹으로 매핑
 
+V사의 데이터 포털 인스턴스와 Airflow 인스턴스를 모두 회사 내부망에서 관리할 수 있도록 private subnet에 배치시켰다.  
+구식 CLB과는 다르게 ALB는 로드 밸런서 하나만으로 각 대상그룹에 라우팅 시켜준다.  
+`path`뿐만 아니라 `port` 에 따라 대상그룹을 매핑시켜 줄 수 있는 장점이 있기에 활용한 점이 크다. 이는 도커 컨테이너 환경에서 아주 유용하게 작동할 수 있고 하나의 대상그룹에 더 많은 컨테이너를 넣어 비용을 최적화할 수 있기 때문이다.
 
 ## 향후 개선 사항
 
@@ -449,22 +452,28 @@ force-merge 시행 전과 후의 7일간 인기 검색어 조회 시, 2023년 12
 단순히 7일간의 Index에 대한 aggs 연산이 아닌, 짧은 시간 내의 검색 키워드를 캐싱하여 이를 함께 활용한다면 인기 검색어 결과가 더욱 정확해질 것으로 예상된다.  
 
 ## 느낀점
-- 단순히 ElasticSearch 기능들을 사용하는 걸로 끝이 아닌, 실제 성능 개선을 어떤식으로 할지 고민하면서 이론을 사용하니 알던 개념도 더욱 깊게 이해할 수 있었다.
-- `검색` 도메인에 흥미가 생겼고, 사용자 입장에서 원하는 결과를 더욱 빠르고 정확하게 도출해내기 위해 클러스터, 노드와 같이 더 넓은 단위의 개념 학습을 추가적으로 할 예정이다.
+- 단순히 ElasticSearch 기능들을 사용하는 걸로 끝이 아닌, 실제 성능 개선을 어떤식으로 할지 고민하면서 구현해보니, 알고있던 개념을 더욱 깊게 이해할 수 있었다.
+- `검색` 도메인에 흥미가 생겼고, 사용자 입장에서 원하는 결과를 더욱 빠르고 정확하게 도출해내기 위해 `클러스터, 노드`와 같이 더 넓은 단위의 개념 학습 및 성능 최적화에 힘쓸 예정이다.
 
 
 ## 참고 사항
-- 회사 프로젝트의 접근 권한은 private이기 때문에, 제 리포지토리에 보이도록 하기 위해 `main 브랜치만 가져온 상태`입니다.
-- 제 레포에서는 Github Actions의 Deploy 실패 문구가 보이지만, `실제 현업에서는 정상작동` 하고 있습니다.
+- 회사 프로젝트의 접근 권한은 private이기 때문에, 제 로컬 repo에 보이도록 하기 위해 `main 브랜치만 가져온 상태`입니다.
+- 저의 로컬 repo에서는 Github Actions의 Deploy 실패 문구가 보이지만, `실제 현업에서는 정상작동` 하고 있습니다.
 
 ![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/787fcdc3-686f-4363-9066-adcf37970793)
 *현업에서 사용되었던, 혹은 사용중인 브랜치명 목록들*  
 
 
-
-![image](https://github.com/shinsj4653/vs-data-service-backend/assets/49470452/811ab1df-f5c6-4c97-9fd3-b5f73935c673)
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/9ad17317-6407-44bd-94a2-d7e9779d7a99)  
 *정상 작동한 Github Actions의 Workflows 이력*
 
 ## 참고 자료
+- [NHN FORWARD 22 - 엘라스틱서치를 이용한 상품 검색 엔진 개발 일지](https://www.youtube.com/watch?v=fBfUr_8Pq8A)
+- [ElasticSearch 동의어 사전](https://icarus8050.tistory.com/49)
+- [Elasticsearch copy_to 활용](https://1995-dev.tistory.com/155)
+- [elasticsearch term match 비교](https://cupeanimus.tistory.com/66)
+- [엘라스틱서치 샤딩, 이 정도는 알고 사용하자](https://jinseong-dev.tistory.com/entry/ELK-%EC%97%98%EB%9D%BC%EC%8A%A4%ED%8B%B1%EC%84%9C%EC%B9%98-%EC%83%A4%EB%94%A9-%EC%9D%B4-%EC%A0%95%EB%8F%84%EB%8A%94-%EC%95%8C%EA%B3%A0-%EC%82%AC%EC%9A%A9%ED%95%98%EC%9E%90)
+- [내가 운영하는 Elasticsearch 클러스터에 얼마나 많은 샤드가 필요할까?](https://www.elastic.co/kr/blog/how-many-shards-should-i-have-in-my-elasticsearch-cluster)
+- [ElasticSearch 검색 성능 최적화](https://velog.io/@ehwnghks/Elasticsearch-%EA%B2%80%EC%83%89-%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94)
 - [엘라스틱 서치 구성 요소 및 구조](https://jeongxoo.tistory.com/17)
 
