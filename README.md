@@ -38,10 +38,14 @@
 
 ## 포털의 기능
 
-![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/d9590b21-c055-461e-9784-32aa6e4ccdd9)
+![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/d9590b21-c055-461e-9784-32aa6e4ccdd9)  
+이 중에서 `메타 데이터 검색` 기능을 담당하여 수행함
+
+## 포털 활용 시나리오
+<img width="857" alt="image" src="https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/e40093b4-4776-4c94-8151-add064a8443b">  
 
 
-이 중에서 `메타 데이터 검색` 기능을 담당함
+
 
 ## 사용 기술 스택
 - `Language` : Java 11, JUnit 4
