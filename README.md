@@ -41,11 +41,17 @@
 ![image](https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/d9590b21-c055-461e-9784-32aa6e4ccdd9)  
 이 중에서 `메타 데이터 검색` 기능을 담당하여 수행함
 
-## 포털 활용 시나리오
-<img width="857" alt="image" src="https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/e40093b4-4776-4c94-8151-add064a8443b">  
+## 포털 활용 시나리오  
+### 1. 회원 정보 통합 및 SSO 적용
+<img width="500" alt="image" src="https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/86dfc5da-0285-46ac-ab88-891732086f67">
 
+### 2. 영어 교육 컨텐츠를 위한 예문 개발
+<img width="500" alt="image" src="https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/15b9ac98-f939-46db-80cf-a6d6fbb684ae">  
 
+### 포털 활용 단계  
+<img width="321" alt="image" src="https://github.com/shinsj4653/vs-data-portal-backend/assets/49470452/8bfd2f0f-133a-4e03-8012-f64d516309ef">
 
+`데이터 검색 -> 메타 데이터 확인 -> 데이터 요청` 순으로 활용 가능하다. 메타 데이터의 빠른 조회를 위한 `검색 기능 개발`을 맡아 진행함.  
 
 ## 사용 기술 스택
 - `Language` : Java 11, JUnit 4
